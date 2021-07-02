@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pers_info_help_form">
+        <item>--请选择日常求助类别--</item>
+        <item>代取物品</item>
+        <item>信息求问</item>
+        <item>寻物启事</item>
+        <item>失物招领</item>
+        <item>其他</item>
+    </string-array>
+</resources>

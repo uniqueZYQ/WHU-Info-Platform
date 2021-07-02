@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@drawable/p_m">
+    <include layout="@layout/toolbar"/>
+    <TextView
+        android:id="@+id/text_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="19sp"
+        android:textColor="#000000"
+        android:background="#77FFFFFF"
+        android:layout_margin="1dp"
+        />
+    <TextView
+        android:id="@+id/text_realname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="19sp"
+        android:textColor="#000000"
+        android:background="#77FFFFFF"
+        android:layout_margin="1dp"
+        />
+    <TextView
+        android:id="@+id/text_stdid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="19sp"
+        android:textColor="#000000"
+        android:background="#77FFFFFF"
+        android:layout_margin="1dp"
+        />
+    <Button
+        android:id="@+id/button_upgrade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="修改个人资料"
+        android:textSize="19sp"
+        android:background="@drawable/add_info"
+        android:layout_gravity="center"
+        android:layout_margin="3dp"
+        />
+
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="info_form">
+        <item>--请选择信息种类--</item>
+        <item>私人性信息</item>
+        <item>组织性活动信息 </item>
+        <item>课程点评信息</item>
+    </string-array>
+</resources>

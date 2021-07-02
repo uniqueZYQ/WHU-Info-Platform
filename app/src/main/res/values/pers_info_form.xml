@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pers_info_form">
+        <item>--请选择私人性信息种类--</item>
+        <item>学术咨询</item>
+        <item>日常求助</item>
+        <item>物品出售</item>
+        <item>物品求购</item>
+    </string-array>
+</resources>
