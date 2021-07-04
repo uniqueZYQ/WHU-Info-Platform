@@ -16,6 +16,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
@@ -27,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 public class Create_User_promote_Activity extends rootActivity {
     private DB_USER dbHelper;
     private ActivityCreateUserPromoteBinding binding;
+    ImageView picture;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +44,8 @@ public class Create_User_promote_Activity extends rootActivity {
     @Override
     protected void initData() {
         super.initData();
+        picture=binding.picture;
+        picture.setImageResource(R.drawable.default_head);
         binding.editPwd.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -104,11 +108,17 @@ public class Create_User_promote_Activity extends rootActivity {
                     dbHelper.getWritableDatabase();
                     Boolean ret = false;
                     SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    picture.setDrawingCacheEnabled(true);
+                    Bitmap bitmap = Bitmap.createBitmap(picture.getDrawingCache());
+                    picture.setDrawingCacheEnabled(false);
+                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
                     ContentValues values = new ContentValues();
                     values.put("nickname", nnm);
                     values.put("pwd", pw);
                     values.put("realname", rnm);
                     values.put("stdid", id);
+                    values.put("picture",os.toByteArray());
                     Cursor cursor = db.rawQuery("select id from User where stdid=?", new String[]{id}, null);
                     if(cursor.moveToFirst()) {
                         if (cursor.getCount() != 0) {
