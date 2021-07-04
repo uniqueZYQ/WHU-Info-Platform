@@ -114,7 +114,7 @@ public class Message_Center_Activity extends rootActivity {
         List<Integer> oppo_hist_id=new ArrayList<>();
         myid=intent.getIntExtra("id",0);
         List<Msg> msg = DataSupport.where("sub_id=? or obj_id=?",String.valueOf(myid),String.valueOf(myid)).order("time desc").find(Msg.class);
-        dbHelper = new DB_USER(this, "User.db", null, 6);
+        dbHelper = new DB_USER(this, "User.db", null, 7);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         String lasttext="";
         for(int i=0;i<msg.size();i++){

@@ -89,7 +89,7 @@ public class Search_Info_promote_Activity extends rootActivity {
         Intent intent=getIntent();
         String kwd=intent.getStringExtra("kwd");
         int id=intent.getIntExtra("id",0);
-        dbHelper = new DB_USER(this, "User.db", null, 6);
+        dbHelper = new DB_USER(this, "User.db", null, 7);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         List<Info> info = DataSupport.where("detail like ? or lesson like ?","%"+kwd+"%","%"+kwd+"%").order("send_date desc").find(Info.class);
         for(int i=0;i<info.size();i++){

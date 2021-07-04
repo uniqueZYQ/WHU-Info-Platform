@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.DB.DB_INFO;
+/*import com.example.whuinfoplatform.DB.DB_INFO;*/
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.R;
@@ -250,7 +250,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             info.setScore(-1);
                             info.setDetail(detail);
                             info.setReward(reward);
-                            Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的信息]查看详情",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
                             long timecurrentTimeMillis = System.currentTimeMillis();
                             SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
@@ -281,7 +281,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             info.setScore(-1);
                             info.setDetail(detail);
                             info.setReward(-1);
-                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的信息]查看详情", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                             long timecurrentTimeMillis = System.currentTimeMillis();
                             SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
@@ -312,7 +312,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             info.setScore(-1);
                             info.setDetail(detail);
                             info.setReward(-1);
-                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的信息]查看详情", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                             long timecurrentTimeMillis = System.currentTimeMillis();
                             SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
@@ -347,7 +347,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             info.setScore(-1);
                             info.setDetail(detail);
                             info.setReward(reward);
-                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的信息]查看详情", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                             long timecurrentTimeMillis = System.currentTimeMillis();
                             SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());

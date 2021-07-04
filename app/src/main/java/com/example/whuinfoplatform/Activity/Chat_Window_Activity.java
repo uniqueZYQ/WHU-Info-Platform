@@ -56,7 +56,7 @@ public class Chat_Window_Activity extends rootActivity {
         if(sub_id==0) sub_id=intent.getIntExtra("sub_id1",0);
         obj_id=intent.getIntExtra("obj_id",0);
         if(obj_id==0) obj_id=intent.getIntExtra("obj_id1",0);
-        dbHelper=new DB_USER(this,"User.db",null,6);
+        dbHelper=new DB_USER(this,"User.db",null,7);
         dbHelper.getWritableDatabase();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from User where id=?", new String[]{String.valueOf(obj_id)}, null);

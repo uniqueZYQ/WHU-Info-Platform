@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.whuinfoplatform">
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
         android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"
@@ -30,7 +30,9 @@
         <activity
             android:name=".Activity.Info_Hall_Activity"
             android:launchMode="singleTask" />
-        <activity android:name=".Activity.Personal_Message_Activity" />
+        <activity
+            android:name=".Activity.Personal_Message_Activity"
+            android:launchMode="singleTask"/>
         <activity android:name=".Activity.Message_Center_Activity" />
         <activity
             android:name=".Activity.Personal_Center_Activity"
@@ -38,6 +40,15 @@
         <activity
             android:name=".Activity.MainActivity"
             android:launchMode="singleTask"></activity>
+        <provider
+            android:authorities="com.example.whuinfoplatform.fileprovider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

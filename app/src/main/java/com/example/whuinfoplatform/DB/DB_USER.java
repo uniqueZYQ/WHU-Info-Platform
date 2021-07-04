@@ -12,6 +12,7 @@ public class DB_USER extends SQLiteOpenHelper {
         "nickname text," +
         "pwd text," +
         "stdid integer," +
+        "picture blob," +
         "realname text)";
 
     private Context mContext;

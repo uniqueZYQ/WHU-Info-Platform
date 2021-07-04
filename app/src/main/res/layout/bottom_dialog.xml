@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:paddingBottom="20dp"
+    android:paddingLeft="22.5dp"
+    android:paddingRight="22.5dp"
+    android:paddingTop="20dp">
+
+    <Button
+        android:id="@+id/btn_open_camera"
+        android:layout_width="225dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center"
+        android:text="拍摄头像"
+        android:background="@drawable/add_info"
+        android:textColor="#000000"
+        android:textSize="19sp" />
+
+    <Button
+        android:id="@+id/btn_choose_img"
+        android:layout_width="225dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:text="从相册中选择头像"
+        android:background="@drawable/add_info"
+        android:textColor="#000000"
+        android:textSize="19sp" />
+
+</LinearLayout>

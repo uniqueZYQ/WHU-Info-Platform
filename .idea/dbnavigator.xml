@@ -25,8 +25,8 @@
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
     <loaded-nodes>
-      <connection connection-id="24d72fe6-47f7-40bb-9b9d-dcbd01a850a4">
-        <schema name="main" object-types="table, view" />
+      <connection connection-id="db24dfdc-b2cc-414f-a0fb-1f0841476f08">
+        <schema name="main" object-types="table, view, constraint, index, column, dataset trigger" />
       </connection>
     </loaded-nodes>
   </component>
@@ -47,11 +47,11 @@
     <connection id="24d72fe6-47f7-40bb-9b9d-dcbd01a850a4" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="db24dfdc-b2cc-414f-a0fb-1f0841476f08" dataset="main.User" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="24d72fe6-47f7-40bb-9b9d-dcbd01a850a4" dataset="main.info" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="24d72fe6-47f7-40bb-9b9d-dcbd01a850a4" dataset="main.msg" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="24d72fe6-47f7-40bb-9b9d-dcbd01a850a4" dataset="main.last" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="24d72fe6-47f7-40bb-9b9d-dcbd01a850a4" dataset="main.last_show" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="db24dfdc-b2cc-414f-a0fb-1f0841476f08" dataset="main.User" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
@@ -94,7 +94,7 @@
           <port value="1234" />
           <database value="database" />
           <files>
-            <file path="C:\Users\Mr.Zhan\Documents\AndroidStudio\DeviceExplorer\xiaomi-m2002j9e-7307ed30\data\data\com.example.whuinfoplatform\databases\User.db" schema="main" />
+            <file path="C:\Users\HP\Documents\AndroidStudio\DeviceExplorer\xiaomi-m2002j9e-7307ed30\data\data\com.example.whuinfoplatform\databases\User.db" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />

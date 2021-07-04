@@ -7,6 +7,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,13 +22,15 @@ import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityCreateUserPromoteBinding;
 
+import java.io.ByteArrayOutputStream;
+
 public class Create_User_promote_Activity extends rootActivity {
     private DB_USER dbHelper;
     private ActivityCreateUserPromoteBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbHelper=new DB_USER(this,"User.db",null,6);
+        dbHelper=new DB_USER(this,"User.db",null,7);
     }
 
     @Override

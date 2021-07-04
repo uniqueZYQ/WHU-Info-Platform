@@ -20,7 +20,9 @@
         android:background="#33FFFFFF"
         android:hint="  请输入搜索关键词："
         android:maxLines="1"
+        android:singleLine="true"
         android:maxLength="10"
+        android:imeOptions="actionSearch"
         />
 
     <Button
