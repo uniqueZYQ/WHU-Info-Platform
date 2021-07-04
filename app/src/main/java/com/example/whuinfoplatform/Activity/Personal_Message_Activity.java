@@ -157,7 +157,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     @Override
     protected void onPause() {
         if(type1==0)
-            mCameraDialog.cancel();
+            if(mCameraDialog.isShowing()) mCameraDialog.cancel();
         super.onPause();
     }
 
