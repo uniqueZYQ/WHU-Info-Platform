@@ -174,6 +174,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
             binding.textStdidRnm.setText(newstdid + "-" + newrnm);
         }
         if(intent1.getIntExtra("type",0)>1){
+            binding.cardPicture.setVisibility(View.VISIBLE);
             binding.picture.setVisibility(View.VISIBLE);
             binding.button1.setText("确定上传");
             binding.textStdidRnm.setText("缩放或拖动图片以适配相框");

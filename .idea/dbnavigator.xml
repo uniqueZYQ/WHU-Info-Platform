@@ -28,6 +28,9 @@
       <connection connection-id="db24dfdc-b2cc-414f-a0fb-1f0841476f08">
         <schema name="main" object-types="table, view, constraint, index, column, dataset trigger" />
       </connection>
+      <connection connection-id="24d72fe6-47f7-40bb-9b9d-dcbd01a850a4">
+        <schema name="main" object-types="table, view, constraint, index, column, dataset trigger" />
+      </connection>
     </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
@@ -41,7 +44,7 @@
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
-      <object connection-id="db24dfdc-b2cc-414f-a0fb-1f0841476f08" object-ref="schemas/main/tables/User" />
+      <object connection-id="24d72fe6-47f7-40bb-9b9d-dcbd01a850a4" object-ref="schemas/main/tables/msg" />
     </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
@@ -183,7 +186,7 @@
           <port value="1234" />
           <database value="database" />
           <files>
-            <file path="C:\Users\Mr.Zhan\Documents\AndroidStudio\DeviceExplorer\xiaomi-m2002j9e-7307ed30\data\data\com.example.whuinfoplatform\databases\Info.db" schema="main" />
+            <file path="C:\Users\HP\Documents\AndroidStudio\DeviceExplorer\xiaomi-m2002j9e-7307ed30\data\data\com.example.whuinfoplatform\databases\Info.db" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />

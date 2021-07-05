@@ -113,15 +113,15 @@ public class Message_Center_Activity extends rootActivity {
         Intent intent=getIntent();
         List<Integer> oppo_hist_id=new ArrayList<>();
         myid=intent.getIntExtra("id",0);
-        List<Msg> msg = DataSupport.where("sub_id=? or obj_id=?",String.valueOf(myid),String.valueOf(myid)).order("time desc").find(Msg.class);
+        List<Msg> msg = DataSupport.where("sub_id=? or obj_id=?",String.valueOf(myid),String.valueOf(myid)).order("id desc").find(Msg.class);
         dbHelper = new DB_USER(this, "User.db", null, 7);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         String lasttext="";
         for(int i=0;i<msg.size();i++){
             String last_time=msg.get(i).getTime();
-            String last_detail=msg.get(i).getContent();
             int msgid=msg.get(i).getId();
             String oppo_name="";
+            String last_detail=msg.get(i).getContent();
             int oppo_id=0;
             if(myid==msg.get(i).getSub_id()) {
                 oppo_id=msg.get(i).getObj_id();
@@ -131,7 +131,6 @@ public class Message_Center_Activity extends rootActivity {
             if(cursor.moveToFirst()){
                 if (cursor.getCount() != 0) {
                     oppo_name=cursor.getString(cursor.getColumnIndex("nickname"));
-
                 }
             }
             cursor.close();
@@ -176,7 +175,7 @@ public class Message_Center_Activity extends rootActivity {
                     }
                 }
                 //
-                my_msg mymsg=new my_msg(msgid,oppo_name,last_time,last_detail,lasttext);
+                my_msg mymsg=new my_msg(msgid,oppo_id,oppo_name,last_time,last_detail,lasttext);
                 my_msg_list.add(mymsg);
                 oppo_hist_id.add(oppo_id);
             }

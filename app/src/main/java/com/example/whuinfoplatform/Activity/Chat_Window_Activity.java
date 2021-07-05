@@ -91,7 +91,7 @@ public class Chat_Window_Activity extends rootActivity {
             public void onClick(View v) {
                 String content = inputText.getText().toString();
                 long timecurrentTimeMillis = System.currentTimeMillis();
-                SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                SimpleDateFormat sdfTwo =new SimpleDateFormat("MM月dd日 HH:mm", Locale.getDefault());
                 String time = sdfTwo.format(timecurrentTimeMillis);
                 if (!"".equals(content)) {
                     Msg msg = new Msg();

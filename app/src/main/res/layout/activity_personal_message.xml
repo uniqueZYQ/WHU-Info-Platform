@@ -2,16 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="@drawable/p_m">
     <include layout="@layout/toolbar"/>
-    <ImageView
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_picture"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:id="@+id/picture"
-        android:layout_gravity="center"
-        />
+        app:cardCornerRadius="10dp"
+        android:layout_gravity="center">
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/picture"
+            android:layout_gravity="center"
+            />
+    </com.google.android.material.card.MaterialCardView>
+
     <TextView
         android:id="@+id/text_nickname"
         android:layout_width="match_parent"

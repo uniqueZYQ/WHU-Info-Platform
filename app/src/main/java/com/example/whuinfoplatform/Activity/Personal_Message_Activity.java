@@ -78,7 +78,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
                 binding.picture.setImageBitmap(bit);
             }
             else
-                Toast.makeText(Personal_Message_Activity.this,"读取失败",Toast.LENGTH_SHORT).show();
+                Toast.makeText(Personal_Message_Activity.this,"头像信息读取失败",Toast.LENGTH_SHORT).show();
         }
         cursor.close();
         binding.textNickname.setText("昵称:"+tmpnkn);

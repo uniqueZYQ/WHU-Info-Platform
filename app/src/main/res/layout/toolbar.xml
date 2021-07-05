@@ -8,4 +8,4 @@
     android:background="#01FFFFFF"
     android:gravity="center"
     app:layout_scrollFlags="scroll|enterAlways">
-</androidx.appcompat.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
