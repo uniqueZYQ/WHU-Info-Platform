@@ -3,6 +3,7 @@
 java-based Android客户端信息交互平台
 
   开发者：city ghost
+  
   具体使用说明详见需求定义文档。
   
   更新记录：
