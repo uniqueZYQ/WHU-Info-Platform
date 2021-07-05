@@ -16,6 +16,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +25,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.FloatMath;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -44,9 +48,76 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
     public static final int CHOOSE_PHOTO = 2;
     private ImageView picture;
     private Uri imageUri;
+    //以下为图片缩放移动使用
+    private ImageView mImageView;
+    private Matrix matrix = new Matrix();
+    private Matrix savedMatrix = new Matrix();
+    private static final int NONE = 0;
+    private static final int DRAG = 1;
+    private static final int ZOOM = 2;
+    private int mode = NONE;
+    // 第一个按下的手指的点
+    private PointF startPoint = new PointF();
+    // 两个按下的手指的触摸点的中点
+    private PointF midPoint = new PointF();
+    // 初始的两个手指按下的触摸点的距离
+    private float oriDis = 1f;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mImageView = (ImageView) this.findViewById(R.id.picture);
+        mImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                ImageView view = (ImageView) v;
+
+                // 进行与操作是为了判断多点触摸
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        // 第一个手指按下事件
+                        matrix.set(view.getImageMatrix());
+                        savedMatrix.set(matrix);
+                        startPoint.set(event.getX(), event.getY());
+                        mode = DRAG;
+                        break;
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        // 第二个手指按下事件
+                        oriDis = distance(event);
+                        if (oriDis > 10f) {
+                            savedMatrix.set(matrix);
+                            midPoint = middle(event);
+                            mode = ZOOM;
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_POINTER_UP:
+                        // 手指放开事件
+                        mode = NONE;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        // 手指滑动事件
+                        if (mode == DRAG) {
+                            // 是一个手指拖动
+                            matrix.set(savedMatrix);
+                            matrix.postTranslate(event.getX() - startPoint.x, event.getY()
+                                    - startPoint.y);
+                        } else if (mode == ZOOM) {
+                            // 两个手指滑动
+                            float newDist = distance(event);
+                            if (newDist > 10f) {
+                                matrix.set(savedMatrix);
+                                float scale = newDist / oriDis;
+                                matrix.postScale(scale, scale, midPoint.x, midPoint.y);
+                            }
+                        }
+                        break;
+                }
+
+                // 设置ImageView的Matrix
+                view.setImageMatrix(matrix);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -105,7 +176,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
         if(intent1.getIntExtra("type",0)>1){
             binding.picture.setVisibility(View.VISIBLE);
             binding.button1.setText("确定上传");
-            binding.textStdidRnm.setVisibility(View.GONE);
+            binding.textStdidRnm.setText("缩放或拖动图片以适配相框");
             /*Cursor cursor = db1.rawQuery("select picture from User where id=?", new String[]{id}, null);
             if (cursor.moveToFirst()) {
                 if (cursor.getCount() != 0) {
@@ -204,6 +275,20 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
             actionBar.setTitle("个人资料-选择头像");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+    }
+
+    // 计算两个触摸点之间的距离
+    private float distance(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return /*FloatMath.sqrt(x * x + y * y);*/(float) Math.sqrt(x*x+y*y);
+    }
+
+    // 计算两个触摸点的中点
+    private PointF middle(MotionEvent event) {
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        return new PointF(x / 2, y / 2);
     }
 
     private void openAlbum(){
@@ -311,5 +396,4 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
             Toast.makeText(this,"获取图片失败！",Toast.LENGTH_SHORT).show();
         }
     }
-
 }
