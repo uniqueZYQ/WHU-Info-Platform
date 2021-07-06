@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Msg;
@@ -90,27 +91,38 @@ public class Chat_Window_Activity extends rootActivity {
             @Override
             public void onClick(View v) {
                 String content = inputText.getText().toString();
-                long timecurrentTimeMillis = System.currentTimeMillis();
-                SimpleDateFormat sdfTwo =new SimpleDateFormat("MM月dd日 HH:mm", Locale.getDefault());
-                String time = sdfTwo.format(timecurrentTimeMillis);
-                if (!"".equals(content)) {
+                boolean valid = false;
+                for (int i = 0; i < content.length(); i++) {
+                    if (content.charAt(i) == '\0' || content.charAt(i) == '\n' || content.charAt(i) == ' ')
+                        continue;
+                    else
+                        valid = true;
+                }
+                if (valid) {
+                    long timecurrentTimeMillis = System.currentTimeMillis();
+                    SimpleDateFormat sdfTwo = new SimpleDateFormat("MM月dd日 HH:mm", Locale.getDefault());
+                    String time = sdfTwo.format(timecurrentTimeMillis);
                     Msg msg = new Msg();
                     msg.setContent(content);
                     msg.setTime(time);
                     msg.setType(1);
+                    msg.setSub_id(sub_id);//add
                     msgList.add(msg);
                     adapter.notifyItemInserted(msgList.size() - 1);
                     msgRecyclerView.scrollToPosition(msgList.size() - 1);
                     inputText.setText("");
+                    Connector.getDatabase();
+                    Msg addmsg = new Msg();
+                    addmsg.setType(1);
+                    addmsg.setContent(content);
+                    addmsg.setSub_id(sub_id);
+                    addmsg.setObj_id(obj_id);
+                    addmsg.setTime(time);
+                    addmsg.save();
+                } else {
+                    inputText.setText("");
+                    Toast.makeText(Chat_Window_Activity.this, "不能发送无意义的内容!", Toast.LENGTH_SHORT).show();
                 }
-                Connector.getDatabase();
-                Msg addmsg = new Msg();
-                addmsg.setType(1);
-                addmsg.setContent(content);
-                addmsg.setSub_id(sub_id);
-                addmsg.setObj_id(obj_id);
-                addmsg.setTime(time);
-                addmsg.save();
             }
         });
     }
