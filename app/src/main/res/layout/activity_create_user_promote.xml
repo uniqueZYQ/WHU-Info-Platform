@@ -2,48 +2,68 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:fitsSystemWindows="true">
     <include layout="@layout/toolbar"/>
 
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
         android:id="@+id/edit_nickname"
         android:hint="  新账号昵称：1~15个字符"
         android:maxLength="15"
         android:singleLine="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"
         />
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
         android:id="@+id/edit_pwd"
         android:hint="  新账号密码：1~15个非中文字符"
         android:maxLength="15"
         android:singleLine="true"
+        android:layout_gravity="center"
         />
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
         android:id="@+id/edit_realname"
         android:hint="  真实姓名：2~15个中文字符"
         android:maxLength="15"
         android:singleLine="true"
+        android:layout_gravity="center"
         />
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
         android:id="@+id/edit_stdid"
         android:hint="  学号：13位"
         android:maxLength="13"
         android:singleLine="true"
         android:inputType="number"
+        android:layout_gravity="center"
         />
-    <Button
-        android:id="@+id/button1"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="确认创建" />
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_picture"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        app:cardCornerRadius="20dp"
+        android:background="#00FFFFFF"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp">
+        <Button
+            android:id="@+id/button1"
+            android:layout_height="60dp"
+            android:layout_width="150dp"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:background="#ff3322"
+            android:text="确认创建" />
+    </com.google.android.material.card.MaterialCardView>
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

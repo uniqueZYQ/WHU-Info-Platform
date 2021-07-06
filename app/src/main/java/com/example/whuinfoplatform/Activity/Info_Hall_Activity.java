@@ -3,11 +3,15 @@ package com.example.whuinfoplatform.Activity;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.R;
@@ -31,9 +35,46 @@ public class Info_Hall_Activity extends rootActivity {
     @Override
     protected void initClick() {
         super.initClick();
+        binding.startEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event){
+                if(actionId== EditorInfo.IME_ACTION_SEARCH){
+                    String kwd = binding.startEditText.getText().toString();
+                    boolean valid = false;
+                    for (int i = 0; i < kwd.length(); i++) {
+                        if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
+                            continue;
+                        else
+                            valid = true;
+                    }
+                    if(valid){
+                        Intent intent = new Intent(Info_Hall_Activity.this, Search_Info_promote_Activity.class);
+                        intent.putExtra("kwd",kwd);
+                        Intent intent1=getIntent();
+                        int id=intent1.getIntExtra("id",0);
+                        intent.putExtra("id",id);
+                        startActivity(intent);
+                    }
+                    else{
+                        binding.startEditText.setText("");
+                        Toast.makeText(Info_Hall_Activity.this,"无法搜索无意义的内容！",Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                }
+                else
+                    return false;
+            }
+        });
         binding.startFindInfoActivity.setOnClickListener(v->{
             String kwd = binding.startEditText.getText().toString();
-            if(!kwd.equals("")){
+            boolean valid = false;
+            for (int i = 0; i < kwd.length(); i++) {
+                if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
+                    continue;
+                else
+                    valid = true;
+            }
+            if(valid){
                 Intent intent = new Intent(Info_Hall_Activity.this, Search_Info_promote_Activity.class);
                 intent.putExtra("kwd",kwd);
                 Intent intent1=getIntent();
@@ -42,7 +83,8 @@ public class Info_Hall_Activity extends rootActivity {
                 startActivity(intent);
             }
             else{
-                Toast.makeText(Info_Hall_Activity.this,"搜索不能为空！",Toast.LENGTH_SHORT).show();
+                binding.startEditText.setText("");
+                Toast.makeText(Info_Hall_Activity.this,"无法搜索无意义的内容！",Toast.LENGTH_SHORT).show();
             }
         });
         binding.startPublishInfoActivity.setOnClickListener(v->{
@@ -59,6 +101,7 @@ public class Info_Hall_Activity extends rootActivity {
         super.initData();
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
         ActionBar actionBar =getSupportActionBar();
@@ -68,37 +111,3 @@ public class Info_Hall_Activity extends rootActivity {
     }
 }
 
-/*@Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.button1:
-                        String kwd = editText.getText().toString();
-                        if(!kwd.equals("")){
-                            Intent intent = new Intent(Info_Hall_Activity.this, Search_Info_promote_Activity.class);
-                            intent.putExtra("kwd",kwd);
-                            startActivity(intent);
-                            break;
-                        }
-                        else{
-                            Toast.makeText(Info_Hall_Activity.this,"搜索不能为空！",Toast.LENGTH_SHORT).show();
-                            break;
-                        }
-                    default:
-                        break;
-                }
-            }
-        });
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.button2:
-                        Intent intent = new Intent(Info_Hall_Activity.this, Publish_Info_promote_Activity.class);
-                        startActivity(intent);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-    }*/

@@ -13,7 +13,9 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         app:cardCornerRadius="10dp"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="8dp">
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -28,8 +30,9 @@
         android:layout_height="wrap_content"
         android:textSize="19sp"
         android:textColor="#000000"
-        android:background="#77FFFFFF"
-        android:layout_margin="1dp"
+        android:background="#00FFFFFF"
+        android:layout_margin="4dp"
+        android:gravity="center"
         />
     <TextView
         android:id="@+id/text_realname"
@@ -37,8 +40,9 @@
         android:layout_height="wrap_content"
         android:textSize="19sp"
         android:textColor="#000000"
-        android:background="#77FFFFFF"
-        android:layout_margin="1dp"
+        android:background="#00FFFFFF"
+        android:layout_margin="4dp"
+        android:gravity="center"
         />
     <TextView
         android:id="@+id/text_stdid"
@@ -46,8 +50,9 @@
         android:layout_height="wrap_content"
         android:textSize="19sp"
         android:textColor="#000000"
-        android:background="#77FFFFFF"
-        android:layout_margin="1dp"
+        android:background="#00FFFFFF"
+        android:layout_margin="4dp"
+        android:gravity="center"
         />
     <Button
         android:id="@+id/button_upgrade"
@@ -57,7 +62,7 @@
         android:textSize="19sp"
         android:background="@drawable/add_info"
         android:layout_gravity="center"
-        android:layout_margin="3dp"
+        android:layout_margin="4dp"
         />
     <Button
         android:id="@+id/button_upload"
@@ -67,7 +72,7 @@
         android:textSize="19sp"
         android:background="@drawable/add_info"
         android:layout_gravity="center"
-        android:layout_margin="3dp"
+        android:layout_margin="4dp"
         />
 
 </LinearLayout>

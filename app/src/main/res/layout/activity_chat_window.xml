@@ -29,21 +29,36 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="58dp" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.045"
+            android:background="#eeeeee"
+            />
 
         <EditText
             android:id="@+id/inputText"
             android:layout_width="0dp"
-            android:layout_height="47dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="#ffffff"
+            android:background="#eeeeee"
             android:hint="此处输入文字..."
-            android:maxLines="2" />
+            android:maxLines="40"
+            android:maxLength="100"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.045"
+            android:background="#eeeeee"
+            />
 
         <Button
             android:id="@+id/send"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:background="#2e8b57"
             android:text="发送"
             android:textColor="#ffffff"/>

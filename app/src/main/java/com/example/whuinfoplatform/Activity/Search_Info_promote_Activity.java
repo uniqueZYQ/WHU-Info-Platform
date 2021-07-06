@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -108,7 +109,7 @@ public class Search_Info_promote_Activity extends rootActivity {
             }
             cursor.close();
             int infoid=info.get(i).getId();
-            srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,self);
+            srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self);
             srch_info_list.add(srchinfo);
         }
 
@@ -150,6 +151,7 @@ public class Search_Info_promote_Activity extends rootActivity {
 
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
         super.initWidget();

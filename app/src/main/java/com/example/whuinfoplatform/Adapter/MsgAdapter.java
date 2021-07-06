@@ -66,7 +66,6 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     public void onBindViewHolder(ViewHolder holder,int position){
         Msg msg = mMsgList.get(position);
 
-
         if(msg.getType()==Msg.TYPE_RECEIVED){
             holder.leftLayout.setVisibility(View.VISIBLE);
             holder.rightLayout.setVisibility(View.GONE);

@@ -83,6 +83,7 @@ public class Chat_Window_Activity extends rootActivity {
             else cumsg.setType(0);
             msgList.add(cumsg);
         }
+        //msgRecyclerView.smoothScrollToPosition(msgList.size()-1);
     }
 
     @Override
@@ -106,7 +107,7 @@ public class Chat_Window_Activity extends rootActivity {
                     msg.setContent(content);
                     msg.setTime(time);
                     msg.setType(1);
-                    msg.setSub_id(sub_id);//add
+                    msg.setSub_id(sub_id);
                     msgList.add(msg);
                     adapter.notifyItemInserted(msgList.size() - 1);
                     msgRecyclerView.scrollToPosition(msgList.size() - 1);
