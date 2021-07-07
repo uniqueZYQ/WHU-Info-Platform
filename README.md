@@ -45,3 +45,5 @@ java-based Android客户端信息交互平台
     增加recyclerview判空提示
 
     添加聊天窗口初始位置定位
+    
+    添加金额格式识别
