@@ -112,6 +112,9 @@ public class Search_Info_promote_Activity extends rootActivity {
             srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self);
             srch_info_list.add(srchinfo);
         }
+        if(srch_info_list.size()==0){
+           binding.none.setVisibility(View.VISIBLE);
+        }
 
     }
 

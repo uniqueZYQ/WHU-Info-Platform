@@ -16,6 +16,17 @@
         android:background="#77EEEEEE"
         android:layout_margin="2dp"
         />
+    <TextView
+        android:id="@+id/none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="#000000"
+        android:textSize="30dp"
+        android:text="暂无会话记录\n试试发布或响应信息!"
+        android:gravity="center"
+        android:background="#77FFFFFF"
+        android:visibility="gone"
+        />
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperrfresh"
         android:layout_width="match_parent"

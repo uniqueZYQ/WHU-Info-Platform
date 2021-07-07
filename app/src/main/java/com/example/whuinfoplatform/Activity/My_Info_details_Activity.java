@@ -6,10 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.R;
@@ -20,7 +25,8 @@ import org.litepal.crud.DataSupport;
 import java.util.List;
 
 public class My_Info_details_Activity extends rootActivity {
-    private com.example.whuinfoplatform.databinding.ActivityMyInfoDetailsBinding binding;
+    private ActivityMyInfoDetailsBinding binding;
+    private DB_USER dbHelper;
     int form=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +42,25 @@ public class My_Info_details_Activity extends rootActivity {
     @Override
     protected void initData() {
         super.initData();
+        dbHelper = new DB_USER(this, "User.db", null, 7);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
         Intent intent = getIntent();
         int id=intent.getIntExtra("id",0);
+        int owner_id=intent.getIntExtra("owner_id",0);
+        Cursor cursor = db.rawQuery("select nickname,picture from User where id=?", new String[]{String.valueOf(owner_id)}, null);
+        if(cursor.moveToFirst()){
+            if (cursor.getCount() != 0) {
+                binding.nickname.setText(cursor.getString(cursor.getColumnIndex("nickname")));
+            }
+            byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
+            Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+            binding.picture.setImageBitmap(bit);
+        }
+        cursor.close();
         List<Info> info = DataSupport.where("id=?",String.valueOf(id)).find(Info.class);
         for(int i=0;i<info.size();i++){
             form=info.get(i).getForm();
-            binding.sendDate.setText("发布时间："+(info.get(i).getSend_date()));
+            binding.sendDate.setText("发布于"+(info.get(i).getSend_date()));
             binding.form.setText("信息类别："+(info.get(i).getForm()==1?"私人性-学术咨询信息":info.get(i).getForm()==2?"私人性-日常求助信息":info.get(i).getForm()==3?"私人性-物品出售信息":info.get(i).getForm()==4?"私人性-物品求购信息":info.get(i).getForm()==5?"组织性活动信息":"课程点评信息"));
             binding.detail.setText("具体内容：\n    "+(info.get(i).getDetail()));
             switch(info.get(i).getForm()){

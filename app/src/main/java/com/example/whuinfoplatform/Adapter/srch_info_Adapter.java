@@ -46,7 +46,16 @@ public class srch_info_Adapter extends ArrayAdapter<srch_info> {
         time.setText(srchinfo.getTime());
         form.setText(srchinfo.getForm());
         detail.setText(srchinfo.getDetail());
-        owner.setText(srchinfo.getOwner());
+        String nickname=srchinfo.getOwner();
+        if(nickname.charAt(nickname.length()-3)=='('&&
+                nickname.charAt(nickname.length()-2)=='我'&&
+                nickname.charAt(nickname.length()-1)==')'){
+            owner.setTextColor(0xFF777777);
+        }
+        else{
+            owner.setTextColor(0xFF000000);
+        }
+        owner.setText(nickname);
         dbHelper = new DB_USER(parent.getContext(), "User.db", null, 7);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int id=srchinfo.getOwner_id();

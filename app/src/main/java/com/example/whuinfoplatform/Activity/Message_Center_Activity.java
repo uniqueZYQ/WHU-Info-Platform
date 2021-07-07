@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -93,7 +94,6 @@ public class Message_Center_Activity extends rootActivity {
             }
         });
 
-        /////
         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
         swipeRefresh.setColorSchemeResources(
                 android.R.color.holo_blue_light,
@@ -105,7 +105,6 @@ public class Message_Center_Activity extends rootActivity {
                 refresh_my_msg();
             }
         });
-        /////
     }
 
     private void init(){
@@ -181,7 +180,9 @@ public class Message_Center_Activity extends rootActivity {
             }
 
         }
-
+        if(my_msg_list.size()==0){
+            binding.none.setVisibility(View.VISIBLE);
+        }
     }
 
     private void refresh_my_msg(){
@@ -245,6 +246,7 @@ public class Message_Center_Activity extends rootActivity {
         super.initData();
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
         super.initWidget();

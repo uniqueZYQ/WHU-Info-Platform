@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.core.app.Person;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,10 +27,10 @@ import java.util.List;
 public class Personal_Center_Activity extends rootActivity {
 
     private ActivityPersonalCenterBinding binding;
-    private MyInfoItemBinding binding1;
     private List<my_info> my_info_list = new ArrayList<>();
     private SwipeRefreshLayout swipeRefresh;
     private my_info_Adapter adapter;
+    int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,6 @@ public class Personal_Center_Activity extends rootActivity {
     @Override
     public void bindView() {
         binding = ActivityPersonalCenterBinding.inflate(getLayoutInflater());
-        binding1 = MyInfoItemBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         init();
         adapter = new my_info_Adapter(Personal_Center_Activity.this,R.layout.my_info_item,my_info_list);
@@ -51,8 +51,11 @@ public class Personal_Center_Activity extends rootActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 my_info myinfo = my_info_list.get(position);
                 int infoid=myinfo.getId();
+                Intent intent2 = getIntent();
+                int owner_id=intent2.getIntExtra("id",0);
                 Intent intent = new Intent(Personal_Center_Activity.this,My_Info_details_Activity.class);
                 intent.putExtra("id",infoid);
+                intent.putExtra("owner_id",owner_id);
                 startActivity(intent);
             }
         });
@@ -73,7 +76,7 @@ public class Personal_Center_Activity extends rootActivity {
     }
     private void init(){
         Intent intent=getIntent();
-        int id=intent.getIntExtra("id",0);
+        id=intent.getIntExtra("id",0);
         List<Info> info = DataSupport.where("owner_id=?",String.valueOf(id)).order("send_date desc").find(Info.class);
         for(int i=0;i<info.size();i++){
             String date=info.get(i).getSend_date();
@@ -84,7 +87,9 @@ public class Personal_Center_Activity extends rootActivity {
             my_info myinfo=new my_info(infoid,date,form,detail,answered);
             my_info_list.add(myinfo);
         }
-
+        if(my_info_list.size()==0){
+            binding.none.setVisibility(View.VISIBLE);
+        }
     }
 
     private void refresh_my_info(){
@@ -147,6 +152,7 @@ public class Personal_Center_Activity extends rootActivity {
         super.initData();
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
         super.initWidget();

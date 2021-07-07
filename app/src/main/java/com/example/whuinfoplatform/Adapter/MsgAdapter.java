@@ -87,7 +87,6 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             holder.leftLayout.setVisibility(View.GONE);
             holder.rightMsg.setText(msg.getContent());
             holder.time_right.setText(msg.getTime());
-            String text=msg.getContent();
             int id=msg.getSub_id();
             Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
             if(cursor.moveToFirst()){

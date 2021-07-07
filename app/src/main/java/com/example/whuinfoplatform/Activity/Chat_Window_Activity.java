@@ -83,7 +83,7 @@ public class Chat_Window_Activity extends rootActivity {
             else cumsg.setType(0);
             msgList.add(cumsg);
         }
-        //msgRecyclerView.smoothScrollToPosition(msgList.size()-1);
+
     }
 
     @Override
@@ -133,6 +133,7 @@ public class Chat_Window_Activity extends rootActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         msgRecyclerView.setLayoutManager(layoutManager);
         msgRecyclerView.setAdapter(adapter);
+        msgRecyclerView.scrollToPosition(msgList.size() - 1);//最下方显示最新消息
     }
 
 }
