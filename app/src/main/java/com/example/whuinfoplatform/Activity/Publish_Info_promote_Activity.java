@@ -3,6 +3,7 @@ package com.example.whuinfoplatform.Activity;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -201,125 +202,205 @@ public class Publish_Info_promote_Activity extends rootActivity {
                 switch(form){
                     case 1:{
                         String detail=binding.detail.getText().toString();
-                        reward=binding.editReward.getText().toString().equals("")?0:Double.parseDouble(binding.editReward.getText().toString());
-                        if(pos_fd==0||detail.equals("")||reward==0)
+                        reward=binding.editReward.getText().toString().equals("")?-2:
+                            binding.editReward.getText().toString().charAt(0)=='.'?-1:
+                            binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
+                            binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
+                        if(pos_fd==0||detail.equals("")||reward==-2)
                             Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
-                        else{
-                            Connector.getDatabase();
-                            Info info = new Info();
-                            info.setOwner_id(id);
-                            info.setAnswered(0);
-                            info.setForm(1);
-                            info.setFd_form(pos_fd);
-                            info.setHelp_form(-1);
-                            info.setPrice(-1);
-                            info.setDate("");
-                            info.setPlace("");
-                            info.setLesson("");
-                            info.setScore(-1);
-                            info.setDetail(detail);
-                            info.setReward(reward);
-                            Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
-                            long timecurrentTimeMillis = System.currentTimeMillis();
-                            SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                            String time = sdfTwo.format(timecurrentTimeMillis);
-                            info.setSend_date(time);
-                            info.save();
-                            startActivity(intent);
+                        else if(reward==-1)
+                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else {//格式判断
+                            String text=String.valueOf(reward);
+                            int length=text.length();
+                            int res=0;
+                            boolean count=false;
+                            for(int i=0;i<length;i++){
+                                if(count)
+                                    res++;
+                                if(text.charAt(i)=='.'){
+                                    count=true;
+                                }
+                            }
+                            if(res>2||count&&res==0)
+                                Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                            else{
+                                Connector.getDatabase();
+                                Info info = new Info();
+                                info.setOwner_id(id);
+                                info.setAnswered(0);
+                                info.setForm(1);
+                                info.setFd_form(pos_fd);
+                                info.setHelp_form(-1);
+                                info.setPrice(-1);
+                                info.setDate("");
+                                info.setPlace("");
+                                info.setLesson("");
+                                info.setScore(-1);
+                                info.setDetail(detail);
+                                info.setReward(reward);
+                                Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
+                                long timecurrentTimeMillis = System.currentTimeMillis();
+                                SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                                String time = sdfTwo.format(timecurrentTimeMillis);
+                                info.setSend_date(time);
+                                info.save();
+                                startActivity(intent);
+                            }
                         }
                         break;
                     }
                     case 2:{
                         String detail=binding.detail.getText().toString();
-                        reward=binding.editReward.getText().toString().equals("")?0:Double.parseDouble(binding.editReward.getText().toString());
-                        if(pos_help==0||detail.equals("")||reward==0)
+                        reward=binding.editReward.getText().toString().equals("")?-2:
+                                binding.editReward.getText().toString().charAt(0)=='.'?-1:
+                                binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
+                                binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
+                        if(pos_help==0||detail.equals("")||reward==-2)
                             Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
-                        else{
-                            Connector.getDatabase();
-                            Info info = new Info();
-                            info.setOwner_id(id);
-                            info.setAnswered(0);
-                            info.setForm(2);
-                            info.setFd_form(-1);
-                            info.setHelp_form(pos_help);
-                            info.setPrice(-1);
-                            info.setDate("");
-                            info.setPlace("");
-                            info.setLesson("");
-                            info.setScore(-1);
-                            info.setDetail(detail);
-                            info.setReward(reward);
-                            Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
-                            long timecurrentTimeMillis = System.currentTimeMillis();
-                            SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                            String time = sdfTwo.format(timecurrentTimeMillis);
-                            info.setSend_date(time);
-                            info.save();
-                            startActivity(intent);
+                        else if(reward==-1)
+                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else {//格式判断
+                            String text = String.valueOf(reward);
+                            int length = text.length();
+                            int res = 0;
+                            boolean count = false;
+                            for (int i = 0; i < length; i++) {
+                                if (count)
+                                    res++;
+                                if (text.charAt(i) == '.') {
+                                    count = true;
+                                }
+                            }
+                            if (res > 2 || count && res == 0)
+                                Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
+                            else {
+                                Connector.getDatabase();
+                                Info info = new Info();
+                                info.setOwner_id(id);
+                                info.setAnswered(0);
+                                info.setForm(2);
+                                info.setFd_form(-1);
+                                info.setHelp_form(pos_help);
+                                info.setPrice(-1);
+                                info.setDate("");
+                                info.setPlace("");
+                                info.setLesson("");
+                                info.setScore(-1);
+                                info.setDetail(detail);
+                                info.setReward(reward);
+                                Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
+                                long timecurrentTimeMillis = System.currentTimeMillis();
+                                SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                                String time = sdfTwo.format(timecurrentTimeMillis);
+                                info.setSend_date(time);
+                                info.save();
+                                startActivity(intent);
+                            }
                         }
                         break;
                     }
                     case 3:{
                         String detail=binding.detail.getText().toString();
-                        price=binding.editPrice.getText().toString().equals("")?0:Double.parseDouble(binding.editPrice.getText().toString());
-                        if(price==0||detail.equals(""))
+                        price=binding.editPrice.getText().toString().equals("")?-2:
+                                binding.editPrice.getText().toString().charAt(0)=='.'?-1:
+                                binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
+                                binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
+                        if(price==-2||detail.equals(""))
                             Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
-                        else {
-                            Connector.getDatabase();
-                            Info info = new Info();
-                            info.setOwner_id(id);
-                            info.setAnswered(0);
-                            info.setForm(3);
-                            info.setFd_form(-1);
-                            info.setHelp_form(-1);
-                            info.setPrice(price);
-                            info.setDate("");
-                            info.setPlace("");
-                            info.setLesson("");
-                            info.setScore(-1);
-                            info.setDetail(detail);
-                            info.setReward(-1);
-                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
-                            long timecurrentTimeMillis = System.currentTimeMillis();
-                            SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                            String time = sdfTwo.format(timecurrentTimeMillis);
-                            info.setSend_date(time);
-                            info.save();
-                            startActivity(intent);
+                        else if(price==-1)
+                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else {//格式判断
+                            String text = String.valueOf(price);
+                            int length = text.length();
+                            int res = 0;
+                            boolean count = false;
+                            for (int i = 0; i < length; i++) {
+                                if (count)
+                                    res++;
+                                if (text.charAt(i) == '.') {
+                                    count = true;
+                                }
+                            }
+                            if (res > 2 || count && res == 0)
+                                Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
+                            else {
+                                Connector.getDatabase();
+                                Info info = new Info();
+                                info.setOwner_id(id);
+                                info.setAnswered(0);
+                                info.setForm(3);
+                                info.setFd_form(-1);
+                                info.setHelp_form(-1);
+                                info.setPrice(price);
+                                info.setDate("");
+                                info.setPlace("");
+                                info.setLesson("");
+                                info.setScore(-1);
+                                info.setDetail(detail);
+                                info.setReward(-1);
+                                Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
+                                long timecurrentTimeMillis = System.currentTimeMillis();
+                                SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                                String time = sdfTwo.format(timecurrentTimeMillis);
+                                info.setSend_date(time);
+                                info.save();
+                                startActivity(intent);
+                            }
                         }
                         break;
                     }
                     case 4:{
                         String detail=binding.detail.getText().toString();
-                        price=binding.editPrice.getText().toString().equals("")?0:Double.parseDouble(binding.editPrice.getText().toString());
-                        if(price==0||detail.equals(""))
+                        price=binding.editPrice.getText().toString().equals("")?-2:
+                                binding.editPrice.getText().toString().charAt(0)=='.'?-1:
+                                binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
+                                binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
+                        if(price==-2||detail.equals(""))
                             Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
-                        else {
-                            Connector.getDatabase();
-                            Info info = new Info();
-                            info.setOwner_id(id);
-                            info.setAnswered(0);
-                            info.setForm(4);
-                            info.setFd_form(-1);
-                            info.setHelp_form(-1);
-                            info.setPrice(price);
-                            info.setDate("");
-                            info.setPlace("");
-                            info.setLesson("");
-                            info.setScore(-1);
-                            info.setDetail(detail);
-                            info.setReward(-1);
-                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
-                            long timecurrentTimeMillis = System.currentTimeMillis();
-                            SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                            String time = sdfTwo.format(timecurrentTimeMillis);
-                            info.setSend_date(time);
-                            info.save();
-                            startActivity(intent);
+                        else if(price==-1)
+                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else {//格式判断
+                            String text = String.valueOf(price);
+                            int length = text.length();
+                            int res = 0;
+                            boolean count = false;
+                            for (int i = 0; i < length; i++) {
+                                if (count)
+                                    res++;
+                                if (text.charAt(i) == '.') {
+                                    count = true;
+                                }
+                            }
+                            if (res > 2 || count && res == 0)
+                                Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
+                            else {
+                                Connector.getDatabase();
+                                Info info = new Info();
+                                info.setOwner_id(id);
+                                info.setAnswered(0);
+                                info.setForm(4);
+                                info.setFd_form(-1);
+                                info.setHelp_form(-1);
+                                info.setPrice(price);
+                                info.setDate("");
+                                info.setPlace("");
+                                info.setLesson("");
+                                info.setScore(-1);
+                                info.setDetail(detail);
+                                info.setReward(-1);
+                                Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
+                                long timecurrentTimeMillis = System.currentTimeMillis();
+                                SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                                String time = sdfTwo.format(timecurrentTimeMillis);
+                                info.setSend_date(time);
+                                info.save();
+                                startActivity(intent);
+                            }
                         }
                         break;
                     }
@@ -327,34 +408,52 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         String detail=binding.detail.getText().toString();
                         String place=binding.editPlace.getText().toString();
                         String date=binding.editDate.getText().toString();
-                        /*if(binding.editReward.getText().toString().equals(""))
-                            reward=0;*/
-                        reward=binding.editReward.getText().toString().equals("")?0:Double.parseDouble(binding.editReward.getText().toString());
-                        if(detail.equals("")||place.equals("")||date.equals("")||reward==0)
+                        reward=binding.editReward.getText().toString().equals("")?-2:
+                                binding.editReward.getText().toString().charAt(0)=='.'?-1:
+                                binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
+                                binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
+                        if(detail.equals("")||place.equals("")||date.equals("")||reward==-2)
                             Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
-                        else {
-                            Connector.getDatabase();
-                            Info info = new Info();
-                            info.setOwner_id(id);
-                            info.setAnswered(0);
-                            info.setForm(5);
-                            info.setFd_form(-1);
-                            info.setHelp_form(-1);
-                            info.setPrice(-1);
-                            info.setDate(date);
-                            info.setPlace(place);
-                            info.setLesson("");
-                            info.setScore(-1);
-                            info.setDetail(detail);
-                            info.setReward(reward);
-                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
-                            long timecurrentTimeMillis = System.currentTimeMillis();
-                            SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                            String time = sdfTwo.format(timecurrentTimeMillis);
-                            info.setSend_date(time);
-                            info.save();
-                            startActivity(intent);
+                        else if(reward==-1)
+                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else {//格式判断
+                            String text = String.valueOf(reward);
+                            int length = text.length();
+                            int res = 0;
+                            boolean count = false;
+                            for (int i = 0; i < length; i++) {
+                                if (count)
+                                    res++;
+                                if (text.charAt(i) == '.') {
+                                    count = true;
+                                }
+                            }
+                            if (res > 2 || count && res == 0)
+                                Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
+                            else {
+                                Connector.getDatabase();
+                                Info info = new Info();
+                                info.setOwner_id(id);
+                                info.setAnswered(0);
+                                info.setForm(5);
+                                info.setFd_form(-1);
+                                info.setHelp_form(-1);
+                                info.setPrice(-1);
+                                info.setDate(date);
+                                info.setPlace(place);
+                                info.setLesson("");
+                                info.setScore(-1);
+                                info.setDetail(detail);
+                                info.setReward(reward);
+                                Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
+                                long timecurrentTimeMillis = System.currentTimeMillis();
+                                SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                                String time = sdfTwo.format(timecurrentTimeMillis);
+                                info.setSend_date(time);
+                                info.save();
+                                startActivity(intent);
+                            }
                         }
                         break;
                     }
@@ -397,6 +496,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
         });
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
         super.initWidget();
