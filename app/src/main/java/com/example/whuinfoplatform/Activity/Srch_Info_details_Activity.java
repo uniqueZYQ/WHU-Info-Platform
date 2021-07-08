@@ -3,11 +3,17 @@ package com.example.whuinfoplatform.Activity;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.R;
@@ -22,6 +28,7 @@ import java.util.Locale;
 public class Srch_Info_details_Activity extends rootActivity {
     private com.example.whuinfoplatform.databinding.ActivitySrchInfoDetailsBinding binding;
     int form=0;
+    private DB_USER dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +43,6 @@ public class Srch_Info_details_Activity extends rootActivity {
     @Override
     protected void initData() {
         super.initData();
-        super.initData();
         Intent intent = getIntent();
         String owner=intent.getStringExtra("owner");
         int id= intent.getIntExtra("id",0);
@@ -44,14 +50,26 @@ public class Srch_Info_details_Activity extends rootActivity {
         if(self==0){
             binding.answer.setVisibility(View.VISIBLE);
         }
+        dbHelper = new DB_USER(this, "User.db", null, 7);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
         List<Info> info = DataSupport.where("id=?",String.valueOf(id)).find(Info.class);
         for(int i=0;i<info.size();i++){
             form=info.get(i).getForm();
-            binding.sendDate.setText("发布时间："+(info.get(i).getSend_date()));
+            binding.sendDate.setText("发布于"+(info.get(i).getSend_date()));
             binding.form.setText("信息类别："+(info.get(i).getForm()==1?"私人性-学术咨询信息":info.get(i).getForm()==2?"私人性-日常求助信息":info.get(i).getForm()==3?"私人性-物品出售信息":info.get(i).getForm()==4?"私人性-物品求购信息":info.get(i).getForm()==5?"组织性活动信息":"课程点评信息"));
             binding.detail.setText("具体内容：\n    "+(info.get(i).getDetail()));
-            binding.owner.setText("发送者："+owner);
-            if(info.get(i).getAnswered()==0) binding.answer.setText("响应信息\n(你是第一个！)");
+            binding.nickname.setText(owner);
+            int owner_id=info.get(i).getOwner_id();
+            Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{String.valueOf(owner_id)}, null);
+            if(cursor.moveToFirst()){
+                if (cursor.getCount() != 0) {
+                    byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
+                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                    binding.picture.setImageBitmap(bit);
+                }
+            }
+            cursor.close();
+            if(info.get(i).getAnswered()==0) binding.answer.setText("响应信息\n(你是第一个!)");
             else binding.answer.setText("继续响应");
             switch(info.get(i).getForm()){
                 case 1:{
@@ -145,6 +163,7 @@ public class Srch_Info_details_Activity extends rootActivity {
         initData();
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
         super.initWidget();

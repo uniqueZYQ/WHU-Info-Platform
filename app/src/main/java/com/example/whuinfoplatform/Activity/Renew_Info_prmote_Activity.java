@@ -66,20 +66,40 @@ public class Renew_Info_prmote_Activity extends rootActivity {
                     }
                 });
                 binding.finish.setOnClickListener(v->{
-                    String reward=binding.editReward.getText().toString();
+                    double reward=binding.editReward.getText().toString().equals("")?-2:
+                            binding.editReward.getText().toString().charAt(0)=='.'?-1:
+                                    binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
+                                            binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
                     String detail=binding.detail.getText().toString();
-                    if(!(fd_form==0||reward.equals("")||detail.equals(""))) {
-                        info.setFd_form(fd_form);
-                        info.setReward(Double.parseDouble(reward));
-                        info.setDetail(detail);
-                        Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n可在[我发布的]查看最新信息", Toast.LENGTH_SHORT).show();
-                        Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
-                        startActivity(intent1);
-                        long timecurrentTimeMillis = System.currentTimeMillis();
-                        SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                        String time = sdfTwo.format(timecurrentTimeMillis);
-                        info.setSend_date(time);
-                        info.updateAll("id=?",String.valueOf(id));
+                    if(reward==-1||reward==0)
+                        Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                    else if(!(fd_form==0||reward==-2||detail.equals(""))) {
+                        String text=String.valueOf(reward);
+                        int length=text.length();
+                        int res=0;
+                        boolean count=false;
+                        for(int i=0;i<length;i++){
+                            if(count)
+                                res++;
+                            if(text.charAt(i)=='.'){
+                                count=true;
+                            }
+                        }
+                        if(res>2||count&&res==0)
+                            Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else{
+                            info.setFd_form(fd_form);
+                            info.setReward(reward);
+                            info.setDetail(detail);
+                            Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n可在[我发布的]查看最新信息", Toast.LENGTH_SHORT).show();
+                            Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
+                            startActivity(intent1);
+                            long timecurrentTimeMillis = System.currentTimeMillis();
+                            SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                            String time = sdfTwo.format(timecurrentTimeMillis);
+                            info.setSend_date(time);
+                            info.updateAll("id=?",String.valueOf(id));
+                        }
                     }
                     else
                         Toast.makeText(Renew_Info_prmote_Activity.this, "请完善信息", Toast.LENGTH_SHORT).show();
@@ -103,20 +123,40 @@ public class Renew_Info_prmote_Activity extends rootActivity {
                     }
                 });
                 binding.finish.setOnClickListener(v->{
-                    String reward=binding.editReward.getText().toString();
+                    double reward=binding.editReward.getText().toString().equals("")?-2:
+                            binding.editReward.getText().toString().charAt(0)=='.'?-1:
+                                    binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
+                                            binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
                     String detail=binding.detail.getText().toString();
-                    if(!(help_form==0||reward.equals("")||detail.equals(""))) {
-                        info.setHelp_form(help_form);
-                        info.setReward(Double.parseDouble(reward));
-                        info.setDetail(detail);
-                        Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n刷新[我发布的]可查看最新信息", Toast.LENGTH_SHORT).show();
-                        Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
-                        startActivity(intent1);
-                        long timecurrentTimeMillis = System.currentTimeMillis();
-                        SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                        String time = sdfTwo.format(timecurrentTimeMillis);
-                        info.setSend_date(time);
-                        info.updateAll("id=?",String.valueOf(id));
+                    if(reward==-1||reward==0)
+                        Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                    else if(!(help_form==0||reward==-2||detail.equals(""))) {
+                        String text=String.valueOf(reward);
+                        int length=text.length();
+                        int res=0;
+                        boolean count=false;
+                        for(int i=0;i<length;i++){
+                            if(count)
+                                res++;
+                            if(text.charAt(i)=='.'){
+                                count=true;
+                            }
+                        }
+                        if(res>2||count&&res==0)
+                            Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else{
+                            info.setHelp_form(help_form);
+                            info.setReward(reward);
+                            info.setDetail(detail);
+                            Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n刷新[我发布的]可查看最新信息", Toast.LENGTH_SHORT).show();
+                            Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
+                            startActivity(intent1);
+                            long timecurrentTimeMillis = System.currentTimeMillis();
+                            SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                            String time = sdfTwo.format(timecurrentTimeMillis);
+                            info.setSend_date(time);
+                            info.updateAll("id=?",String.valueOf(id));
+                        }
                     }
                     else
                         Toast.makeText(Renew_Info_prmote_Activity.this, "请完善信息", Toast.LENGTH_SHORT).show();
@@ -127,19 +167,39 @@ public class Renew_Info_prmote_Activity extends rootActivity {
                 binding.form.setText("物品出售");
                 binding.editPrice.setVisibility(View.VISIBLE);
                 binding.finish.setOnClickListener(v->{
-                    String price=binding.editPrice.getText().toString();
+                    double price=binding.editPrice.getText().toString().equals("")?-2:
+                            binding.editPrice.getText().toString().charAt(0)=='.'?-1:
+                                    binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
+                                            binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
                     String detail=binding.detail.getText().toString();
-                    if(!(price.equals("")||detail.equals(""))) {
-                        info.setPrice(Double.parseDouble(price));
-                        info.setDetail(detail);
-                        Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n刷新[我发布的]可查看最新信息", Toast.LENGTH_SHORT).show();
-                        Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
-                        startActivity(intent1);
-                        long timecurrentTimeMillis = System.currentTimeMillis();
-                        SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                        String time = sdfTwo.format(timecurrentTimeMillis);
-                        info.setSend_date(time);
-                        info.updateAll("id=?",String.valueOf(id));
+                    if(price==-1||price==0)
+                        Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                    else if(!(price==-2||detail.equals(""))) {
+                        String text=String.valueOf(price);
+                        int length=text.length();
+                        int res=0;
+                        boolean count=false;
+                        for(int i=0;i<length;i++){
+                            if(count)
+                                res++;
+                            if(text.charAt(i)=='.'){
+                                count=true;
+                            }
+                        }
+                        if(res>2||count&&res==0)
+                            Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else{
+                            info.setPrice(price);
+                            info.setDetail(detail);
+                            Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n刷新[我发布的]可查看最新信息", Toast.LENGTH_SHORT).show();
+                            Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
+                            startActivity(intent1);
+                            long timecurrentTimeMillis = System.currentTimeMillis();
+                            SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                            String time = sdfTwo.format(timecurrentTimeMillis);
+                            info.setSend_date(time);
+                            info.updateAll("id=?",String.valueOf(id));
+                        }
                     }
                     else
                         Toast.makeText(Renew_Info_prmote_Activity.this, "请完善信息", Toast.LENGTH_SHORT).show();
@@ -150,19 +210,39 @@ public class Renew_Info_prmote_Activity extends rootActivity {
                 binding.form.setText("物品求购");
                 binding.editPrice.setVisibility(View.VISIBLE);
                 binding.finish.setOnClickListener(v->{
-                    String price=binding.editPrice.getText().toString();
+                    double price=binding.editPrice.getText().toString().equals("")?-2:
+                            binding.editPrice.getText().toString().charAt(0)=='.'?-1:
+                                    binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
+                                            binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
                     String detail=binding.detail.getText().toString();
-                    if(!(price.equals("")||detail.equals(""))) {
-                        info.setPrice(Double.parseDouble(price));
-                        info.setDetail(detail);
-                        Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n刷新[我发布的]可查看最新信息", Toast.LENGTH_SHORT).show();
-                        Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
-                        startActivity(intent1);
-                        long timecurrentTimeMillis = System.currentTimeMillis();
-                        SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                        String time = sdfTwo.format(timecurrentTimeMillis);
-                        info.setSend_date(time);
-                        info.updateAll("id=?",String.valueOf(id));
+                    if(price==-1||price==0)
+                        Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                    else if(!(price==-2||detail.equals(""))) {
+                        String text=String.valueOf(price);
+                        int length=text.length();
+                        int res=0;
+                        boolean count=false;
+                        for(int i=0;i<length;i++){
+                            if(count)
+                                res++;
+                            if(text.charAt(i)=='.'){
+                                count=true;
+                            }
+                        }
+                        if(res>2||count&&res==0)
+                            Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else{
+                            info.setPrice(price);
+                            info.setDetail(detail);
+                            Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n刷新[我发布的]可查看最新信息", Toast.LENGTH_SHORT).show();
+                            Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
+                            startActivity(intent1);
+                            long timecurrentTimeMillis = System.currentTimeMillis();
+                            SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                            String time = sdfTwo.format(timecurrentTimeMillis);
+                            info.setSend_date(time);
+                            info.updateAll("id=?",String.valueOf(id));
+                        }
                     }
                     else
                         Toast.makeText(Renew_Info_prmote_Activity.this, "请完善信息", Toast.LENGTH_SHORT).show();
@@ -175,23 +255,43 @@ public class Renew_Info_prmote_Activity extends rootActivity {
                 binding.editDate.setVisibility(View.VISIBLE);
                 binding.editPlace.setVisibility(View.VISIBLE);
                 binding.finish.setOnClickListener(v->{
-                    String reward=binding.editReward.getText().toString();
+                    double reward=binding.editReward.getText().toString().equals("")?-2:
+                            binding.editReward.getText().toString().charAt(0)=='.'?-1:
+                                    binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
+                                            binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
                     String date=binding.editDate.getText().toString();
                     String place=binding.editPlace.getText().toString();
                     String detail=binding.detail.getText().toString();
-                    if(!(reward.equals("")||detail.equals("")||date.equals("")||place.equals(""))) {
-                        info.setReward(Double.parseDouble(reward));
-                        info.setPlace(place);
-                        info.setDate(date);
-                        info.setDetail(detail);
-                        Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n刷新[我发布的]可查看最新信息", Toast.LENGTH_SHORT).show();
-                        Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
-                        startActivity(intent1);
-                        long timecurrentTimeMillis = System.currentTimeMillis();
-                        SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                        String time = sdfTwo.format(timecurrentTimeMillis);
-                        info.setSend_date(time);
-                        info.updateAll("id=?",String.valueOf(id));
+                    if(reward==-1||reward==0)
+                        Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                    else if(!(reward==-2||detail.equals("")||date.equals("")||place.equals(""))) {
+                        String text=String.valueOf(reward);
+                        int length=text.length();
+                        int res=0;
+                        boolean count=false;
+                        for(int i=0;i<length;i++){
+                            if(count)
+                                res++;
+                            if(text.charAt(i)=='.'){
+                                count=true;
+                            }
+                        }
+                        if(res>2||count&&res==0)
+                            Toast.makeText(Renew_Info_prmote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                        else{
+                            info.setReward(reward);
+                            info.setPlace(place);
+                            info.setDate(date);
+                            info.setDetail(detail);
+                            Toast.makeText(Renew_Info_prmote_Activity.this, "修改成功！\n刷新[我发布的]可查看最新信息", Toast.LENGTH_SHORT).show();
+                            Intent intent1 = new Intent(Renew_Info_prmote_Activity.this,Personal_Center_Activity.class);
+                            startActivity(intent1);
+                            long timecurrentTimeMillis = System.currentTimeMillis();
+                            SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                            String time = sdfTwo.format(timecurrentTimeMillis);
+                            info.setSend_date(time);
+                            info.updateAll("id=?",String.valueOf(id));
+                        }
                     }
                     else
                         Toast.makeText(Renew_Info_prmote_Activity.this, "请完善信息", Toast.LENGTH_SHORT).show();
