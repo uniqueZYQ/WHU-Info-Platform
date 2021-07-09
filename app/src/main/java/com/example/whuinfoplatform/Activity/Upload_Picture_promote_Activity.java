@@ -24,27 +24,25 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.FloatMath;
+
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.R;
-import com.example.whuinfoplatform.databinding.ActivityPersonalMessageBinding;
-import com.example.whuinfoplatform.databinding.ActivityRenewPermsgPromteBinding;
+import com.example.whuinfoplatform.databinding.ActivityUploadPicturePromoteBinding;
+
+import org.litepal.tablemanager.Connector;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class Renew_Permsg_Promte_Activity extends rootActivity {
-    private ActivityRenewPermsgPromteBinding binding;
-    private DB_USER dbHelper;
+public class Upload_Picture_promote_Activity extends rootActivity {
+    private ActivityUploadPicturePromoteBinding binding;
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
     private ImageView picture;
@@ -123,7 +121,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
 
     @Override
     public void bindView() {
-        binding= ActivityRenewPermsgPromteBinding.inflate(getLayoutInflater());
+        binding= ActivityUploadPicturePromoteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
     }
 
@@ -131,67 +129,12 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
     protected void initData() {
         super.initData();
         Intent intent1 = getIntent();
-        dbHelper = new DB_USER(this, "User.db", null, 7);
-        SQLiteDatabase db1 = dbHelper.getWritableDatabase();
         String id = Integer.toString(intent1.getIntExtra("id", 0));
-        if(intent1.getIntExtra("type",0)==1) {
-            binding.editNickname.setVisibility(View.VISIBLE);
-            binding.editPwd.setVisibility(View.VISIBLE);
-            String newnkn = "";
-            String newrnm = "";
-            String newstdid = "";
-            binding.editPwd.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    if (s.length() > 0) {
-                        for (int i = 0; i < s.length(); i++) {
-                            char c = s.charAt(i);
-                            if (c >= 0x4e00 && c <= 0X9fff) { // 根据字节码判断
-                                // 如果是中文，则清除输入的字符，否则保留
-                                s.delete(i, i + 1);
-                            }
-                        }
-                    }
-                }
-            });
-            Cursor cursor = db1.rawQuery("select nickname,realname,stdid from User where id=?", new String[]{id}, null);
-            if (cursor.moveToFirst()) {
-                if (cursor.getCount() != 0) {
-                    newnkn = cursor.getString(cursor.getColumnIndex("nickname"));
-                    newrnm = cursor.getString(cursor.getColumnIndex("realname"));
-                    newstdid = cursor.getString(cursor.getColumnIndex("stdid"));
-                }
-            }
-            cursor.close();
-            binding.editNickname.setText(newnkn);
-            binding.textStdidRnm.setText(newstdid + "-" + newrnm);
-        }
         if(intent1.getIntExtra("type",0)>1){
-            binding.cardPicture.setVisibility(View.VISIBLE);
-            binding.picture.setVisibility(View.VISIBLE);
-            binding.button1.setText("确定上传");
-            binding.textStdidRnm.setText("缩放或拖动图片以适配相框");
-            /*Cursor cursor = db1.rawQuery("select picture from User where id=?", new String[]{id}, null);
-            if (cursor.moveToFirst()) {
-                if (cursor.getCount() != 0) {
-                    byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
-                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                    binding.picture.setImageBitmap(bit);
-                }
-            }
-            cursor.close();*/
             if(intent1.getIntExtra("type",0)==2){
                 picture=binding.picture;
-                if(ContextCompat.checkSelfPermission(Renew_Permsg_Promte_Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(Renew_Permsg_Promte_Activity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+                if(ContextCompat.checkSelfPermission(Upload_Picture_promote_Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(Upload_Picture_promote_Activity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
                 }
                 else{
                     openAlbum();
@@ -209,7 +152,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                     e.printStackTrace();
                 }
                 if(Build.VERSION.SDK_INT>=24){
-                    imageUri= FileProvider.getUriForFile(Renew_Permsg_Promte_Activity.this,"com.example.whuinfoplatform.fileprovider",outputImage);
+                    imageUri= FileProvider.getUriForFile(Upload_Picture_promote_Activity.this,"com.example.whuinfoplatform.fileprovider",outputImage);
                 }
                 else{
                     imageUri=Uri.fromFile(outputImage);
@@ -223,49 +166,24 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
 
     @Override
     protected void initClick() {
-        super.initClick();
-        binding.button1.setOnClickListener(v->{
-            Intent intent1 = getIntent();
-            dbHelper = new DB_USER(this, "User.db", null, 7);
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            if(intent1.getIntExtra("type",0)==1) {
-                String id = Integer.toString(intent1.getIntExtra("id", 0));
-                String newnkn = binding.editNickname.getText().toString();
-                String newpwd = binding.editPwd.getText().toString();
-                /*binding.picture.setDrawingCacheEnabled(true);
-                Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
-                binding.picture.setDrawingCacheEnabled(false);
-                final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);*/
-                if ((newnkn.equals("")) || (newpwd.equals(""))) {
-                    Toast.makeText(Renew_Permsg_Promte_Activity.this, "请填入完整信息！", Toast.LENGTH_SHORT).show();
-                } else {
-                    db.execSQL("update User set nickname = ?,pwd = ? where id = ?", new String[]{newnkn, newpwd, id});
-                    /*ContentValues values = new ContentValues();
-                    values.put("picture", os.toByteArray());
-                    db.update("User", values, "id=?", new String[]{id});*/
-                    Toast.makeText(Renew_Permsg_Promte_Activity.this, "修改成功，请重新登录！", Toast.LENGTH_SHORT).show();
-                    Intent intent2 = new Intent(Renew_Permsg_Promte_Activity.this, MainActivity.class);
-                    startActivity(intent2);
-                }
-            }
-            if(intent1.getIntExtra("type",0)>1) {
-                String id = Integer.toString(intent1.getIntExtra("id", 0));
-                binding.picture.setDrawingCacheEnabled(true);
-                Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
-                binding.picture.setDrawingCacheEnabled(false);
-                final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
-                ContentValues values = new ContentValues();
-                values.put("picture", os.toByteArray());
-                db.update("User", values, "id=?", new String[]{id});
-                Toast.makeText(Renew_Permsg_Promte_Activity.this, "头像修改成功！", Toast.LENGTH_SHORT).show();
-                Intent intent2 = new Intent(Renew_Permsg_Promte_Activity.this, Personal_Message_Activity.class);
-                startActivity(intent2);
-            }
+        binding.cancel.setOnClickListener(v->{
+            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+            startActivity(intent);
         });
-        binding.button2.setOnClickListener(v->{
-            Intent intent=new Intent(Renew_Permsg_Promte_Activity.this,Personal_Message_Activity.class);
+        binding.upload.setOnClickListener(v->{
+            Connector.getDatabase();
+            com.example.whuinfoplatform.Entity.Picture picture=new Picture();
+            binding.picture.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
+            binding.picture.setDrawingCacheEnabled(false);
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
+            picture.setPicture(os.toByteArray());
+            picture.save();
+            int picture_id=picture.getId();
+            Toast.makeText(Upload_Picture_promote_Activity.this,"图片上传成功!",Toast.LENGTH_SHORT).show();
+            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+            intent.putExtra("picture_id",picture_id);
             startActivity(intent);
         });
     }
@@ -274,14 +192,6 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
     @Override
     protected void initWidget() {
         super.initWidget();
-        ActionBar actionBar =getSupportActionBar();
-        Intent intent1 = getIntent();
-        if(intent1.getIntExtra("type",0)==1) {
-            actionBar.setTitle("个人资料-修改");
-        }else
-            actionBar.setTitle("个人资料-选择头像");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDefaultDisplayHomeAsUpEnabled(true);
     }
 
     // 计算两个触摸点之间的距离
@@ -319,7 +229,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                     }
                 }
                 else{
-                    Intent intent=new Intent(Renew_Permsg_Promte_Activity.this,Personal_Message_Activity.class);
+                    Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
                     startActivity(intent);
                 }
                 break;
@@ -333,7 +243,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                     }
                 }
                 else{
-                    Intent intent=new Intent(Renew_Permsg_Promte_Activity.this,Personal_Message_Activity.class);
+                    Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
                     startActivity(intent);
                 }
                 break;

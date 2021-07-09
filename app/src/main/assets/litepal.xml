@@ -3,12 +3,13 @@
 	<list>
 		<dbname value="Info"></dbname>
 
-		<version value="10"></version>
+		<version value="14"></version>
 
 		<list>
 			<mapping class="com.example.whuinfoplatform.Entity.Info"></mapping>
 			<mapping class="com.example.whuinfoplatform.Entity.Msg"></mapping>
 			<mapping class="com.example.whuinfoplatform.Entity.Last"></mapping>
+			<mapping class="com.example.whuinfoplatform.Entity.Picture"></mapping>
 		</list>
 
 		<!--<dbname value="Msg"></dbname>

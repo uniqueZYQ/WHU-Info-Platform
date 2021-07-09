@@ -1,12 +1,15 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CalendarView;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.Entity.Info;
@@ -15,7 +18,9 @@ import com.example.whuinfoplatform.R;
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,6 +36,7 @@ public class Renew_Info_prmote_Activity extends rootActivity {
     public void bindView() {
         binding= com.example.whuinfoplatform.databinding.ActivityRenewInfoPrmoteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        binding.calendar.setVisibility(View.GONE);
     }
 
     @Override
@@ -341,9 +347,90 @@ public class Renew_Info_prmote_Activity extends rootActivity {
     @Override
     protected void initClick() {
         super.initClick();
+        binding.editDate.setOnClickListener(v -> {
+            binding.calendar.setVisibility(View.VISIBLE);
+            long timecurrentTimeMillis = System.currentTimeMillis();
+            binding.calendar.setMinDate(timecurrentTimeMillis);
+            if(!binding.editDate.getText().toString().equals("")){
+                SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    Date current=simpleDateFormat.parse(binding.editDate.getText().toString());
+                    long time=current.getTime();
+                    binding.calendar.setDate(time);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        binding.calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                if(month<9){
+                    if(dayOfMonth<10){
+                        binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
+                    }
+                    else{
+                        binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-"+String.valueOf(dayOfMonth));
+                    }
+                }
+                else{
+                    if(dayOfMonth<10){
+                        binding.editDate.setText(String.valueOf(year)+"-"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
+                    }
+                    else{
+                        binding.editDate.setText(String.valueOf(year)+"-"+String.valueOf(month+1)+"-"+String.valueOf(dayOfMonth));
+                    }
+                }
+                binding.calendar.setVisibility(View.GONE);
+            }
+        });
+        //开始定义日历隐藏事件
+        binding.editPlace.setOnClickListener(v -> {
+            binding.calendar.setVisibility(View.GONE);
+        });
+        binding.detail.setOnClickListener(v -> {
+            binding.calendar.setVisibility(View.GONE);
+        });
+        binding.editReward.setOnClickListener(v -> {
+            binding.calendar.setVisibility(View.GONE);
+        });
+        binding.editPlace.setOnFocusChangeListener(new android.view.View.
+                OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    binding.calendar.setVisibility(View.GONE);
+                } else {
 
+                }
+            }
+        });
+        binding.detail.setOnFocusChangeListener(new android.view.View.
+                OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    binding.calendar.setVisibility(View.GONE);
+                } else {
+
+                }
+            }
+        });
+        binding.editReward.setOnFocusChangeListener(new android.view.View.
+                OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    binding.calendar.setVisibility(View.GONE);
+                } else {
+
+                }
+            }
+        });
+        //结束日历隐藏事件1
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
         super.initWidget();

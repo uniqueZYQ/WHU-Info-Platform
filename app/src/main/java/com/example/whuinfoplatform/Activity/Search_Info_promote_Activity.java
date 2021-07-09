@@ -68,7 +68,7 @@ public class Search_Info_promote_Activity extends rootActivity {
                 startActivity(intent);
             }
         });
-        /////
+
         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
         swipeRefresh.setColorSchemeResources(
                 android.R.color.holo_blue_light,
@@ -80,8 +80,6 @@ public class Search_Info_promote_Activity extends rootActivity {
                 refresh_my_info();
             }
         });
-        /////
-
     }
 
     private void init(){

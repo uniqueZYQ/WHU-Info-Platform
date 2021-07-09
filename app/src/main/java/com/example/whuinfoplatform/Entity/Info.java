@@ -2,6 +2,8 @@ package com.example.whuinfoplatform.Entity;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
+
 public class Info extends DataSupport {
     private int id;
     private int owner_id;
@@ -17,6 +19,10 @@ public class Info extends DataSupport {
     private int score;
     private String detail;
     private double reward;
+    private int picture1;
+    private int picture2;
+    private int picture3;
+    private int picture4;
     public int getId() {
         return id;
     }
@@ -40,6 +46,38 @@ public class Info extends DataSupport {
     }
     public void setAnswered(int answered){
         this.answered=answered;
+    }
+
+    public int getPicture1() {
+        return picture1;
+    }
+
+    public int getPicture2() {
+        return picture2;
+    }
+
+    public int getPicture3() {
+        return picture3;
+    }
+
+    public int getPicture4() {
+        return picture4;
+    }
+
+    public void setPicture1(int picture1) {
+        this.picture1 = picture1;
+    }
+
+    public void setPicture2(int picture2) {
+        this.picture2 = picture2;
+    }
+
+    public void setPicture3(int picture3) {
+        this.picture3 = picture3;
+    }
+
+    public void setPicture4(int picture4) {
+        this.picture4 = picture4;
     }
 
     public int getForm() {

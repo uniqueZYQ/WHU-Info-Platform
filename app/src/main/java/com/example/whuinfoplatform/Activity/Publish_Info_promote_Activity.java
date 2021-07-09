@@ -1,39 +1,57 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 /*import com.example.whuinfoplatform.DB.DB_INFO;*/
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Info;
+import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPublishInfoPromoteBinding;
 
+import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Publish_Info_promote_Activity extends rootActivity {
     private ActivityPublishInfoPromoteBinding binding;
-    int id=0,id1=0,id2=0,pos_fd=0,pos_help=0,pos_score=0,form=-1;
-    double reward=0,price=0;
+    private int id=0,id1=0,id2=0,pos_fd=0,pos_help=0,pos_score=0,form=-1,picture_count=0;
+    private double reward=0,price=0;
+    private Dialog mCameraDialog;
+    private boolean upload=false;
+    private ArrayList<Integer> pictureList=new ArrayList<Integer>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +61,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
     public void bindView() {
         binding=ActivityPublishInfoPromoteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        binding.calendar.setVisibility(View.GONE);
     }
 
     @Override
@@ -57,6 +76,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                 switch ((int)id){
                     case 1:{//私人性信息
                         id1=1;
+                        binding.calendar.setVisibility(View.GONE);
                         binding.persInfoType.setVisibility(View.VISIBLE);
                         binding.editPlace.setVisibility(View.GONE);
                         binding.editDate.setVisibility(View.GONE);
@@ -136,6 +156,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                     case 3:{//点评信息
                         id1=3;
                         id2=1;
+                        binding.calendar.setVisibility(View.GONE);
                         binding.persInfoType.setVisibility(View.GONE);
                         binding.persInfoFdType.setVisibility(View.GONE);
                         binding.persInfoHelpType.setVisibility(View.GONE);
@@ -149,6 +170,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         break;
                     }
                     default:
+                        binding.calendar.setVisibility(View.GONE);
                         binding.persInfoType.setVisibility(View.GONE);
                         binding.persInfoFdType.setVisibility(View.GONE);
                         binding.persInfoHelpType.setVisibility(View.GONE);
@@ -239,6 +261,10 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setScore(-1);
                                 info.setDetail(detail);
                                 info.setReward(reward);
+                                info.setPicture1(ret_list_1());
+                                info.setPicture2(ret_list_2());
+                                info.setPicture3(ret_list_3());
+                                info.setPicture4(ret_list_4());
                                 Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -290,6 +316,10 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setScore(-1);
                                 info.setDetail(detail);
                                 info.setReward(reward);
+                                info.setPicture1(ret_list_1());
+                                info.setPicture2(ret_list_2());
+                                info.setPicture3(ret_list_3());
+                                info.setPicture4(ret_list_4());
                                 Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -341,6 +371,10 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setScore(-1);
                                 info.setDetail(detail);
                                 info.setReward(-1);
+                                info.setPicture1(ret_list_1());
+                                info.setPicture2(ret_list_2());
+                                info.setPicture3(ret_list_3());
+                                info.setPicture4(ret_list_4());
                                 Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -392,6 +426,10 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setScore(-1);
                                 info.setDetail(detail);
                                 info.setReward(-1);
+                                info.setPicture1(ret_list_1());
+                                info.setPicture2(ret_list_2());
+                                info.setPicture3(ret_list_3());
+                                info.setPicture4(ret_list_4());
                                 Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -445,6 +483,10 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setScore(-1);
                                 info.setDetail(detail);
                                 info.setReward(reward);
+                                info.setPicture1(ret_list_1());
+                                info.setPicture2(ret_list_2());
+                                info.setPicture3(ret_list_3());
+                                info.setPicture4(ret_list_4());
                                 Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -477,6 +519,10 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             info.setScore(pos_score);
                             info.setDetail(detail);
                             info.setReward(-1);
+                            info.setPicture1(ret_list_1());
+                            info.setPicture2(ret_list_2());
+                            info.setPicture3(ret_list_3());
+                            info.setPicture4(ret_list_4());
                             Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                             long timecurrentTimeMillis = System.currentTimeMillis();
@@ -494,6 +540,96 @@ public class Publish_Info_promote_Activity extends rootActivity {
             else
                 Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息！",Toast.LENGTH_SHORT).show();
         });
+        binding.editDate.setOnClickListener(v -> {
+            binding.calendar.setVisibility(View.VISIBLE);
+            long timecurrentTimeMillis = System.currentTimeMillis();
+            binding.calendar.setMinDate(timecurrentTimeMillis);
+            if(!binding.editDate.getText().toString().equals("")){
+                SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    Date current=simpleDateFormat.parse(binding.editDate.getText().toString());
+                    long time=current.getTime();
+                    binding.calendar.setDate(time);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        binding.calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                if(month<9){
+                    if(dayOfMonth<10){
+                        binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
+                    }
+                    else{
+                        binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-"+String.valueOf(dayOfMonth));
+                    }
+                }
+                else{
+                    if(dayOfMonth<10){
+                        binding.editDate.setText(String.valueOf(year)+"-"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
+                    }
+                    else{
+                        binding.editDate.setText(String.valueOf(year)+"-"+String.valueOf(month+1)+"-"+String.valueOf(dayOfMonth));
+                    }
+                }
+                binding.calendar.setVisibility(View.GONE);
+            }
+        });
+        //开始定义日历隐藏事件
+        binding.editPlace.setOnClickListener(v -> {
+            binding.calendar.setVisibility(View.GONE);
+        });
+        binding.detail.setOnClickListener(v -> {
+            binding.calendar.setVisibility(View.GONE);
+        });
+        binding.editReward.setOnClickListener(v -> {
+            binding.calendar.setVisibility(View.GONE);
+        });
+        binding.editPlace.setOnFocusChangeListener(new android.view.View.
+                OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    binding.calendar.setVisibility(View.GONE);
+                } else {
+
+                }
+            }
+        });
+        binding.detail.setOnFocusChangeListener(new android.view.View.
+                OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    binding.calendar.setVisibility(View.GONE);
+                } else {
+
+                }
+            }
+        });
+        binding.editReward.setOnFocusChangeListener(new android.view.View.
+                OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    binding.calendar.setVisibility(View.GONE);
+                } else {
+
+                }
+            }
+        });
+        //结束日历隐藏事件
+        binding.upload.setOnClickListener(v -> {
+            if(picture_count>=4){//最多上传四张图片
+                Toast.makeText(Publish_Info_promote_Activity.this,"最多只能上传四张图片!",Toast.LENGTH_SHORT).show();
+            }
+            else{
+                upload=true;
+                setDialog();
+            }
+        });
     }
 
     @SuppressLint("RestrictedApi")
@@ -504,5 +640,140 @@ public class Publish_Info_promote_Activity extends rootActivity {
         actionBar.setTitle("信息大厅-编辑新信息");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+    }
+
+    private void setDialog() {
+        LinearLayout root = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.bottom_dialog, null);
+        //初始化视图
+        root.findViewById(R.id.btn_choose_img).setOnClickListener(v -> {
+            Intent intent = new Intent(Publish_Info_promote_Activity.this,Upload_Picture_promote_Activity.class);
+            intent.putExtra("id",id);
+            intent.putExtra("type",2);
+            startActivity(intent);
+        });
+        root.findViewById(R.id.btn_open_camera).setOnClickListener(v -> {
+            Intent intent = new Intent(Publish_Info_promote_Activity.this,Upload_Picture_promote_Activity.class);
+            intent.putExtra("id",id);
+            intent.putExtra("type",3);
+            startActivity(intent);
+        });
+        mCameraDialog = new Dialog(this, R.style.BottomDialog);
+        mCameraDialog.setContentView(root);
+        Window dialogWindow = mCameraDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        //dialogWindow.setWindowAnimations(R.style.dialogstyle); // 添加动画
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
+        lp.x = 0; // 新位置X坐标
+        lp.y = 0; // 新位置Y坐标
+        lp.width = (int) getResources().getDisplayMetrics().widthPixels; // 宽度
+        root.measure(0, 0);
+        lp.height = root.getMeasuredHeight();
+        lp.alpha = 9f; // 透明度
+        dialogWindow.setAttributes(lp);
+        mCameraDialog.show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(upload)
+            if(mCameraDialog.isShowing()) mCameraDialog.cancel();
+    }
+
+    /**
+     *
+     * 重写此方法，加上setIntent(intent);否则在onResume里面得不到intent
+     * @param intent intent
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        initPictureList();
+    }
+
+    private void initPictureList(){
+        Intent intent=getIntent();
+        int picture_id=intent.getIntExtra("picture_id",0);
+        if(picture_id!=0){
+            picture_count++;
+            pictureList.add(picture_id);
+        }
+        Connector.getDatabase();
+        switch(pictureList.size()){
+            case 4:
+                int picture4=pictureList.get(3);
+                List<Picture> picture_4 = DataSupport.where("id=?",String.valueOf(picture4)).find(Picture.class);
+                byte[] in_4=picture_4.get(0).getPicture();
+                binding.picture4.setVisibility(View.VISIBLE);
+                Bitmap bit_4 = BitmapFactory.decodeByteArray(in_4, 0, in_4.length);
+                binding.picture4.setImageBitmap(bit_4);
+            case 3:
+                int picture3=pictureList.get(2);
+                List<Picture> picture_3 = DataSupport.where("id=?",String.valueOf(picture3)).find(Picture.class);
+                byte[] in_3=picture_3.get(0).getPicture();
+                binding.picture3.setVisibility(View.VISIBLE);
+                Bitmap bit_3 = BitmapFactory.decodeByteArray(in_3, 0, in_3.length);
+                binding.picture3.setImageBitmap(bit_3);
+            case 2:
+                int picture2=pictureList.get(1);
+                List<Picture> picture_2 = DataSupport.where("id=?",String.valueOf(picture2)).find(Picture.class);
+                byte[] in_2=picture_2.get(0).getPicture();
+                binding.picture2.setVisibility(View.VISIBLE);
+                Bitmap bit_2 = BitmapFactory.decodeByteArray(in_2, 0, in_2.length);
+                binding.picture2.setImageBitmap(bit_2);
+            case 1:
+                int picture1=pictureList.get(0);
+                List<Picture> picture_1 = DataSupport.where("id=?",String.valueOf(picture1)).find(Picture.class);
+                byte[] in_1=picture_1.get(0).getPicture();
+                binding.picture1.setVisibility(View.VISIBLE);
+                Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
+                binding.picture1.setImageBitmap(bit_1);
+                break;
+            default:
+                break;
+
+        }
+    }
+
+    private int ret_list_1(){
+        if(pictureList.size()>=1){
+            return pictureList.get(0);
+        }
+        else{
+            return 0;
+        }
+    }
+
+    private int ret_list_2(){
+        if(pictureList.size()>=2){
+            return pictureList.get(1);
+        }
+        else{
+            return 0;
+        }
+    }
+
+    private int ret_list_3(){
+        if(pictureList.size()>=3){
+            return pictureList.get(2);
+        }
+        else{
+            return 0;
+        }
+    }
+
+    private int ret_list_4(){
+        if(pictureList.size()>=4){
+            return pictureList.get(3);
+        }
+        else{
+            return 0;
+        }
     }
 }
