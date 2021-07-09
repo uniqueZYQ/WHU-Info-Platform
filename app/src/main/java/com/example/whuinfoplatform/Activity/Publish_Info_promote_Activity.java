@@ -734,6 +734,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                 binding.picture1.setVisibility(View.VISIBLE);
                 Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
                 binding.picture1.setImageBitmap(bit_1);
+                binding.upload.setText("继续上传图片");
                 break;
             default:
                 break;
