@@ -39,8 +39,8 @@
         android:layout_height="40dp"
         android:orientation="horizontal"
         android:layout_marginLeft="50dp"
-        android:layout_marginRight="70dp"
-        >
+        android:layout_marginRight="70dp">
+
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -54,12 +54,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="  "
-                    android:background="#eeeeee"/>
+                android:orientation="horizontal"
+                android:background="#eeeeee">
+
                 <EditText
                     android:id="@+id/edit_stdid"
                     android:layout_width="0dp"
@@ -71,8 +68,10 @@
                     android:maxLength="13"
                     android:singleLine="true"
                     android:textSize="20dp"
+                    android:layout_marginLeft="3dp"
                     android:background="#eeeeee"/>
             </LinearLayout>
+
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
@@ -102,12 +101,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text=" "
-                    android:background="#eeeeee"/>
+                android:orientation="horizontal"
+                android:background="#eeeeee">
 
                 <EditText
                     android:id="@+id/edit_pwd"
@@ -119,8 +114,10 @@
                     android:maxLength="15"
                     android:singleLine="true"
                     android:textSize="20dp"
+                    android:layout_marginLeft="3dp"
                     android:background="#eeeeee"/>
             </LinearLayout>
+
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>

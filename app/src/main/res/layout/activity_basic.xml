@@ -29,6 +29,7 @@ android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:background="@drawable/a2"
+            android:shadowRadius="20"
             />
         <TextView
             android:layout_width="0dp"
@@ -42,6 +43,7 @@ android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:background="@drawable/a3"
+            android:shadowRadius="20"
             />
         <TextView
             android:layout_width="0dp"
@@ -68,6 +70,7 @@ android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:background="@drawable/a4"
+            android:shadowRadius="20"
             />
         <TextView
             android:layout_width="0dp"
@@ -81,6 +84,7 @@ android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:background="@drawable/a1"
+            android:shadowRadius="20"
             />
         <TextView
             android:layout_width="0dp"

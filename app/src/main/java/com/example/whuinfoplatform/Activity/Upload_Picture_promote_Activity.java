@@ -1,5 +1,6 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -11,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -25,9 +27,11 @@ import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.Entity.Picture;
@@ -41,7 +45,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import static org.litepal.LitePalApplication.getContext;
+
 public class Upload_Picture_promote_Activity extends rootActivity {
+    private static final int CENTER = Gravity.CENTER;
     private ActivityUploadPicturePromoteBinding binding;
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
@@ -61,6 +68,8 @@ public class Upload_Picture_promote_Activity extends rootActivity {
     private PointF midPoint = new PointF();
     // 初始的两个手指按下的触摸点的距离
     private float oriDis = 1f;
+    int chat=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,7 +138,6 @@ public class Upload_Picture_promote_Activity extends rootActivity {
     protected void initData() {
         super.initData();
         Intent intent1 = getIntent();
-        String id = Integer.toString(intent1.getIntExtra("id", 0));
         if(intent1.getIntExtra("type",0)>1){
             if(intent1.getIntExtra("type",0)==2){
                 picture=binding.picture;
@@ -166,11 +174,20 @@ public class Upload_Picture_promote_Activity extends rootActivity {
 
     @Override
     protected void initClick() {
+        Intent intent1=getIntent();
+        chat=intent1.getIntExtra("chat",0);
         binding.cancel.setOnClickListener(v->{
-            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+            Intent intent;
+            if(chat==0){
+                intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+            }
+            else{
+                intent=new Intent(Upload_Picture_promote_Activity.this,Chat_Window_Activity.class);
+            }
             startActivity(intent);
         });
         binding.upload.setOnClickListener(v->{
+            Intent intent;
             Connector.getDatabase();
             com.example.whuinfoplatform.Entity.Picture picture=new Picture();
             binding.picture.setDrawingCacheEnabled(true);
@@ -182,7 +199,12 @@ public class Upload_Picture_promote_Activity extends rootActivity {
             picture.save();
             int picture_id=picture.getId();
             Toast.makeText(Upload_Picture_promote_Activity.this,"图片上传成功!",Toast.LENGTH_SHORT).show();
-            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+            if(chat==0){
+                intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+            }
+            else {
+                intent=new Intent(Upload_Picture_promote_Activity.this,Chat_Window_Activity.class);
+            }
             intent.putExtra("picture_id",picture_id);
             startActivity(intent);
         });
@@ -214,11 +236,13 @@ public class Upload_Picture_promote_Activity extends rootActivity {
         startActivityForResult(intent,CHOOSE_PHOTO);//打开相册
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("MissingSuperCall")
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data) {
         switch(requestCode){
             case TAKE_PHOTO:
+                Intent intent;
                 if (resultCode==RESULT_OK){
                     try{
                         //显示照片
@@ -229,11 +253,17 @@ public class Upload_Picture_promote_Activity extends rootActivity {
                     }
                 }
                 else{
-                    Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+                    if(chat==0){
+                        intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+                    }
+                    else{
+                        intent=new Intent(Upload_Picture_promote_Activity.this,Chat_Window_Activity.class);
+                    }
                     startActivity(intent);
                 }
                 break;
             case CHOOSE_PHOTO:
+                Intent intent1;
                 if(resultCode==RESULT_OK){
                     if(Build.VERSION.SDK_INT>=19){
                         handleImageOnKitKat(data);
@@ -243,8 +273,13 @@ public class Upload_Picture_promote_Activity extends rootActivity {
                     }
                 }
                 else{
-                    Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
-                    startActivity(intent);
+                    if(chat==0){
+                        intent1=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+                    }
+                    else{
+                        intent1=new Intent(Upload_Picture_promote_Activity.this,Chat_Window_Activity.class);
+                    }
+                    startActivity(intent1);
                 }
                 break;
             default:
@@ -267,7 +302,7 @@ public class Upload_Picture_promote_Activity extends rootActivity {
         }
     }
 
-    @TargetApi(19)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void handleImageOnKitKat(Intent data){
         String imagePath = null;
         Uri uri = data.getData();
@@ -295,6 +330,7 @@ public class Upload_Picture_promote_Activity extends rootActivity {
         displayImage(imagePath);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void handleImageBeforeKitKat(Intent data){
         Uri uri = data.getData();
         String imagePath = getImagePath(uri,null);
@@ -313,10 +349,30 @@ public class Upload_Picture_promote_Activity extends rootActivity {
         return path;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void displayImage(String imagePath){
         if(imagePath!=null){
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            picture.setImageBitmap(bitmap);
+            Bitmap bitmap_p;
+            double p_width=bitmap.getWidth();
+            double p_height=bitmap.getHeight();
+            double width=1000;//标准宽
+            double height=1600;//标准高
+            LinearLayout.LayoutParams params;
+            double ratio=p_width/p_height,st_ratio=width/height;
+            if(ratio>st_ratio){
+                height=width/ratio;
+                params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
+                bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
+                picture.setImageBitmap(bitmap_p);
+            }
+            else{
+                width=ratio*height;
+                params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
+                bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
+                picture.setImageBitmap(bitmap_p);
+            }
+            picture.setLayoutParams(params);
         }
         else {
             Toast.makeText(this,"获取图片失败！",Toast.LENGTH_SHORT).show();

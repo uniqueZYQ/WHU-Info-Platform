@@ -30,7 +30,8 @@
         <activity android:name=".Activity.Publish_Info_promote_Activity"
             android:launchMode="singleTask"/>
         <activity android:name=".Activity.Search_Info_promote_Activity" />
-        <activity android:name=".Activity.Chat_Window_Activity" />
+        <activity android:name=".Activity.Chat_Window_Activity"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".Activity.Info_Hall_Activity"
             android:launchMode="singleTask" />

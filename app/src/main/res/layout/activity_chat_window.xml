@@ -29,38 +29,46 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="58dp" >
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.045"
-            android:background="#eeeeee"
-            />
+        android:layout_height="wrap_content"
+        android:background="#eeeeee"
+        android:maxHeight="150dp"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/inputText"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:background="#eeeeee"
-            android:hint="此处输入文字..."
+            android:background="#ffffff"
+            android:layout_marginLeft="9dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_gravity="center"
+            android:hint=" 此处输入文字..."
+            android:padding="2.5dp"
             android:maxLines="40"
-            android:maxLength="100"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.045"
-            android:background="#eeeeee"
+            android:maxLength="400"
+            android:maxHeight="20dp"
             />
 
         <Button
             android:id="@+id/send"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="85dp"
+            android:layout_height="53dp"
             android:background="#2e8b57"
+            android:shadowRadius="20"
             android:text="发送"
+            android:layout_margin="7dp"
+            android:layout_gravity="center"
+            android:textColor="#ffffff"/>
+        <Button
+            android:id="@+id/send_picture"
+            android:layout_width="58dp"
+            android:shadowRadius="20"
+            android:layout_gravity="center"
+            android:layout_height="match_parent"
+            android:background="@drawable/send_picture"
             android:textColor="#ffffff"/>
 
     </LinearLayout>

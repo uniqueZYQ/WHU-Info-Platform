@@ -1,16 +1,28 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Outline;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewOutlineProvider;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
@@ -38,6 +50,9 @@ public class Chat_Window_Activity extends rootActivity {
     String owner="";
     int sub_id=0;
     int obj_id=0;
+    private boolean upload=false;
+    private Dialog mCameraDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +65,7 @@ public class Chat_Window_Activity extends rootActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void initData() {
         Intent intent = getIntent();
@@ -83,7 +99,14 @@ public class Chat_Window_Activity extends rootActivity {
             else cumsg.setType(0);
             msgList.add(cumsg);
         }
-
+        binding.send.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                // 设置按钮圆角率为30
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), 30);
+            }
+        });
+        binding.send.setClipToOutline(true);
     }
 
     @Override
@@ -126,6 +149,10 @@ public class Chat_Window_Activity extends rootActivity {
                 }
             }
         });
+        binding.sendPicture.setOnClickListener(v->{
+            upload=true;
+            setDialog();
+        });
     }
 
     @Override
@@ -134,6 +161,90 @@ public class Chat_Window_Activity extends rootActivity {
         msgRecyclerView.setLayoutManager(layoutManager);
         msgRecyclerView.setAdapter(adapter);
         msgRecyclerView.scrollToPosition(msgList.size() - 1);//最下方显示最新消息
+        binding.send.setVisibility(View.GONE);
+        binding.sendPicture.setVisibility(View.VISIBLE);
+        binding.inputText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(!String.valueOf(s).equals("")) {
+                    binding.send.setVisibility(View.VISIBLE);
+                    binding.sendPicture.setVisibility(View.GONE);
+                }
+                else{
+                    binding.send.setVisibility(View.GONE);
+                    binding.sendPicture.setVisibility(View.VISIBLE);
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
+    private void setDialog() {
+        LinearLayout root = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.bottom_dialog, null);
+        //初始化视图
+        root.findViewById(R.id.btn_choose_img).setOnClickListener(v -> {
+            Intent intent = new Intent(Chat_Window_Activity.this,Upload_Picture_promote_Activity.class);
+            intent.putExtra("chat",1);
+            intent.putExtra("type",2);
+            startActivity(intent);
+        });
+        root.findViewById(R.id.btn_open_camera).setOnClickListener(v -> {
+            Intent intent = new Intent(Chat_Window_Activity.this,Upload_Picture_promote_Activity.class);
+            intent.putExtra("chat",1);
+            intent.putExtra("type",3);
+            startActivity(intent);
+        });
+        mCameraDialog = new Dialog(this, R.style.BottomDialog);
+        mCameraDialog.setContentView(root);
+        Window dialogWindow = mCameraDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        //dialogWindow.setWindowAnimations(R.style.dialogstyle); // 添加动画
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
+        lp.x = 0; // 新位置X坐标
+        lp.y = 0; // 新位置Y坐标
+        lp.width = (int) getResources().getDisplayMetrics().widthPixels; // 宽度
+        root.measure(0, 0);
+        lp.height = root.getMeasuredHeight();
+        lp.alpha = 9f; // 透明度
+        dialogWindow.setAttributes(lp);
+        mCameraDialog.show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(upload)
+            if(mCameraDialog.isShowing()) mCameraDialog.cancel();
+    }
+
+    /**
+     *
+     * 重写此方法，加上setIntent(intent);否则在onResume里面得不到intent
+     * @param intent intent
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Intent intent=getIntent();
+        if(intent.getIntExtra("picture_id",0)!=0){
+            //todo
+        }
+    }
 }
