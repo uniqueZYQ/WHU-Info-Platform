@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Info;
+import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityMyInfoDetailsBinding;
@@ -63,6 +65,34 @@ public class My_Info_details_Activity extends rootActivity {
             binding.sendDate.setText("发布于"+(info.get(i).getSend_date()));
             binding.form.setText("信息类别："+(info.get(i).getForm()==1?"私人性-学术咨询信息":info.get(i).getForm()==2?"私人性-日常求助信息":info.get(i).getForm()==3?"私人性-物品出售信息":info.get(i).getForm()==4?"私人性-物品求购信息":info.get(i).getForm()==5?"组织性活动信息":"课程点评信息"));
             binding.detail.setText("具体内容：\n    "+(info.get(i).getDetail()));
+            if(info.get(i).getPicture4()!=0){
+                List<Picture> picture4=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture4())).find(Picture.class);
+                byte[] in_4 = picture4.get(0).getPicture();
+                Bitmap bit_4 = BitmapFactory.decodeByteArray(in_4, 0, in_4.length);
+                binding.picture4.setImageBitmap(bit_4);
+                binding.picture4.setVisibility(View.VISIBLE);
+            }
+            if(info.get(i).getPicture3()!=0){
+                List<Picture> picture3=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture3())).find(Picture.class);
+                byte[] in_3 = picture3.get(0).getPicture();
+                Bitmap bit_3 = BitmapFactory.decodeByteArray(in_3, 0, in_3.length);
+                binding.picture3.setImageBitmap(bit_3);
+                binding.picture3.setVisibility(View.VISIBLE);
+            }
+            if(info.get(i).getPicture2()!=0){
+                List<Picture> picture2=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture2())).find(Picture.class);
+                byte[] in_2 = picture2.get(0).getPicture();
+                Bitmap bit_2 = BitmapFactory.decodeByteArray(in_2, 0, in_2.length);
+                binding.picture2.setImageBitmap(bit_2);
+                binding.picture2.setVisibility(View.VISIBLE);
+            }
+            if(info.get(i).getPicture1()!=0){
+                List<Picture> picture1=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture1())).find(Picture.class);
+                byte[] in_1 = picture1.get(0).getPicture();
+                Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
+                binding.picture1.setImageBitmap(bit_1);
+                binding.picture1.setVisibility(View.VISIBLE);
+            }
             switch(info.get(i).getForm()){
                 case 1:{
                     binding.fdForm.setText("咨询领域："+(
@@ -169,6 +199,7 @@ public class My_Info_details_Activity extends rootActivity {
         });
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
         super.initWidget();

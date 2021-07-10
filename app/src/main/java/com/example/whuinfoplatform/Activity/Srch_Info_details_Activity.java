@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.Msg;
+import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.R;
 
 import org.litepal.crud.DataSupport;
@@ -59,6 +60,34 @@ public class Srch_Info_details_Activity extends rootActivity {
             binding.form.setText("信息类别："+(info.get(i).getForm()==1?"私人性-学术咨询信息":info.get(i).getForm()==2?"私人性-日常求助信息":info.get(i).getForm()==3?"私人性-物品出售信息":info.get(i).getForm()==4?"私人性-物品求购信息":info.get(i).getForm()==5?"组织性活动信息":"课程点评信息"));
             binding.detail.setText("具体内容：\n    "+(info.get(i).getDetail()));
             binding.nickname.setText(owner);
+            if(info.get(i).getPicture4()!=0){
+                List<Picture> picture4=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture4())).find(Picture.class);
+                byte[] in_4 = picture4.get(0).getPicture();
+                Bitmap bit_4 = BitmapFactory.decodeByteArray(in_4, 0, in_4.length);
+                binding.picture4.setImageBitmap(bit_4);
+                binding.picture4.setVisibility(View.VISIBLE);
+            }
+            if(info.get(i).getPicture3()!=0){
+                List<Picture> picture3=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture3())).find(Picture.class);
+                byte[] in_3 = picture3.get(0).getPicture();
+                Bitmap bit_3 = BitmapFactory.decodeByteArray(in_3, 0, in_3.length);
+                binding.picture3.setImageBitmap(bit_3);
+                binding.picture3.setVisibility(View.VISIBLE);
+            }
+            if(info.get(i).getPicture2()!=0){
+                List<Picture> picture2=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture2())).find(Picture.class);
+                byte[] in_2 = picture2.get(0).getPicture();
+                Bitmap bit_2 = BitmapFactory.decodeByteArray(in_2, 0, in_2.length);
+                binding.picture2.setImageBitmap(bit_2);
+                binding.picture2.setVisibility(View.VISIBLE);
+            }
+            if(info.get(i).getPicture1()!=0){
+                List<Picture> picture1=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture1())).find(Picture.class);
+                byte[] in_1 = picture1.get(0).getPicture();
+                Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
+                binding.picture1.setImageBitmap(bit_1);
+                binding.picture1.setVisibility(View.VISIBLE);
+            }
             int owner_id=info.get(i).getOwner_id();
             Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{String.valueOf(owner_id)}, null);
             if(cursor.moveToFirst()){
