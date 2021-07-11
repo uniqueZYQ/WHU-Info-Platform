@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -657,6 +658,10 @@ public class Publish_Info_promote_Activity extends rootActivity {
             intent.putExtra("type",3);
             startActivity(intent);
         });
+        Button btn_choose_img=root.findViewById(R.id.btn_choose_img);
+        Button btn_open_camera=root.findViewById(R.id.btn_open_camera);
+        btn_choose_img.setText("从相册中选择图片");
+        btn_open_camera.setText("拍摄图片");
         mCameraDialog = new Dialog(this, R.style.BottomDialog);
         mCameraDialog.setContentView(root);
         Window dialogWindow = mCameraDialog.getWindow();

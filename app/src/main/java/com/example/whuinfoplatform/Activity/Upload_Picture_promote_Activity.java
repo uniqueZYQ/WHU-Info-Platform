@@ -20,6 +20,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Outline;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +31,7 @@ import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -75,6 +77,7 @@ public class Upload_Picture_promote_Activity extends rootActivity {
         super.onCreate(savedInstanceState);
         mImageView = (ImageView) this.findViewById(R.id.picture);
         mImageView.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 ImageView view = (ImageView) v;
@@ -134,10 +137,19 @@ public class Upload_Picture_promote_Activity extends rootActivity {
         setContentView(binding.getRoot());
     }
 
+    @SuppressLint("ResourceAsColor")
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void initData() {
         super.initData();
         Intent intent1 = getIntent();
+        if(intent1.getIntExtra("chat",0)==0)
+            binding.upload.setVisibility(View.VISIBLE);
+        else{
+            binding.chatUpload.setVisibility(View.VISIBLE);
+            binding.cancel.setBackgroundResource(R.drawable.cancel);
+            binding.cancel.setTextColor(0xFFFFFFFF);
+        }
         if(intent1.getIntExtra("type",0)>1){
             if(intent1.getIntExtra("type",0)==2){
                 picture=binding.picture;
@@ -170,10 +182,19 @@ public class Upload_Picture_promote_Activity extends rootActivity {
                 startActivityForResult(intent,TAKE_PHOTO);
             }
         }
+        binding.chatUpload.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                // 设置按钮圆角率为30
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), 30);
+            }
+        });
+        binding.chatUpload.setClipToOutline(true);
     }
 
     @Override
     protected void initClick() {
+        Connector.getDatabase();
         Intent intent1=getIntent();
         chat=intent1.getIntExtra("chat",0);
         binding.cancel.setOnClickListener(v->{
@@ -187,8 +208,6 @@ public class Upload_Picture_promote_Activity extends rootActivity {
             startActivity(intent);
         });
         binding.upload.setOnClickListener(v->{
-            Intent intent;
-            Connector.getDatabase();
             com.example.whuinfoplatform.Entity.Picture picture=new Picture();
             binding.picture.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
@@ -198,13 +217,23 @@ public class Upload_Picture_promote_Activity extends rootActivity {
             picture.setPicture(os.toByteArray());
             picture.save();
             int picture_id=picture.getId();
-            Toast.makeText(Upload_Picture_promote_Activity.this,"图片上传成功!",Toast.LENGTH_SHORT).show();
-            if(chat==0){
-                intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
-            }
-            else {
-                intent=new Intent(Upload_Picture_promote_Activity.this,Chat_Window_Activity.class);
-            }
+            //Toast.makeText(Upload_Picture_promote_Activity.this,"图片上传成功!",Toast.LENGTH_SHORT).show();
+            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
+            intent.putExtra("picture_id",picture_id);
+            startActivity(intent);
+        });
+        binding.chatUpload.setOnClickListener(v -> {
+            com.example.whuinfoplatform.Entity.Picture picture=new Picture();
+            binding.picture.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
+            binding.picture.setDrawingCacheEnabled(false);
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
+            picture.setPicture(os.toByteArray());
+            picture.save();
+            int picture_id=picture.getId();
+            //Toast.makeText(Upload_Picture_promote_Activity.this,"图片上传成功!",Toast.LENGTH_SHORT).show();
+            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Chat_Window_Activity.class);
             intent.putExtra("picture_id",picture_id);
             startActivity(intent);
         });
@@ -248,6 +277,26 @@ public class Upload_Picture_promote_Activity extends rootActivity {
                         //显示照片
                         Bitmap bitmap= BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
                         picture.setImageBitmap(bitmap);
+                            Bitmap bitmap_p;
+                            double p_width=bitmap.getWidth();
+                            double p_height=bitmap.getHeight();
+                            double width=1000;//标准宽
+                            double height=1600;//标准高
+                            LinearLayout.LayoutParams params;
+                            double ratio=p_width/p_height,st_ratio=width/height;
+                            if(ratio>st_ratio){
+                                height=width/ratio;
+                                params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
+                                bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
+                                picture.setImageBitmap(bitmap_p);
+                            }
+                            else{
+                                width=ratio*height;
+                                params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
+                                bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
+                                picture.setImageBitmap(bitmap_p);
+                            }
+                            picture.setLayoutParams(params);
                     }catch(FileNotFoundException e){
                         e.printStackTrace();
                     }

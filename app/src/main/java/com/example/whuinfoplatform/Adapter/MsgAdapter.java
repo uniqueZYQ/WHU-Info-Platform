@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ColorSpace;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.whuinfoplatform.Activity.Personal_Message_Activity;
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Msg;
+import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPublishInfoPromoteBinding;
 import com.example.whuinfoplatform.databinding.MsgItemBinding;
+
+import org.litepal.crud.DataSupport;
+import org.litepal.tablemanager.Connector;
 
 import java.util.List;
 
@@ -37,6 +42,8 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         TextView time_right;
         ImageView picture_left;
         ImageView picture_right;
+        ImageView left_upload;
+        ImageView right_upload;
         public ViewHolder(View view){
             super(view);
             leftLayout = (LinearLayout)view.findViewById(R.id.left_layout);
@@ -47,6 +54,8 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             time_right=(TextView)view.findViewById(R.id.time_right);
             picture_left=(ImageView)view.findViewById(R.id.picture_left);
             picture_right=(ImageView)view.findViewById(R.id.picture_right);
+            left_upload=(ImageView)view.findViewById(R.id.left_upload);
+            right_upload=(ImageView)view.findViewById(R.id.right_upload);
         }
     }
 
@@ -81,11 +90,28 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 }
             }
             cursor.close();
+            int picture_id=msg.getPicture();
+            if(picture_id!=0){
+                Connector.getDatabase();
+                List<Picture> picture = DataSupport.where("id=?",String.valueOf(picture_id)).find(Picture.class);
+                for(int i=0;i<picture.size();i++) {
+                    byte[] in = picture.get(i).getPicture();
+                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                    holder.left_upload.setImageBitmap(bit);
+                }
+                holder.leftMsg.setVisibility(View.GONE);
+                holder.left_upload.setVisibility(View.VISIBLE);
+            }
+            else{
+                holder.leftMsg.setVisibility(View.VISIBLE);
+                holder.left_upload.setVisibility(View.GONE);
+            }
         }
         else if (msg.getType()==Msg.TYPE_SENT){
             holder.rightLayout.setVisibility(View.VISIBLE);
             holder.leftLayout.setVisibility(View.GONE);
             holder.rightMsg.setText(msg.getContent());
+            String test=msg.getContent();////////////////////////////////////////////////////////////////////////////////////////////
             holder.time_right.setText(msg.getTime());
             int id=msg.getSub_id();
             Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
@@ -97,6 +123,22 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 }
             }
             cursor.close();
+            int picture_id=msg.getPicture();
+            if(picture_id!=0){
+                Connector.getDatabase();
+                List<Picture> picture = DataSupport.where("id=?",String.valueOf(picture_id)).find(Picture.class);
+                for(int i=0;i<picture.size();i++) {
+                    byte[] in = picture.get(i).getPicture();
+                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                    holder.right_upload.setImageBitmap(bit);
+                }
+                holder.rightMsg.setVisibility(View.GONE);
+                holder.right_upload.setVisibility(View.VISIBLE);
+            }
+            else{
+                holder.rightMsg.setVisibility(View.VISIBLE);
+                holder.right_upload.setVisibility(View.GONE);
+            }
         }
     }
 

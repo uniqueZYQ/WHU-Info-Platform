@@ -55,6 +55,18 @@
                 android:paddingBottom="6dp"
                 android:paddingTop="6dp"
                 android:background="@drawable/message_left"/>
+            <ImageView
+                android:id="@+id/left_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="320dp"
+                android:layout_gravity="left"
+                android:layout_margin="2dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="11dp"
+                android:paddingBottom="6dp"
+                android:paddingTop="6dp"
+                android:visibility="gone"/>
         </LinearLayout>
 
 
@@ -99,6 +111,18 @@
                 android:paddingBottom="6dp"
                 android:paddingTop="6dp"
                 android:background="@drawable/message_right"/>
+            <ImageView
+                android:id="@+id/right_upload"
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_margin="2dp"
+                android:paddingLeft="11dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="6dp"
+                android:paddingTop="6dp"
+                android:visibility="gone"
+                />
         </LinearLayout>
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_picture_right"

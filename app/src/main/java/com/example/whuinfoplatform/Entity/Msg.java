@@ -11,6 +11,7 @@ public class Msg extends DataSupport {
     private int obj_id;
     private String time;
     private int id;
+    private int picture;
 
     public int getSub_id(){
         return sub_id;
@@ -28,6 +29,7 @@ public class Msg extends DataSupport {
         return type;
     }
     public int getId(){return id;}
+    public int getPicture(){return picture;}
 
     public void setContent(String content) {
         this.content = content;
@@ -43,5 +45,8 @@ public class Msg extends DataSupport {
     }
     public void setType(int type) {
         this.type = type;
+    }
+    public void setPicture(int picture) {
+        this.picture = picture;
     }
 }

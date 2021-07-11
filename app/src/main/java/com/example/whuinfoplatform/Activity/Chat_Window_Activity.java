@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Adapter.MsgAdapter;
+import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityChatWindowBinding;
 
@@ -95,6 +96,7 @@ public class Chat_Window_Activity extends rootActivity {
             cumsg.setObj_id(targetMsg.get(i).getObj_id());
             cumsg.setSub_id(targetMsg.get(i).getSub_id());
             cumsg.setContent(targetMsg.get(i).getContent());
+            cumsg.setPicture(targetMsg.get(i).getPicture());
             if(sub_id==targetMsg.get(i).getSub_id())cumsg.setType(1);
             else cumsg.setType(0);
             msgList.add(cumsg);
@@ -124,13 +126,14 @@ public class Chat_Window_Activity extends rootActivity {
                 }
                 if (valid) {
                     long timecurrentTimeMillis = System.currentTimeMillis();
-                    SimpleDateFormat sdfTwo = new SimpleDateFormat("MM月dd日 HH:mm", Locale.getDefault());
+                    SimpleDateFormat sdfTwo = new SimpleDateFormat("YYYY年MM月dd日 HH:mm", Locale.getDefault());
                     String time = sdfTwo.format(timecurrentTimeMillis);
                     Msg msg = new Msg();
                     msg.setContent(content);
                     msg.setTime(time);
                     msg.setType(1);
                     msg.setSub_id(sub_id);
+                    msg.setPicture(0);
                     msgList.add(msg);
                     adapter.notifyItemInserted(msgList.size() - 1);
                     msgRecyclerView.scrollToPosition(msgList.size() - 1);
@@ -141,6 +144,7 @@ public class Chat_Window_Activity extends rootActivity {
                     addmsg.setContent(content);
                     addmsg.setSub_id(sub_id);
                     addmsg.setObj_id(obj_id);
+                    addmsg.setPicture(0);
                     addmsg.setTime(time);
                     addmsg.save();
                 } else {
@@ -204,6 +208,10 @@ public class Chat_Window_Activity extends rootActivity {
             intent.putExtra("type",3);
             startActivity(intent);
         });
+        Button btn_choose_img=root.findViewById(R.id.btn_choose_img);
+        Button btn_open_camera=root.findViewById(R.id.btn_open_camera);
+        btn_choose_img.setText("从相册中选择图片");
+        btn_open_camera.setText("拍摄图片");
         mCameraDialog = new Dialog(this, R.style.BottomDialog);
         mCameraDialog.setContentView(root);
         Window dialogWindow = mCameraDialog.getWindow();
@@ -243,8 +251,30 @@ public class Chat_Window_Activity extends rootActivity {
     protected void onResume(){
         super.onResume();
         Intent intent=getIntent();
-        if(intent.getIntExtra("picture_id",0)!=0){
-            //todo
+        int picture=intent.getIntExtra("picture_id",0);
+        if(picture!=0){
+            long timecurrentTimeMillis = System.currentTimeMillis();
+            SimpleDateFormat sdfTwo = new SimpleDateFormat("YYYY年MM月dd日 HH:mm", Locale.getDefault());
+            String time = sdfTwo.format(timecurrentTimeMillis);
+            Msg msg = new Msg();
+            msg.setContent("");
+            msg.setTime(time);
+            msg.setType(1);
+            msg.setSub_id(sub_id);
+            msg.setPicture(picture);
+            msgList.add(msg);
+            adapter.notifyItemInserted(msgList.size() - 1);
+            msgRecyclerView.scrollToPosition(msgList.size() - 1);
+            inputText.setText("");
+            Connector.getDatabase();
+            Msg addmsg = new Msg();
+            addmsg.setType(1);
+            addmsg.setContent("");
+            addmsg.setSub_id(sub_id);
+            addmsg.setObj_id(obj_id);
+            addmsg.setPicture(picture);
+            addmsg.setTime(time);
+            addmsg.save();
         }
     }
 }
