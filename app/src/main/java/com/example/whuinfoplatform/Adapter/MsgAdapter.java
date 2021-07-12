@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.whuinfoplatform.Activity.Chat_Window_Activity;
 import com.example.whuinfoplatform.Activity.Personal_Message_Activity;
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Msg;
@@ -26,12 +27,15 @@ import com.example.whuinfoplatform.databinding.MsgItemBinding;
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     private List<Msg> mMsgList;
     private DB_USER dbHelper;
     SQLiteDatabase db;
+    ViewGroup adapter_parent;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         LinearLayout leftLayout;
@@ -65,6 +69,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        adapter_parent=parent;
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.msg_item,parent,false);
         dbHelper = new DB_USER(parent.getContext(),"User.db",null,7);
         db = dbHelper.getWritableDatabase();
@@ -75,11 +80,50 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     public void onBindViewHolder(ViewHolder holder,int position){
         Msg msg = mMsgList.get(position);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(adapter_parent.getContext(),"pressed"+String.valueOf(position),Toast.LENGTH_SHORT).show();
+                //todo
+            }
+        });
+
         if(msg.getType()==Msg.TYPE_RECEIVED){
             holder.leftLayout.setVisibility(View.VISIBLE);
             holder.rightLayout.setVisibility(View.GONE);
             holder.leftMsg.setText(msg.getContent());
-            holder.time_left.setText(msg.getTime());
+            //holder.time_left.setText(msg.getTime());
+            String time_ex=msg.getTime();
+            int currentYear=Integer.decode(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3)));
+            int currentMonth=Integer.decode(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6)));
+            int currentDay=Integer.decode(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9)));
+            int year=getYear();
+            int month=getMonth();
+            int day=getDay();
+            if(currentYear!=year){
+                holder.time_left.setText(time_ex);
+            }
+            else if(currentMonth!=month){
+                String new_time=new String();
+                new_time=String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))+String.valueOf(time_ex.charAt(7))+String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))
+                        +String.valueOf(time_ex.charAt(10))+String.valueOf(time_ex.charAt(11))+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
+                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
+                holder.time_left.setText(new_time);
+            }
+            else if(currentDay!=day){
+                String new_time=new String();
+                new_time=String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))+String.valueOf(time_ex.charAt(7))+String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))
+                        +String.valueOf(time_ex.charAt(10))+String.valueOf(time_ex.charAt(11))+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
+                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
+                holder.time_left.setText(new_time);
+            }
+            else {
+                String new_time=new String();
+                new_time=String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
+                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
+                holder.time_left.setText(new_time);
+            }
             int id=msg.getSub_id();
             Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
             if(cursor.moveToFirst()){
@@ -98,6 +142,27 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                     byte[] in = picture.get(i).getPicture();
                     Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
                     holder.left_upload.setImageBitmap(bit);
+
+                    Bitmap bitmap_p;
+                    double p_width=bit.getWidth();
+                    double p_height=bit.getHeight();
+                    double width=800;//标准宽
+                    double height=1200;//标准高
+                    LinearLayout.LayoutParams params;
+                    double ratio=p_width/p_height,st_ratio=width/height;
+                    if(ratio>st_ratio){
+                        height=width/ratio;
+                        params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
+                        bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
+                        holder.left_upload.setImageBitmap(bitmap_p);
+                    }
+                    else{
+                        width=ratio*height;
+                        params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
+                        bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
+                        holder.left_upload.setImageBitmap(bitmap_p);
+                    }
+                    holder.left_upload.setLayoutParams(params);
                 }
                 holder.leftMsg.setVisibility(View.GONE);
                 holder.left_upload.setVisibility(View.VISIBLE);
@@ -111,8 +176,37 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             holder.rightLayout.setVisibility(View.VISIBLE);
             holder.leftLayout.setVisibility(View.GONE);
             holder.rightMsg.setText(msg.getContent());
-            String test=msg.getContent();////////////////////////////////////////////////////////////////////////////////////////////
-            holder.time_right.setText(msg.getTime());
+            //holder.time_right.setText(msg.getTime());
+            String time_ex=msg.getTime();
+            int currentYear=Integer.decode(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3)));
+            int currentMonth=Integer.decode(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6)));
+            int currentDay=Integer.decode(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9)));
+            int year=getYear();
+            int month=getMonth();
+            int day=getDay();
+            if(currentYear!=year){
+                holder.time_right.setText(time_ex);
+            }
+            else if(currentMonth!=month){
+                String new_time=new String();
+                new_time=String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))+String.valueOf(time_ex.charAt(7))+String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))
+                        +String.valueOf(time_ex.charAt(10))+String.valueOf(time_ex.charAt(11))+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
+                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
+                holder.time_right.setText(new_time);
+            }
+            else if(currentDay!=day){
+                String new_time=new String();
+                new_time=String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))+String.valueOf(time_ex.charAt(7))+String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))
+                        +String.valueOf(time_ex.charAt(10))+String.valueOf(time_ex.charAt(11))+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
+                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
+                holder.time_right.setText(new_time);
+            }
+            else {
+                String new_time=new String();
+                new_time=String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
+                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
+                holder.time_right.setText(new_time);
+            }
             int id=msg.getSub_id();
             Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
             if(cursor.moveToFirst()){
@@ -131,6 +225,27 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                     byte[] in = picture.get(i).getPicture();
                     Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
                     holder.right_upload.setImageBitmap(bit);
+
+                    Bitmap bitmap_p;
+                    double p_width=bit.getWidth();
+                    double p_height=bit.getHeight();
+                    double width=800;//标准宽
+                    double height=1200;//标准高
+                    LinearLayout.LayoutParams params;
+                    double ratio=p_width/p_height,st_ratio=width/height;
+                    if(ratio>st_ratio){
+                        height=width/ratio;
+                        params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
+                        bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
+                        holder.right_upload.setImageBitmap(bitmap_p);
+                    }
+                    else{
+                        width=ratio*height;
+                        params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
+                        bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
+                        holder.right_upload.setImageBitmap(bitmap_p);
+                    }
+                    holder.right_upload.setLayoutParams(params);
                 }
                 holder.rightMsg.setVisibility(View.GONE);
                 holder.right_upload.setVisibility(View.VISIBLE);
@@ -140,6 +255,30 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 holder.right_upload.setVisibility(View.GONE);
             }
         }
+    }
+
+    private int getYear(){
+        long timecurrentTimeMillis = System.currentTimeMillis();
+        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+        String time = sdfTwo.format(timecurrentTimeMillis);
+        int year=Integer.decode(String.valueOf(time.charAt(0))+String.valueOf(time.charAt(1))+String.valueOf(time.charAt(2))+String.valueOf(time.charAt(3)));
+        return year;
+    }
+
+    private int getMonth(){
+        long timecurrentTimeMillis = System.currentTimeMillis();
+        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+        String time = sdfTwo.format(timecurrentTimeMillis);
+        int month=Integer.decode(String.valueOf(time.charAt(5))+String.valueOf(time.charAt(6)));
+        return month;
+    }
+
+    private int getDay(){
+        long timecurrentTimeMillis = System.currentTimeMillis();
+        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+        String time = sdfTwo.format(timecurrentTimeMillis);
+        int day=Integer.decode(String.valueOf(time.charAt(8))+String.valueOf(time.charAt(9)));
+        return day;
     }
 
     @Override

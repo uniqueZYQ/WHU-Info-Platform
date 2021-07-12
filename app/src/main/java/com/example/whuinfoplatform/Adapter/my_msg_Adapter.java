@@ -74,7 +74,7 @@ public class my_msg_Adapter extends ArrayAdapter<my_msg> {
             }
             else {
                 String new_time=new String();
-                new_time=String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
+                new_time="今天"+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
                         String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
                 last_time.setText(new_time);
             }
