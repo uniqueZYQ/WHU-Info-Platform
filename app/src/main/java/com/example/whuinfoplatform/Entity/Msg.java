@@ -49,4 +49,7 @@ public class Msg extends DataSupport {
     public void setPicture(int picture) {
         this.picture = picture;
     }
+    public void setId(int id) {
+        this.id = id;
+    }
 }

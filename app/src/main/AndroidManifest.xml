@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WHUInfoPlatform">
-        <activity android:name=".Activity.Upload_Picture_promote_Activity"></activity>
+        <activity android:name=".Activity.Upload_Picture_promote_Activity" />
         <activity android:name=".Activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,11 +27,13 @@
         <activity android:name=".Activity.rootActivity" />
         <activity android:name=".Activity.Basic_Activity" />
         <activity android:name=".Activity.Create_User_promote_Activity" />
-        <activity android:name=".Activity.Publish_Info_promote_Activity"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name=".Activity.Publish_Info_promote_Activity"
+            android:launchMode="singleTask" />
         <activity android:name=".Activity.Search_Info_promote_Activity" />
-        <activity android:name=".Activity.Chat_Window_Activity"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name=".Activity.Chat_Window_Activity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".Activity.Info_Hall_Activity"
             android:launchMode="singleTask" />

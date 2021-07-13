@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="@drawable/p_m">
@@ -19,14 +18,12 @@
         android:layout_marginTop="30dp"
         android:layout_marginBottom="18dp"
         />
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_picture"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        app:cardCornerRadius="10dp"
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"
-        android:layout_marginTop="30dp">
+        android:orientation="vertical">
         <ImageView
             android:layout_width="250dp"
             android:layout_height="250dp"
@@ -35,8 +32,10 @@
             android:layout_gravity="center"
             android:scaleType="matrix"
             android:visibility="gone"
+            android:foregroundGravity="center"
             />
-    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"

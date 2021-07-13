@@ -24,6 +24,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -32,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPersonalCenterBinding;
 import com.example.whuinfoplatform.databinding.ActivityPersonalMessageBinding;
@@ -77,6 +79,10 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
                 byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
                 Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
                 binding.picture.setImageBitmap(bit);
+                binding.picture.setOnClickListener(v->{
+                    EnlargePicture enlargePicture=new EnlargePicture();
+                    enlargePicture.EnlargePicture(Personal_Message_Activity.this,bit,false);
+                });
             }
             else
                 Toast.makeText(Personal_Message_Activity.this,"头像信息读取失败",Toast.LENGTH_SHORT).show();

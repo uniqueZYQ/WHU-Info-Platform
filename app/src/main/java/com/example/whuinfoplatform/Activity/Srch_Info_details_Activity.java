@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Entity.Picture;
@@ -66,6 +67,10 @@ public class Srch_Info_details_Activity extends rootActivity {
                 Bitmap bit_4 = BitmapFactory.decodeByteArray(in_4, 0, in_4.length);
                 binding.picture4.setImageBitmap(bit_4);
                 binding.picture4.setVisibility(View.VISIBLE);
+                binding.picture4.setOnClickListener(v->{
+                    EnlargePicture enlargePicture=new EnlargePicture();
+                    enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_4,true);
+                });
             }
             if(info.get(i).getPicture3()!=0){
                 List<Picture> picture3=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture3())).find(Picture.class);
@@ -73,6 +78,10 @@ public class Srch_Info_details_Activity extends rootActivity {
                 Bitmap bit_3 = BitmapFactory.decodeByteArray(in_3, 0, in_3.length);
                 binding.picture3.setImageBitmap(bit_3);
                 binding.picture3.setVisibility(View.VISIBLE);
+                binding.picture3.setOnClickListener(v->{
+                    EnlargePicture enlargePicture=new EnlargePicture();
+                    enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_3,true);
+                });
             }
             if(info.get(i).getPicture2()!=0){
                 List<Picture> picture2=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture2())).find(Picture.class);
@@ -80,6 +89,10 @@ public class Srch_Info_details_Activity extends rootActivity {
                 Bitmap bit_2 = BitmapFactory.decodeByteArray(in_2, 0, in_2.length);
                 binding.picture2.setImageBitmap(bit_2);
                 binding.picture2.setVisibility(View.VISIBLE);
+                binding.picture2.setOnClickListener(v->{
+                    EnlargePicture enlargePicture=new EnlargePicture();
+                    enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_2,true);
+                });
             }
             if(info.get(i).getPicture1()!=0){
                 List<Picture> picture1=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture1())).find(Picture.class);
@@ -87,6 +100,10 @@ public class Srch_Info_details_Activity extends rootActivity {
                 Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
                 binding.picture1.setImageBitmap(bit_1);
                 binding.picture1.setVisibility(View.VISIBLE);
+                binding.picture1.setOnClickListener(v->{
+                    EnlargePicture enlargePicture=new EnlargePicture();
+                    enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_1,true);
+                });
             }
             int owner_id=info.get(i).getOwner_id();
             Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{String.valueOf(owner_id)}, null);

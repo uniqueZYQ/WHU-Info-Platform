@@ -30,6 +30,7 @@ import android.util.FloatMath;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
@@ -175,7 +176,6 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
             binding.textStdidRnm.setText(newstdid + "-" + newrnm);
         }
         if(intent1.getIntExtra("type",0)>1){
-            binding.cardPicture.setVisibility(View.VISIBLE);
             binding.picture.setVisibility(View.VISIBLE);
             binding.button1.setText("确定上传");
             binding.textStdidRnm.setText("缩放或拖动图片以适配相框");
@@ -406,7 +406,27 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
     private void displayImage(String imagePath){
         if(imagePath!=null){
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            picture.setImageBitmap(bitmap);
+            //picture.setImageBitmap(bitmap);
+            Bitmap bitmap_p;
+            double p_width=bitmap.getWidth();
+            double p_height=bitmap.getHeight();
+            double width=800;//标准宽
+            double height=800;//标准高
+            LinearLayout.LayoutParams params;
+            double ratio=p_width/p_height;
+            if(ratio>1){
+                height=width/ratio;
+                params = new LinearLayout.LayoutParams(800,800);
+                bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
+                picture.setImageBitmap(bitmap_p);
+            }
+            else{
+                width=ratio*height;
+                params = new LinearLayout.LayoutParams(800,800);
+                bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
+                picture.setImageBitmap(bitmap_p);
+            }
+            picture.setLayoutParams(params);
         }
         else {
             Toast.makeText(this,"获取图片失败！",Toast.LENGTH_SHORT).show();
