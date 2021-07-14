@@ -62,7 +62,7 @@ public class my_info_Adapter extends ArrayAdapter<my_info> {
         }
         else {
             String new_time=new String();
-            new_time="今天"+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
+            new_time="今天 "+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
                     String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
             time.setText(new_time);
         }
