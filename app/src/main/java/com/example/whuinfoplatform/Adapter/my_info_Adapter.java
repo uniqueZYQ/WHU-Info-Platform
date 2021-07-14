@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.example.whuinfoplatform.Entity.AboutTime;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.R;
 
@@ -40,9 +41,10 @@ public class my_info_Adapter extends ArrayAdapter<my_info> {
         int currentYear=Integer.decode(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3)));
         int currentMonth=Integer.decode(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6)));
         int currentDay=Integer.decode(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9)));
-        int year=getYear();
-        int month=getMonth();
-        int day=getDay();
+        AboutTime aboutTime=new AboutTime();
+        int year=aboutTime.getYear();
+        int month=aboutTime.getMonth();
+        int day=aboutTime.getDay();
         if(currentYear!=year){
             time.setText(time_ex);
         }
@@ -76,29 +78,6 @@ public class my_info_Adapter extends ArrayAdapter<my_info> {
         detail.setText(myinfo.getDetail());
         answered.setText(myinfo.getAnswered());
         return view;
-    }
-    private int getYear(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
-        int year=Integer.decode(String.valueOf(time.charAt(0))+String.valueOf(time.charAt(1))+String.valueOf(time.charAt(2))+String.valueOf(time.charAt(3)));
-        return year;
-    }
-
-    private int getMonth(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
-        int month=Integer.decode(String.valueOf(time.charAt(5))+String.valueOf(time.charAt(6)));
-        return month;
-    }
-
-    private int getDay(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
-        int day=Integer.decode(String.valueOf(time.charAt(8))+String.valueOf(time.charAt(9)));
-        return day;
     }
 }
 

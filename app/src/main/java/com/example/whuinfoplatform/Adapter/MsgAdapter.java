@@ -23,6 +23,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Entity.AboutTime;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Entity.Picture;
@@ -45,22 +46,21 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     static class ViewHolder extends RecyclerView.ViewHolder{
         LinearLayout leftLayout;
         LinearLayout rightLayout;
+        TextView timestamp;
         TextView leftMsg;
         TextView rightMsg;
-        TextView time_left;
-        TextView time_right;
         ImageView picture_left;
         ImageView picture_right;
         ImageView left_upload;
         ImageView right_upload;
+
         public ViewHolder(View view){
             super(view);
             leftLayout = (LinearLayout)view.findViewById(R.id.left_layout);
             rightLayout = (LinearLayout)view.findViewById(R.id.right_layout);
+            timestamp = (TextView)view.findViewById(R.id.timestamp);
             leftMsg = (TextView)view.findViewById(R.id.leftMsg);
             rightMsg = (TextView)view.findViewById(R.id.rightMsg);
-            time_left=(TextView)view.findViewById(R.id.time_left);
-            time_right=(TextView)view.findViewById(R.id.time_right);
             picture_left=(ImageView)view.findViewById(R.id.picture_left);
             picture_right=(ImageView)view.findViewById(R.id.picture_right);
             left_upload=(ImageView)view.findViewById(R.id.left_upload);
@@ -84,6 +84,68 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(ViewHolder holder,int position){
         Msg msg = mMsgList.get(position);
+        //当前项时间获取
+        String time_ex=msg.getTime();
+        int itemYear=Integer.decode(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3)));
+        int itemMonth=Integer.decode(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6)));
+        int itemDay=Integer.decode(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9)));
+        int itemHour=Integer.decode(String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13)));
+        int itemMinute;
+        if(!String.valueOf(time_ex.charAt(15)).equals("0"))
+            itemMinute=Integer.decode(String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16)));
+        else
+            itemMinute=Integer.decode(String.valueOf(time_ex.charAt(16)));
+        //现在时间获取
+        AboutTime aboutTime=new AboutTime();
+        /*int currentYear=aboutTime.getYear();
+        int currentMonth=aboutTime.getMonth();
+        int currentDay=aboutTime.getDay();
+        int currentHour=aboutTime.getHour();
+        int currentMinute=aboutTime.getMinute();*/
+
+        String timestamp;
+        timestamp=aboutTime.judgeTimeOnScreen(time_ex);
+
+        if(position==0){
+            holder.timestamp.setVisibility(View.VISIBLE);
+            holder.timestamp.setText(timestamp);
+        }
+        else{
+            Msg last_msg=mMsgList.get(position-1);
+            String last_time_ex=last_msg.getTime();
+            //上一项时间获取
+            int last_itemYear=Integer.decode(String.valueOf(last_time_ex.charAt(0))+String.valueOf(last_time_ex.charAt(1))+String.valueOf(last_time_ex.charAt(2))+String.valueOf(last_time_ex.charAt(3)));
+            int last_itemMonth=Integer.decode(String.valueOf(last_time_ex.charAt(5))+String.valueOf(last_time_ex.charAt(6)));
+            int last_itemDay=Integer.decode(String.valueOf(last_time_ex.charAt(8))+String.valueOf(last_time_ex.charAt(9)));
+            int last_itemHour=Integer.decode(String.valueOf(last_time_ex.charAt(12))+String.valueOf(last_time_ex.charAt(13)));
+            int last_itemMinute;
+            if(!String.valueOf(last_time_ex.charAt(15)).equals("0"))
+                last_itemMinute=Integer.decode(String.valueOf(last_time_ex.charAt(15))+String.valueOf(last_time_ex.charAt(16)));
+            else
+                last_itemMinute=Integer.decode(String.valueOf(last_time_ex.charAt(16)));
+            if(last_itemYear!=itemYear){
+                holder.timestamp.setVisibility(View.VISIBLE);
+                holder.timestamp.setText(timestamp);
+            }
+            else if(last_itemMonth!=itemMonth){
+                holder.timestamp.setVisibility(View.VISIBLE);
+                holder.timestamp.setText(timestamp);
+            }
+            else if(last_itemDay!=itemDay){
+                holder.timestamp.setVisibility(View.VISIBLE);
+                holder.timestamp.setText(timestamp);
+            }
+            else if(last_itemHour!=itemHour){
+                holder.timestamp.setVisibility(View.VISIBLE);
+                holder.timestamp.setText(timestamp);
+            }
+            else if(itemMinute-last_itemMinute>=5){
+                holder.timestamp.setVisibility(View.VISIBLE);
+                holder.timestamp.setText(timestamp);
+            }
+            else
+                holder.timestamp.setVisibility(View.GONE);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener(){
 
@@ -106,36 +168,6 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             holder.rightLayout.setVisibility(View.GONE);
             holder.leftMsg.setText(msg.getContent());
             //holder.time_left.setText(msg.getTime());
-            String time_ex=msg.getTime();
-            int currentYear=Integer.decode(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3)));
-            int currentMonth=Integer.decode(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6)));
-            int currentDay=Integer.decode(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9)));
-            int year=getYear();
-            int month=getMonth();
-            int day=getDay();
-            if(currentYear!=year){
-                holder.time_left.setText(time_ex);
-            }
-            else if(currentMonth!=month){
-                String new_time=new String();
-                new_time=String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))+String.valueOf(time_ex.charAt(7))+String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))
-                        +String.valueOf(time_ex.charAt(10))+String.valueOf(time_ex.charAt(11))+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
-                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
-                holder.time_left.setText(new_time);
-            }
-            else if(currentDay!=day){
-                String new_time=new String();
-                new_time=String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))+String.valueOf(time_ex.charAt(7))+String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))
-                        +String.valueOf(time_ex.charAt(10))+String.valueOf(time_ex.charAt(11))+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
-                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
-                holder.time_left.setText(new_time);
-            }
-            else {
-                String new_time=new String();
-                new_time=String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
-                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
-                holder.time_left.setText(new_time);
-            }
             int id=msg.getSub_id();
             Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
             if(cursor.moveToFirst()){
@@ -189,36 +221,6 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             holder.leftLayout.setVisibility(View.GONE);
             holder.rightMsg.setText(msg.getContent());
             //holder.time_right.setText(msg.getTime());
-            String time_ex=msg.getTime();
-            int currentYear=Integer.decode(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3)));
-            int currentMonth=Integer.decode(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6)));
-            int currentDay=Integer.decode(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9)));
-            int year=getYear();
-            int month=getMonth();
-            int day=getDay();
-            if(currentYear!=year){
-                holder.time_right.setText(time_ex);
-            }
-            else if(currentMonth!=month){
-                String new_time=new String();
-                new_time=String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))+String.valueOf(time_ex.charAt(7))+String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))
-                        +String.valueOf(time_ex.charAt(10))+String.valueOf(time_ex.charAt(11))+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
-                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
-                holder.time_right.setText(new_time);
-            }
-            else if(currentDay!=day){
-                String new_time=new String();
-                new_time=String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))+String.valueOf(time_ex.charAt(7))+String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))
-                        +String.valueOf(time_ex.charAt(10))+String.valueOf(time_ex.charAt(11))+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
-                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
-                holder.time_right.setText(new_time);
-            }
-            else {
-                String new_time=new String();
-                new_time=String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
-                        String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
-                holder.time_right.setText(new_time);
-            }
             int id=msg.getSub_id();
             Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
             if(cursor.moveToFirst()){
@@ -269,29 +271,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         }
     }
 
-    private int getYear(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
-        int year=Integer.decode(String.valueOf(time.charAt(0))+String.valueOf(time.charAt(1))+String.valueOf(time.charAt(2))+String.valueOf(time.charAt(3)));
-        return year;
-    }
 
-    private int getMonth(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
-        int month=Integer.decode(String.valueOf(time.charAt(5))+String.valueOf(time.charAt(6)));
-        return month;
-    }
-
-    private int getDay(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
-        int day=Integer.decode(String.valueOf(time.charAt(8))+String.valueOf(time.charAt(9)));
-        return day;
-    }
 
     @Override
     public int getItemCount(){
