@@ -2,6 +2,7 @@ package com.example.whuinfoplatform.Adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -41,7 +42,6 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     private DB_USER dbHelper;
     SQLiteDatabase db;
     ViewGroup adapter_parent;
-    int picture_id;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         LinearLayout leftLayout;
@@ -49,6 +49,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         TextView timestamp;
         TextView leftMsg;
         TextView rightMsg;
+        TextView recalled;
         ImageView picture_left;
         ImageView picture_right;
         ImageView left_upload;
@@ -61,6 +62,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             timestamp = (TextView)view.findViewById(R.id.timestamp);
             leftMsg = (TextView)view.findViewById(R.id.leftMsg);
             rightMsg = (TextView)view.findViewById(R.id.rightMsg);
+            recalled = (TextView)view.findViewById(R.id.recalled);
             picture_left=(ImageView)view.findViewById(R.id.picture_left);
             picture_right=(ImageView)view.findViewById(R.id.picture_right);
             left_upload=(ImageView)view.findViewById(R.id.left_upload);
@@ -84,6 +86,13 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(ViewHolder holder,int position){
         Msg msg = mMsgList.get(position);
+        //重新进行撤回判断，否则刷新时撤回失效
+        Connector.getDatabase();
+        int s=msg.getSub_id();
+        int o=msg.getObj_id();
+        List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(o),String.valueOf(s),String.valueOf(s),String.valueOf(o)).order("id asc").find(Msg.class);
+        int recalled=msg1.get(position).getRecalled();
+
         //当前项时间获取
         String time_ex=msg.getTime();
         int itemYear=Integer.decode(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3)));
@@ -97,12 +106,6 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             itemMinute=Integer.decode(String.valueOf(time_ex.charAt(16)));
         //现在时间获取
         AboutTime aboutTime=new AboutTime();
-        /*int currentYear=aboutTime.getYear();
-        int currentMonth=aboutTime.getMonth();
-        int currentDay=aboutTime.getDay();
-        int currentHour=aboutTime.getHour();
-        int currentMinute=aboutTime.getMinute();*/
-
         String timestamp;
         timestamp=aboutTime.judgeTimeOnScreen(time_ex);
 
@@ -147,131 +150,154 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 holder.timestamp.setVisibility(View.GONE);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                Connector.getDatabase();
-                picture_id=msg.getPicture();
-                if(picture_id!=0){
-                    List<Picture> picture=DataSupport.where("id=?",String.valueOf(picture_id)).find(Picture.class);
-                    byte[] in=picture.get(0).getPicture();
-                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                    EnlargePicture enlargePicture=new EnlargePicture();
-                    enlargePicture.EnlargePicture(adapter_parent.getContext(),bit,true);
-                }
-            }
-        });
-
         if(msg.getType()==Msg.TYPE_RECEIVED){
-            holder.leftLayout.setVisibility(View.VISIBLE);
-            holder.rightLayout.setVisibility(View.GONE);
-            holder.leftMsg.setText(msg.getContent());
-            //holder.time_left.setText(msg.getTime());
-            int id=msg.getSub_id();
-            Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
-            if(cursor.moveToFirst()){
-                if (cursor.getCount() != 0) {
-                    byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
-                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                    holder.picture_left.setImageBitmap(bit);
-                }
-            }
-            cursor.close();
-            int picture_id=msg.getPicture();
-            if(picture_id!=0){
-                Connector.getDatabase();
-                List<Picture> picture = DataSupport.where("id=?",String.valueOf(picture_id)).find(Picture.class);
-                for(int i=0;i<picture.size();i++) {
-                    byte[] in = picture.get(i).getPicture();
-                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                    holder.left_upload.setImageBitmap(bit);
-
-                    Bitmap bitmap_p;
-                    double p_width=bit.getWidth();
-                    double p_height=bit.getHeight();
-                    double width=800;//标准宽
-                    double height=1200;//标准高
-                    LinearLayout.LayoutParams params;
-                    double ratio=p_width/p_height,st_ratio=width/height;
-                    if(ratio>st_ratio){
-                        height=width/ratio;
-                        params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
-                        bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
-                        holder.left_upload.setImageBitmap(bitmap_p);
-                    }
-                    else{
-                        width=ratio*height;
-                        params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
-                        bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
-                        holder.left_upload.setImageBitmap(bitmap_p);
-                    }
-                    holder.left_upload.setLayoutParams(params);
-                }
-                holder.leftMsg.setVisibility(View.GONE);
-                holder.left_upload.setVisibility(View.VISIBLE);
+            if(recalled==1){
+                holder.leftLayout.setVisibility(View.GONE);
+                holder.rightLayout.setVisibility(View.GONE);
+                holder.recalled.setVisibility(View.VISIBLE);
+                holder.recalled.setText("对方撤回了一条消息");
             }
             else{
-                holder.leftMsg.setVisibility(View.VISIBLE);
-                holder.left_upload.setVisibility(View.GONE);
+                holder.recalled.setVisibility(View.GONE);
+                holder.leftLayout.setVisibility(View.VISIBLE);
+                holder.rightLayout.setVisibility(View.GONE);
+                holder.leftMsg.setText(msg.getContent());
+                //holder.time_left.setText(msg.getTime());
+                int id=msg.getSub_id();
+                Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
+                if(cursor.moveToFirst()){
+                    if (cursor.getCount() != 0) {
+                        byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
+                        Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                        holder.picture_left.setImageBitmap(bit);
+                    }
+                }
+                cursor.close();
+                int picture_id=msg.getPicture();
+                if(picture_id!=0){
+                    Connector.getDatabase();
+                    List<Picture> picture = DataSupport.where("id=?",String.valueOf(picture_id)).find(Picture.class);
+                    for(int i=0;i<picture.size();i++) {
+                        byte[] in = picture.get(i).getPicture();
+                        Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                        holder.left_upload.setImageBitmap(bit);
+
+                        Bitmap bitmap_p;
+                        double p_width=bit.getWidth();
+                        double p_height=bit.getHeight();
+                        double width=800;//标准宽
+                        double height=1200;//标准高
+                        LinearLayout.LayoutParams params;
+                        double ratio=p_width/p_height,st_ratio=width/height;
+                        if(ratio>st_ratio){
+                            height=width/ratio;
+                            params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
+                            bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
+                            holder.left_upload.setImageBitmap(bitmap_p);
+                        }
+                        else{
+                            width=ratio*height;
+                            params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
+                            bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
+                            holder.left_upload.setImageBitmap(bitmap_p);
+                        }
+                        holder.left_upload.setLayoutParams(params);
+                    }
+                    holder.leftMsg.setVisibility(View.GONE);
+                    holder.left_upload.setVisibility(View.VISIBLE);
+                }
+                else{
+                    holder.leftMsg.setVisibility(View.VISIBLE);
+                    holder.left_upload.setVisibility(View.GONE);
+                }
             }
         }
-        else if (msg.getType()==Msg.TYPE_SENT){
-            holder.rightLayout.setVisibility(View.VISIBLE);
-            holder.leftLayout.setVisibility(View.GONE);
-            holder.rightMsg.setText(msg.getContent());
-            //holder.time_right.setText(msg.getTime());
-            int id=msg.getSub_id();
-            Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
-            if(cursor.moveToFirst()){
-                if (cursor.getCount() != 0) {
-                    byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
-                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                    holder.picture_right.setImageBitmap(bit);
-                }
-            }
-            cursor.close();
-            int picture_id=msg.getPicture();
-            if(picture_id!=0){
-                Connector.getDatabase();
-                List<Picture> picture = DataSupport.where("id=?",String.valueOf(picture_id)).find(Picture.class);
-                for(int i=0;i<picture.size();i++) {
-                    byte[] in = picture.get(i).getPicture();
-                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                    holder.right_upload.setImageBitmap(bit);
 
-                    Bitmap bitmap_p;
-                    double p_width=bit.getWidth();
-                    double p_height=bit.getHeight();
-                    double width=800;//标准宽
-                    double height=1200;//标准高
-                    LinearLayout.LayoutParams params;
-                    double ratio=p_width/p_height,st_ratio=width/height;
-                    if(ratio>st_ratio){
-                        height=width/ratio;
-                        params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
-                        bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
-                        holder.right_upload.setImageBitmap(bitmap_p);
-                    }
-                    else{
-                        width=ratio*height;
-                        params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
-                        bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
-                        holder.right_upload.setImageBitmap(bitmap_p);
-                    }
-                    holder.right_upload.setLayoutParams(params);
-                }
-                holder.rightMsg.setVisibility(View.GONE);
-                holder.right_upload.setVisibility(View.VISIBLE);
+        else if (msg.getType()==Msg.TYPE_SENT){
+            if(recalled==1){
+                holder.leftLayout.setVisibility(View.GONE);
+                holder.rightLayout.setVisibility(View.GONE);
+                holder.recalled.setVisibility(View.VISIBLE);
+                holder.recalled.setText("你撤回了一条消息");
             }
             else{
-                holder.rightMsg.setVisibility(View.VISIBLE);
-                holder.right_upload.setVisibility(View.GONE);
+                holder.recalled.setVisibility(View.GONE);
+                holder.rightLayout.setVisibility(View.VISIBLE);
+                holder.leftLayout.setVisibility(View.GONE);
+                holder.rightMsg.setText(msg.getContent());
+                //holder.time_right.setText(msg.getTime());
+                int id=msg.getSub_id();
+                Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
+                if(cursor.moveToFirst()){
+                    if (cursor.getCount() != 0) {
+                        byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
+                        Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                        holder.picture_right.setImageBitmap(bit);
+                    }
+                }
+                cursor.close();
+                int picture_id=msg.getPicture();
+                if(picture_id!=0){
+                    Connector.getDatabase();
+                    List<Picture> picture = DataSupport.where("id=?",String.valueOf(picture_id)).find(Picture.class);
+                    for(int i=0;i<picture.size();i++) {
+                        byte[] in = picture.get(i).getPicture();
+                        Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                        holder.right_upload.setImageBitmap(bit);
+
+                        Bitmap bitmap_p;
+                        double p_width=bit.getWidth();
+                        double p_height=bit.getHeight();
+                        double width=800;//标准宽
+                        double height=1200;//标准高
+                        LinearLayout.LayoutParams params;
+                        double ratio=p_width/p_height,st_ratio=width/height;
+                        if(ratio>st_ratio){
+                            height=width/ratio;
+                            params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
+                            bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
+                            holder.right_upload.setImageBitmap(bitmap_p);
+                        }
+                        else{
+                            width=ratio*height;
+                            params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
+                            bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
+                            holder.right_upload.setImageBitmap(bitmap_p);
+                        }
+                        holder.right_upload.setLayoutParams(params);
+                    }
+                    holder.rightMsg.setVisibility(View.GONE);
+                    holder.right_upload.setVisibility(View.VISIBLE);
+                }
+                else{
+                    holder.rightMsg.setVisibility(View.VISIBLE);
+                    holder.right_upload.setVisibility(View.GONE);
+                }
+
+                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        Connector.getDatabase();
+                        int s=msg.getSub_id();
+                        int o=msg.getObj_id();
+                        List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(o),String.valueOf(s),String.valueOf(s),String.valueOf(o)).order("id asc").find(Msg.class);
+                        int id=msg1.get(position).getId();
+                        int recalled=msg.getRecalled();
+                        String send_time=msg.getTime();
+                        if(recalled==0){
+                            Msg cumsg=new Msg();
+                            cumsg.setRecalled(1);
+                            cumsg.updateAll("id=?",String.valueOf(id));
+                            holder.rightLayout.setVisibility(View.GONE);
+                            holder.recalled.setVisibility(View.VISIBLE);
+                            holder.recalled.setText("你撤回了一条消息");
+                        }
+                        return true;
+                    }
+                });
             }
         }
     }
-
-
 
     @Override
     public int getItemCount(){

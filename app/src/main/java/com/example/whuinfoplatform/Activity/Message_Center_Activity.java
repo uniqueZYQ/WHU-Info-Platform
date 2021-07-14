@@ -118,9 +118,18 @@ public class Message_Center_Activity extends rootActivity {
         String lasttext="";
         for(int i=0;i<msg.size();i++){
             String last_time=msg.get(i).getTime();
+            int recalled=msg.get(i).getRecalled();
             int msgid=msg.get(i).getId();
             String oppo_name="";
-            String last_detail=msg.get(i).getContent();
+            String last_detail;
+            if(recalled==1){
+                if(myid==msg.get(i).getSub_id())
+                    last_detail="你撤回了一条消息";
+                else
+                    last_detail="对方撤回了一条消息";
+            }
+            else
+                last_detail=msg.get(i).getContent();
             int oppo_id=0;
             if(myid==msg.get(i).getSub_id()) {
                 oppo_id=msg.get(i).getObj_id();
@@ -134,8 +143,6 @@ public class Message_Center_Activity extends rootActivity {
             }
             cursor.close();
             if(!oppo_hist_id.contains(oppo_id)){
-
-                //
                 List<Msg> msg1=DataSupport.where("obj_id=? and sub_id=?",String.valueOf(myid),String.valueOf(oppo_id)).order("id desc").find(Msg.class);
                 if(msg1.size()!=0) {
                     int p1 = msg1.get(0).getId();
@@ -173,7 +180,6 @@ public class Message_Center_Activity extends rootActivity {
                         } else lasttext = "";
                     }
                 }
-                //
                 my_msg mymsg=new my_msg(msgid,oppo_id,oppo_name,last_time,last_detail,lasttext);
                 my_msg_list.add(mymsg);
                 oppo_hist_id.add(oppo_id);

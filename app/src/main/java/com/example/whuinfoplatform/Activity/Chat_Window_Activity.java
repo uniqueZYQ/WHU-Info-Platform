@@ -17,6 +17,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.Window;
@@ -98,6 +99,7 @@ public class Chat_Window_Activity extends rootActivity {
             cumsg.setSub_id(targetMsg.get(i).getSub_id());
             cumsg.setContent(targetMsg.get(i).getContent());
             cumsg.setPicture(targetMsg.get(i).getPicture());
+            cumsg.setRecalled(targetMsg.get(i).getRecalled());
             if(sub_id==targetMsg.get(i).getSub_id())cumsg.setType(1);
             else cumsg.setType(0);
             msgList.add(cumsg);
@@ -134,6 +136,8 @@ public class Chat_Window_Activity extends rootActivity {
                     msg.setTime(time);
                     msg.setType(1);
                     msg.setSub_id(sub_id);
+                    msg.setObj_id(obj_id);
+                    msg.setRecalled(0);
                     msg.setPicture(0);
                     msgList.add(msg);
                     adapter.notifyItemInserted(msgList.size() - 1);
@@ -146,6 +150,7 @@ public class Chat_Window_Activity extends rootActivity {
                     addmsg.setSub_id(sub_id);
                     addmsg.setObj_id(obj_id);
                     addmsg.setPicture(0);
+                    addmsg.setRecalled(0);
                     addmsg.setTime(time);
                     addmsg.save();
                 } else {
@@ -164,6 +169,7 @@ public class Chat_Window_Activity extends rootActivity {
     protected void initWidget() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         msgRecyclerView.setLayoutManager(layoutManager);
+        msgRecyclerView.setTag(1);
         msgRecyclerView.setAdapter(adapter);
         msgRecyclerView.scrollToPosition(msgList.size() - 1);//最下方显示最新消息
         binding.send.setVisibility(View.GONE);
@@ -262,6 +268,8 @@ public class Chat_Window_Activity extends rootActivity {
             msg.setTime(time);
             msg.setType(1);
             msg.setSub_id(sub_id);
+            msg.setObj_id(obj_id);
+            msg.setRecalled(0);
             msg.setPicture(picture);
             msgList.add(msg);
             adapter.notifyItemInserted(msgList.size() - 1);
@@ -274,6 +282,7 @@ public class Chat_Window_Activity extends rootActivity {
             addmsg.setSub_id(sub_id);
             addmsg.setObj_id(obj_id);
             addmsg.setPicture(picture);
+            addmsg.setRecalled(0);
             addmsg.setTime(time);
             addmsg.save();
         }

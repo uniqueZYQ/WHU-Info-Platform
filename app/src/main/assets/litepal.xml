@@ -3,7 +3,7 @@
 	<list>
 		<dbname value="Info"></dbname>
 
-		<version value="16"></version>
+		<version value="20"></version>
 
 		<list>
 			<mapping class="com.example.whuinfoplatform.Entity.Info"></mapping>

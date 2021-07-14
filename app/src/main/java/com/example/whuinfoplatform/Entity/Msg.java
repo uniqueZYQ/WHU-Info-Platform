@@ -3,6 +3,7 @@ package com.example.whuinfoplatform.Entity;
 import org.litepal.crud.DataSupport;
 
 public class Msg extends DataSupport {
+    private int id;
     public static final int TYPE_RECEIVED = 0;
     public static final int TYPE_SENT = 1;
     private String content;
@@ -10,9 +11,15 @@ public class Msg extends DataSupport {
     private int sub_id;
     private int obj_id;
     private String time;
-    private int id;
     private int picture;
+    private int recalled;
 
+    public int getId(){
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
     public int getSub_id(){
         return sub_id;
     }
@@ -28,8 +35,11 @@ public class Msg extends DataSupport {
     public int getType(){
         return type;
     }
-    public int getId(){return id;}
+
     public int getPicture(){return picture;}
+    public int getRecalled(){
+        return recalled;
+    }
 
     public void setContent(String content) {
         this.content = content;
@@ -49,7 +59,7 @@ public class Msg extends DataSupport {
     public void setPicture(int picture) {
         this.picture = picture;
     }
-    public void setId(int id) {
-        this.id = id;
+    public void setRecalled(int recalled){
+        this.recalled=recalled;
     }
 }
