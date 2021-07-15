@@ -77,7 +77,6 @@ public class Message_Center_Activity extends rootActivity {
                 lastshow.setUser_id(myid);
                 lastshow.setOppo_id(oppo_id);
                 List<Msg> lastmsg=DataSupport.where("sub_id=? and obj_id=?",String.valueOf(oppo_id),String.valueOf(myid)).order("id desc").find(Msg.class);
-                /**/
                 if(lastmsg.size()==0);
                 else {
                     int b = lastmsg.get(0).getId();
@@ -163,7 +162,11 @@ public class Message_Center_Activity extends rootActivity {
                             }
                         }
                         if(size!=0){
-                            lasttext="["+String.valueOf(size) + "未读]";
+                            if(size>9){
+                                lasttext="[9+未读]";
+                            }
+                            else
+                                lasttext="["+String.valueOf(size) + "未读]";
                         }
                         else lasttext="";
                     }
@@ -176,7 +179,11 @@ public class Message_Center_Activity extends rootActivity {
                             }
                         }
                         if (size != 0) {
-                            lasttext = "[" + String.valueOf(size) + "未读]";
+                            if(size>9){
+                                lasttext="[9+未读]";
+                            }
+                            else
+                                lasttext = "[" + String.valueOf(size) + "未读]";
                         } else lasttext = "";
                     }
                 }

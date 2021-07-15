@@ -85,9 +85,14 @@ public class srch_info_Adapter extends ArrayAdapter<srch_info> {
             time.setText(new_time);
         }
         form.setText(srchinfo.getForm());
-        detail.setText(srchinfo.getDetail());
+        if(srchinfo.getDetail().length()>55){
+            detail.setText(srchinfo.getDetail().substring(0,55)+"...");
+        }
+        else
+            detail.setText(srchinfo.getDetail());
         String nickname=srchinfo.getOwner();
-        if(nickname.charAt(nickname.length()-3)=='('&&
+        if(nickname.length()!=3 &&
+                nickname.charAt(nickname.length()-3)=='('&&
                 nickname.charAt(nickname.length()-2)=='我'&&
                 nickname.charAt(nickname.length()-1)==')'){
             owner.setTextColor(0xFF777777);

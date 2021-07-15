@@ -89,6 +89,9 @@ public class my_msg_Adapter extends ArrayAdapter<my_msg> {
             String detail=mymsg.getLastDetail();
             if(detail.equals(""))
                 last_detail.setText("[图片]");
+            else if(detail.length()>10){
+                last_detail.setText(detail.substring(0,10)+"...");
+            }
             else
                 last_detail.setText(detail);
             oppo_name.setText(mymsg.getOppoName());

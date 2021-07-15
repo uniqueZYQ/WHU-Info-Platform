@@ -75,7 +75,11 @@ public class my_info_Adapter extends ArrayAdapter<my_info> {
             time.setText(new_time);
         }
         form.setText(myinfo.getForm());
-        detail.setText(myinfo.getDetail());
+        if(myinfo.getDetail().length()>57){
+            detail.setText(myinfo.getDetail().substring(0,56)+"...");
+        }
+        else
+            detail.setText(myinfo.getDetail());
         answered.setText(myinfo.getAnswered());
         return view;
     }
