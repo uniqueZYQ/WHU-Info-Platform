@@ -3,6 +3,7 @@ package com.example.whuinfoplatform.Adapter;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -20,11 +21,15 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.whuinfoplatform.Activity.MainActivity;
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.AboutTime;
+import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Entity.Picture;
@@ -33,7 +38,9 @@ import com.example.whuinfoplatform.R;
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,9 +61,11 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         ImageView picture_right;
         ImageView left_upload;
         ImageView right_upload;
+        View msgView;
 
         public ViewHolder(View view){
             super(view);
+            msgView=view;
             leftLayout = (LinearLayout)view.findViewById(R.id.left_layout);
             rightLayout = (LinearLayout)view.findViewById(R.id.right_layout);
             timestamp = (TextView)view.findViewById(R.id.timestamp);
@@ -80,17 +89,79 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.msg_item,parent,false);
         dbHelper = new DB_USER(parent.getContext(),"User.db",null,7);
         db = dbHelper.getWritableDatabase();
-        return new ViewHolder(view);
+
+        final ViewHolder holder=new ViewHolder(view);
+        holder.msgView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int position=holder.getAdapterPosition();
+                Msg msg=mMsgList.get(position);
+                if(msg.getType()==1){
+                    Connector.getDatabase();
+                    int sss=msg.getSub_id();
+                    int ooo=msg.getObj_id();
+                    List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(ooo),String.valueOf(sss),String.valueOf(sss),String.valueOf(ooo)).order("id asc").find(Msg.class);
+                    int id=msg1.get(position).getId();
+                    int recalled=msg.getRecalled();
+                    if(recalled==0){
+                        String send_time=msg.getTime();
+                        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+                        try {
+                            Date current=simpleDateFormat.parse(send_time);
+                            long time=current.getTime();
+                            long timecurrentTimeMillis = System.currentTimeMillis();
+                            if(timecurrentTimeMillis-time<=1000*2*60){
+                                dialog(holder,id);
+                            }
+                            else
+                                Toast.makeText(adapter_parent.getContext(),"超过两分钟的消息无法撤回!",Toast.LENGTH_SHORT).show();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                return true;
+            }
+        });
+
+        return holder;
     }
+
+    protected void dialog(ViewHolder holder,int id){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(adapter_parent.getContext());
+        dialog.setTitle("撤回消息");
+        dialog.setMessage("确定撤回？该操作不可恢复！");
+        dialog.setCancelable(true);
+        dialog.setPositiveButton("是",new DialogInterface.OnClickListener(){
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Msg cumsg=new Msg();
+                cumsg.setRecalled(1);
+                cumsg.updateAll("id=?",String.valueOf(id));
+                holder.rightLayout.setVisibility(View.GONE);
+                holder.recalled.setVisibility(View.VISIBLE);
+                holder.recalled.setText("你撤回了一条消息");
+            }
+        });
+        dialog.setNegativeButton("不，我再想想",new DialogInterface.OnClickListener(){
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        dialog.show();
+    };
 
     @Override
     public void onBindViewHolder(ViewHolder holder,int position){
         Msg msg = mMsgList.get(position);
         //重新进行撤回判断，否则刷新时撤回失效
         Connector.getDatabase();
-        int s=msg.getSub_id();
-        int o=msg.getObj_id();
-        List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(o),String.valueOf(s),String.valueOf(s),String.valueOf(o)).order("id asc").find(Msg.class);
+        int sss=msg.getSub_id();
+        int ooo=msg.getObj_id();
+        List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(ooo),String.valueOf(sss),String.valueOf(sss),String.valueOf(ooo)).order("id asc").find(Msg.class);
         int recalled=msg1.get(position).getRecalled();
 
         //当前项时间获取
@@ -273,28 +344,6 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                     holder.rightMsg.setVisibility(View.VISIBLE);
                     holder.right_upload.setVisibility(View.GONE);
                 }
-
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        Connector.getDatabase();
-                        int s=msg.getSub_id();
-                        int o=msg.getObj_id();
-                        List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(o),String.valueOf(s),String.valueOf(s),String.valueOf(o)).order("id asc").find(Msg.class);
-                        int id=msg1.get(position).getId();
-                        int recalled=msg.getRecalled();
-                        String send_time=msg.getTime();
-                        if(recalled==0){
-                            Msg cumsg=new Msg();
-                            cumsg.setRecalled(1);
-                            cumsg.updateAll("id=?",String.valueOf(id));
-                            holder.rightLayout.setVisibility(View.GONE);
-                            holder.recalled.setVisibility(View.VISIBLE);
-                            holder.recalled.setText("你撤回了一条消息");
-                        }
-                        return true;
-                    }
-                });
             }
         }
     }

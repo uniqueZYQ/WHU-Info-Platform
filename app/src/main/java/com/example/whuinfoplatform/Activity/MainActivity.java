@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
         dialog.setTitle("未登录");
         dialog.setMessage("确定退出WHU平台？");
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
         dialog.setPositiveButton("是",new DialogInterface.OnClickListener(){
 
             @Override
