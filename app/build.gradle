@@ -48,6 +48,7 @@ dependencies {
     implementation 'com.nineoldandroids:library:2.4.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation files('libs/BaiduLBS_Android.jar')
     testImplementation 'junit:junit:4.+'
     implementation 'org.litepal.android:core:1.6.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

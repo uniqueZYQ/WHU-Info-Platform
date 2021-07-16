@@ -2,11 +2,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="@drawable/i_f"
-    android:padding="10dp"
-    >
+    android:padding="10dp">
+    <!--add map-->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        android:background="#00FFFFFF"
+        android:layout_gravity="center"
+        android:padding="5dp"
+        android:visibility="gone">
+
+        <EditText
+            android:layout_width="275dp"
+            android:layout_height="match_parent"
+            android:id="@+id/input"
+            android:background="#33FFFFFF"
+            android:hint=" 请输入搜索关键词："
+            android:maxLines="1"
+            android:singleLine="true"
+            android:maxLength="25"
+            android:imeOptions="actionSearch"
+            android:layout_marginLeft="7dp"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/search"
+            android:background="@drawable/search"
+            android:layout_gravity="right"
+            android:layout_margin="3dp"
+            />
+    </com.google.android.material.card.MaterialCardView>
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:visibility="gone">
+
+    </com.baidu.mapapi.map.MapView>
+
+    <!--done-->
     <include layout="@layout/toolbar"/>
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,7 +97,7 @@
             android:id="@+id/edit_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint=" 选择日期..."
+            android:hint=" 点击此处从日历中选择日期..."
             android:visibility="gone"
             android:background="@drawable/edittext"
             android:inputType="date"
@@ -76,13 +118,15 @@
             android:id="@+id/edit_place"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint=" 输入地点..."
+            android:hint=" 点击此处从地图中选择地点..."
             android:visibility="gone"
             android:background="@drawable/edittext"
             android:textSize="18sp"
             android:maxLines="2"
             android:layout_margin="5dp"
             android:padding="5dp"
+            android:clickable="true"
+            android:focusableInTouchMode="false"
             />
         <EditText
             android:id="@+id/edit_commobj"

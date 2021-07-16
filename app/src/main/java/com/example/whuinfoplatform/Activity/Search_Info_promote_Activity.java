@@ -159,7 +159,11 @@ public class Search_Info_promote_Activity extends rootActivity {
         Intent intent = getIntent();
         String kwd=intent.getStringExtra("kwd");
         ActionBar actionBar =getSupportActionBar();
-        actionBar.setTitle("\""+kwd+"\"的搜索结果");
+        if(kwd.length()>8){
+            actionBar.setTitle("\""+kwd.substring(0,8)+"...\"的搜索结果");
+        }
+        else
+            actionBar.setTitle("\""+kwd+"\"的搜索结果");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
     }
