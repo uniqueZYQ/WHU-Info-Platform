@@ -74,7 +74,7 @@
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="rd3OYzcOpHfKM3xczjqacNIcHC6fHQjm" />
+            android:value="本人AK" />
     </application>
 
 </manifest>
