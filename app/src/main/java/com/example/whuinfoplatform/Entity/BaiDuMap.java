@@ -8,7 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
@@ -21,6 +27,7 @@ import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
+import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.PoiInfo;
@@ -33,9 +40,17 @@ import com.baidu.mapapi.search.poi.PoiIndoorResult;
 import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
 import com.example.whuinfoplatform.Activity.Publish_Info_promote_Activity;
+import com.example.whuinfoplatform.Activity.Renew_Info_prmote_Activity;
+import com.example.whuinfoplatform.Activity.Srch_Info_details_Activity;
 import com.example.whuinfoplatform.R;
 
 import org.litepal.LitePalApplication;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 public class BaiDuMap extends Application {
     private static Context context;
@@ -56,6 +71,38 @@ public class BaiDuMap extends Application {
     }
 
     public void getLocation(BaiduMap mBaiduMap, LocationClient mLocationClient, Publish_Info_promote_Activity.MyLocationListener myLocationListener){
+        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+        mBaiduMap.setMyLocationEnabled(true);
+        //通过LocationClientOption设置LocationClient相关参数
+        LocationClientOption option = new LocationClientOption();
+        option.setOpenGps(true); // 打开gps
+        option.setCoorType("bd09ll"); // 设置坐标类型
+        option.setScanSpan(1000);
+        //设置locationClientOption
+        mLocationClient.setLocOption(option);
+        //注册LocationListener监听器
+        mLocationClient.registerLocationListener(myLocationListener);
+        //开启地图定位图层
+        mLocationClient.start();
+    }
+
+    public void getLocation2(BaiduMap mBaiduMap, LocationClient mLocationClient, Renew_Info_prmote_Activity.MyLocationListener myLocationListener){
+        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+        mBaiduMap.setMyLocationEnabled(true);
+        //通过LocationClientOption设置LocationClient相关参数
+        LocationClientOption option = new LocationClientOption();
+        option.setOpenGps(true); // 打开gps
+        option.setCoorType("bd09ll"); // 设置坐标类型
+        option.setScanSpan(1000);
+        //设置locationClientOption
+        mLocationClient.setLocOption(option);
+        //注册LocationListener监听器
+        mLocationClient.registerLocationListener(myLocationListener);
+        //开启地图定位图层
+        mLocationClient.start();
+    }
+
+    public void getLocation3(BaiduMap mBaiduMap, LocationClient mLocationClient, Srch_Info_details_Activity.MyLocationListener myLocationListener){
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
         mBaiduMap.setMyLocationEnabled(true);
         //通过LocationClientOption设置LocationClient相关参数
@@ -111,24 +158,37 @@ public class BaiDuMap extends Application {
                 .position(point) //必传参数
                 .icon(bitmap) //必传参数
                 .draggable(false);
-        //在地图上添加Marker，并显示
+        //在地图上添加Marker并显示，同时删除历史Marker
+        mBaiduMap.clear();
         mBaiduMap.addOverlay(option);
     }
 
-    public void setInfoWindow(BaiduMap mBaiduMap,Button button,LatLng point,String name,String address){
+    public void setInfoWindow(BaiduMap mBaiduMap,Button button1,Button button2,LatLng point,String name,String address,boolean setButton2){
         //用来构造InfoWindow的Button
-        button.setBackgroundResource(R.drawable.info_window);
-        button.setTextSize(10);
+        button1.setBackgroundResource(R.drawable.info_window);
+        button1.setTextSize(10);
+        button1.setPadding(5,2,5,2);
         if(address.equals(""))
-            button.setText(name);
+            button1.setText(name);
         else
-            button.setText(name+"\n"+address);
-        //构造InfoWindow
-        //point 描述的位置点
-        //-100 InfoWindow相对于point在y轴的偏移量
-        InfoWindow mInfoWindow = new InfoWindow(button, point, -50);
+            button1.setText(name+"\n"+address);
+        List<InfoWindow> infoWindows=new ArrayList<InfoWindow>();
+        //i InfoWindow相对于point在y轴的偏移量
+        InfoWindow mInfoWindow1 = new InfoWindow(button1, point, -50);
+        infoWindows.add(mInfoWindow1);
+
+        if(setButton2){
+            button2.setText(R.string.search_place_extend);
+            button2.setTextSize(10);
+            button2.setPadding(5,2,5,2);
+            button2.setBackgroundColor(0x00FFFFFF);
+            button2.setTextColor(0xFF0000FF);
+            InfoWindow mInfoWindow2 = new InfoWindow(button2, point, 90);
+            mBaiduMap.showInfoWindow(mInfoWindow2);
+            infoWindows.add(mInfoWindow2);
+        }
 
         //使InfoWindow生效
-        mBaiduMap.showInfoWindow(mInfoWindow);
+        mBaiduMap.showInfoWindows(infoWindows);
     }
 }

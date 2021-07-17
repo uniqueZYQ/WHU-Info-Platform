@@ -11,9 +11,47 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClient;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationConfiguration;
+import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.UiSettings;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.PoiInfo;
+import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
+import com.baidu.mapapi.search.poi.PoiDetailResult;
+import com.baidu.mapapi.search.poi.PoiDetailSearchOption;
+import com.baidu.mapapi.search.poi.PoiDetailSearchResult;
+import com.baidu.mapapi.search.poi.PoiIndoorResult;
+import com.baidu.mapapi.search.poi.PoiResult;
+import com.baidu.mapapi.search.poi.PoiSearch;
+import com.baidu.mapapi.search.route.BikingRouteResult;
+import com.baidu.mapapi.search.route.DrivingRouteResult;
+import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.MassTransitRouteResult;
+import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
+import com.baidu.mapapi.search.route.PlanNode;
+import com.baidu.mapapi.search.route.RoutePlanSearch;
+import com.baidu.mapapi.search.route.TransitRouteResult;
+import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
+import com.baidu.mapapi.search.route.WalkingRouteResult;
+import com.baidu.mapapi.walknavi.WalkNavigateHelper;
+import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
+import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
+import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
+import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
+import com.baidu.mapapi.walknavi.params.WalkRouteNodeInfo;
 import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Entity.BaiDuMap;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.Msg;
@@ -24,6 +62,7 @@ import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,6 +70,21 @@ public class Srch_Info_details_Activity extends rootActivity {
     private com.example.whuinfoplatform.databinding.ActivitySrchInfoDetailsBinding binding;
     int form=0;
     private DB_USER dbHelper;
+    private ArrayList<Integer> pictureList=new ArrayList<Integer>();
+    private MapView mMapView = null;
+    private BaiduMap mBaiduMap;
+    private LocationClient mLocationClient;
+    BaiDuMap baidumap=new BaiDuMap();
+    PoiSearch mPoiSearch = PoiSearch.newInstance();
+    LatLng startPt;
+    LatLng endPt;
+    WalkNaviLaunchParam mParam;
+    private double latitude,longitude;
+    private String name=new String();
+    private String address=new String();
+    private String placeId=new String();
+    private int first=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +95,156 @@ public class Srch_Info_details_Activity extends rootActivity {
         binding= com.example.whuinfoplatform.databinding.ActivitySrchInfoDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
     }
+
+    private void initMap(String Uid){
+        mMapView = (MapView) findViewById(R.id.mapView);
+        mMapView.setVisibility(View.VISIBLE);
+        mBaiduMap=mMapView.getMap();
+        //定位初始化为武汉大学行政楼
+        LatLng ll = new LatLng(30.543803317144, 114.37292090919);
+        float zoom=16;
+        MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+        mBaiduMap.setMapStatus(u);
+        mBaiduMap.animateMapStatus(u);
+        mPoiSearch.setOnGetPoiSearchResultListener(listener1);
+        mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
+                .poiUids(Uid));
+        Srch_Info_details_Activity.MyLocationListener myLocationListener = new Srch_Info_details_Activity.MyLocationListener();
+        //定位监听初始化
+        mLocationClient = new LocationClient(this);
+        //获取实时定位
+        baidumap.getLocation3(mBaiduMap,mLocationClient,myLocationListener);
+        //配置地图
+        baidumap.configMap(mBaiduMap, MyLocationConfiguration.LocationMode.NORMAL,true, BitmapDescriptorFactory.fromResource(R.drawable.location),0x55FFFFFF,0x55FFFFFF);
+        //禁止旋转手势
+        UiSettings mUiSettings=mBaiduMap.getUiSettings();
+        mUiSettings.setRotateGesturesEnabled(false);
+        if(first==1)
+            Toast.makeText(Srch_Info_details_Activity.this,"正在获取实时位置，请稍候...",Toast.LENGTH_LONG).show();
+    }
+
+
+    public class MyLocationListener extends BDAbstractLocationListener {
+
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+            //mapView 销毁后不再处理新接收的位置
+            if (location == null || mMapView == null){
+                return;
+            }
+            MyLocationData locData = new MyLocationData.Builder()
+                    .accuracy(location.getRadius())
+                    // 此处设置开发者获取到的方向信息，顺时针0-360
+                    .direction(location.getDirection()).latitude(location.getLatitude())
+                    .longitude(location.getLongitude()).build();
+            mBaiduMap.setMyLocationData(locData);
+            latitude = location.getLatitude();    //获取纬度信息
+            longitude = location.getLongitude();    //获取经度信息
+            if((latitude>=1||longitude>=1)&&first==1){
+                LatLng ll = new LatLng(latitude, longitude);
+                //初始化中心点为实时位置,设初始缩放程度为17
+                float zoom=17;
+                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                mBaiduMap.setMapStatus(u);
+                mBaiduMap.animateMapStatus(u);
+                Toast.makeText(Srch_Info_details_Activity.this,"实时位置获取成功!",Toast.LENGTH_SHORT).show();
+                first=0;
+                binding.guide.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void startNavigation(){
+        // 获取导航控制类
+        // 引擎初始化
+        WalkNavigateHelper.getInstance().initNaviEngine(this, new IWEngineInitListener() {
+
+            @Override
+            public void engineInitSuccess() {
+                //引擎初始化成功的回调
+                getStartAndEndLocation();
+                routePlanWithBikeParam();
+            }
+
+            @Override
+            public void engineInitFail() {
+                //引擎初始化失败的回调
+                Toast.makeText(Srch_Info_details_Activity.this,"步行导航引擎初始化失败，请稍后重试",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getStartAndEndLocation(){
+        startPt = new LatLng(latitude,longitude);
+        WalkRouteNodeInfo Walkstrinfo = new WalkRouteNodeInfo();
+        WalkRouteNodeInfo Walkendinfo = new WalkRouteNodeInfo();
+        Walkstrinfo.setLocation(startPt);
+        Walkendinfo.setLocation(endPt);
+        //构造WalkNaviLaunchParam
+        mParam = new WalkNaviLaunchParam().startNodeInfo(Walkstrinfo).endNodeInfo(Walkendinfo).extraNaviMode(0);
+    }
+
+    private void routePlanWithBikeParam(){
+        WalkNavigateHelper.getInstance().routePlanWithRouteNode(mParam, new IWRoutePlanListener() {
+            @Override
+            public void onRoutePlanStart() {
+                //开始算路的回调
+            }
+
+            @Override
+            public void onRoutePlanSuccess() {
+                //算路成功
+                //跳转至诱导页面
+                Intent intent = new Intent(Srch_Info_details_Activity.this, WNaviGuideActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRoutePlanFail(WalkRoutePlanError walkRoutePlanError) {
+                //算路失败的回调
+                Toast.makeText(Srch_Info_details_Activity.this,"步行导航算路失败，请稍后重试",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    OnGetPoiSearchResultListener listener1 = new OnGetPoiSearchResultListener() {
+        @Override
+        public void onGetPoiResult(PoiResult poiResult) {
+
+        }
+
+        @Override
+        public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
+            //搜索结果信息获取
+            int size=poiDetailSearchResult.getPoiDetailInfoList().size();
+            if(size>0){
+                Button button1 = new Button(getApplicationContext());
+                Button button2 = new Button(getApplicationContext());
+                //定位初始化为活动地点
+                LatLng ll = poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation();
+                float zoom=16;
+                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                mBaiduMap.setMapStatus(u);
+                mBaiduMap.animateMapStatus(u);
+                baidumap.setMark(ll,mBaiduMap);
+                name=poiDetailSearchResult.getPoiDetailInfoList().get(0).getName();
+                address=poiDetailSearchResult.getPoiDetailInfoList().get(0).getAddress();
+                endPt=poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation();
+                baidumap.setInfoWindow(mBaiduMap,button1,button2,ll,name,address,false);
+            }
+            else
+                Toast.makeText(Srch_Info_details_Activity.this,"地址解析失败!",Toast.LENGTH_SHORT).show();
+        }
+        @Override
+        public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
+
+        }
+        //废弃
+        @Override
+        public void onGetPoiDetailResult(PoiDetailResult poiDetailResult) {
+
+        }
+    };
 
     @Override
     protected void initData() {
@@ -117,6 +321,7 @@ public class Srch_Info_details_Activity extends rootActivity {
             cursor.close();
             if(info.get(i).getAnswered()==0) binding.answer.setText("响应信息\n(你是第一个!)");
             else binding.answer.setText("继续响应");
+            form=info.get(i).getForm();
             switch(info.get(i).getForm()){
                 case 1:{
                     binding.fdForm.setText("咨询领域："+(
@@ -166,6 +371,7 @@ public class Srch_Info_details_Activity extends rootActivity {
                     binding.date.setVisibility(View.VISIBLE);
                     binding.place.setText("活动地点："+info.get(i).getPlace());
                     binding.place.setVisibility(View.VISIBLE);
+                    binding.placeDetail.setVisibility(View.VISIBLE);
                     binding.reward.setText("报酬："+(String.valueOf(info.get(i).getReward()))+"元");
                     binding.reward.setVisibility(View.VISIBLE);
                     binding.answered.setVisibility(View.VISIBLE);
@@ -201,12 +407,46 @@ public class Srch_Info_details_Activity extends rootActivity {
             intent1.putExtra("obj_id",obj_id);
             startActivity(intent1);
         });
+        binding.placeDetail.setOnClickListener(v -> {
+            List<Info> info = DataSupport.where("id=?",String.valueOf(id)).find(Info.class);
+            String Uid=info.get(0).getPlaceId();
+            if(Uid.equals("0"))
+                Toast.makeText(Srch_Info_details_Activity.this,"地址信息获取失败!",Toast.LENGTH_SHORT).show();
+            else
+                initMap(Uid);
+        });
+        binding.guide.setOnClickListener(v -> {
+            startNavigation();
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         initData();
+        if(form==5&&first==0){
+            mMapView.onResume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(form==5&&first==0){
+            mMapView.onPause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(form==5&&first==0){
+            mLocationClient.stop();
+            mBaiduMap.setMyLocationEnabled(false);
+            mMapView.onDestroy();
+            mPoiSearch.destroy();
+            mMapView = null;
+        }
     }
 
     @SuppressLint("RestrictedApi")

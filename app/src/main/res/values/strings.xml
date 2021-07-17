@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WHU信息平台</string>
+    <string name="search_place_extend"><u>不是这里？显示下一结果</u></string>
 </resources>

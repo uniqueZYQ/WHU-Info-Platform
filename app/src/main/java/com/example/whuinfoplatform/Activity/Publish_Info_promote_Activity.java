@@ -75,7 +75,7 @@ import java.util.Locale;
 
 public class Publish_Info_promote_Activity extends rootActivity {
     private ActivityPublishInfoPromoteBinding binding;
-    private int id=0,id1=0,id2=0,pos_fd=0,pos_help=0,pos_score=0,form=-1,picture_count=0;
+    private int id=0,id1=0,id2=0,pos_fd=0,pos_help=0,pos_score=0,form=-1,picture_count=0,i=1;
     private double reward=0,price=0;
     private Dialog mCameraDialog;
     private boolean upload=false;
@@ -85,7 +85,12 @@ public class Publish_Info_promote_Activity extends rootActivity {
     private LocationClient mLocationClient;
     BaiDuMap baidumap=new BaiDuMap();
     PoiSearch mPoiSearch = PoiSearch.newInstance();
-    double latitude,longitude;
+    private double latitude,longitude;
+    private String name=new String();
+    private String address=new String();
+    private String placeId=new String();
+    private int first=1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,24 +108,35 @@ public class Publish_Info_promote_Activity extends rootActivity {
         mMapView = (MapView) findViewById(R.id.mapView);
         mMapView.setVisibility(View.VISIBLE);
         mBaiduMap=mMapView.getMap();
+        if(first==0){
+            binding.card.setVisibility(View.VISIBLE);
+            mPoiSearch.setOnGetPoiSearchResultListener(listener1);
+        }
+        //定位初始化为武汉大学行政楼
+        LatLng ll = new LatLng(30.543803317144, 114.37292090919);
+        float zoom=16;
+        MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+        mBaiduMap.setMapStatus(u);
+        mBaiduMap.animateMapStatus(u);
         Publish_Info_promote_Activity.MyLocationListener myLocationListener = new Publish_Info_promote_Activity.MyLocationListener();
-        //定位初始化
+        //定位监听初始化
         mLocationClient = new LocationClient(this);
-        //获取定位
+        //获取实时定位
         baidumap.getLocation(mBaiduMap,mLocationClient,myLocationListener);
         //配置地图
         baidumap.configMap(mBaiduMap,MyLocationConfiguration.LocationMode.NORMAL,true,BitmapDescriptorFactory.fromResource(R.drawable.location),0x55FFFFFF,0x55FFFFFF);
         //禁止旋转手势
         UiSettings mUiSettings=mBaiduMap.getUiSettings();
         mUiSettings.setRotateGesturesEnabled(false);
-        Toast.makeText(Publish_Info_promote_Activity.this,"正在获取实时位置，请稍候...",Toast.LENGTH_LONG).show();
+        if(first==1)
+            Toast.makeText(Publish_Info_promote_Activity.this,"正在获取实时位置，请稍候...",Toast.LENGTH_LONG).show();
     }
 
     public class MyLocationListener extends BDAbstractLocationListener {
-        int first=1;
+
         @Override
         public void onReceiveLocation(BDLocation location) {
-            //mapView 销毁后不在处理新接收的位置
+            //mapView 销毁后不再处理新接收的位置
             if (location == null || mMapView == null){
                 return;
             }
@@ -153,24 +169,94 @@ public class Publish_Info_promote_Activity extends rootActivity {
         @Override
         public void onGetPoiResult(PoiResult poiResult) {
             //PoiInfo 检索到的第一条信息
-            PoiInfo poi=poiResult.getAllPoi().get(0);
-            //通过第一条检索信息对应的uid发起详细信息检索
-            mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
-                    .poiUids(poi.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
+            if(poiResult.getTotalPoiNum()>=5){
+                PoiInfo poi0=poiResult.getAllPoi().get(0);
+                PoiInfo poi1=poiResult.getAllPoi().get(1);
+                PoiInfo poi2=poiResult.getAllPoi().get(2);
+                PoiInfo poi3=poiResult.getAllPoi().get(3);
+                PoiInfo poi4=poiResult.getAllPoi().get(4);
+                //通过前5条检索信息对应的uid发起详细信息检索
+                mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
+                        .poiUids(poi0.uid+","+poi1.uid+","+poi2.uid+","+poi3.uid+","+poi4.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
+            }
+            else if(poiResult.getTotalPoiNum()==4){
+                PoiInfo poi0=poiResult.getAllPoi().get(0);
+                PoiInfo poi1=poiResult.getAllPoi().get(1);
+                PoiInfo poi2=poiResult.getAllPoi().get(2);
+                PoiInfo poi3=poiResult.getAllPoi().get(3);
+                //通过前5条检索信息对应的uid发起详细信息检索
+                mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
+                        .poiUids(poi0.uid+","+poi1.uid+","+poi2.uid+","+poi3.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
+            }
+            else if(poiResult.getTotalPoiNum()==3){
+                PoiInfo poi0=poiResult.getAllPoi().get(0);
+                PoiInfo poi1=poiResult.getAllPoi().get(1);
+                PoiInfo poi2=poiResult.getAllPoi().get(2);
+                //通过前5条检索信息对应的uid发起详细信息检索
+                mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
+                        .poiUids(poi0.uid+","+poi1.uid+","+poi2.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
+            }
+            else if(poiResult.getTotalPoiNum()==2){
+                PoiInfo poi0=poiResult.getAllPoi().get(0);
+                PoiInfo poi1=poiResult.getAllPoi().get(1);
+                //通过前5条检索信息对应的uid发起详细信息检索
+                mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
+                        .poiUids(poi0.uid+","+poi1.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
+            }
+            else if(poiResult.getTotalPoiNum()==1){
+                PoiInfo poi0=poiResult.getAllPoi().get(0);
+                //通过前5条检索信息对应的uid发起详细信息检索
+                mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
+                        .poiUids(poi0.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
+            }
+            else{
+                Toast.makeText(Publish_Info_promote_Activity.this,"暂无该地点\n试试其他搜索关键词!",Toast.LENGTH_SHORT).show();
+                mBaiduMap.clear();
+            }
         }
+
         @Override
         public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
-            Button button = new Button(getApplicationContext());
-            String name=poiDetailSearchResult.getPoiDetailInfoList().get(0).getName();
-            String address=poiDetailSearchResult.getPoiDetailInfoList().get(0).getAddress();
-            LatLng ll=new LatLng(poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation().latitude,
-                    poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation().longitude);
-            float zoom=18;
-            MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
-            mBaiduMap.setMapStatus(u);
-            mBaiduMap.animateMapStatus(u);
-            baidumap.setMark(ll,mBaiduMap);
-            baidumap.setInfoWindow(mBaiduMap,button,ll,name,address);
+            //搜索结果信息获取
+            int size=poiDetailSearchResult.getPoiDetailInfoList().size();
+            if(size>0){
+                Button button1 = new Button(getApplicationContext());
+                Button button2 = new Button(getApplicationContext());
+                name=poiDetailSearchResult.getPoiDetailInfoList().get(0).getName();
+                address=poiDetailSearchResult.getPoiDetailInfoList().get(0).getAddress();
+                placeId=poiDetailSearchResult.getPoiDetailInfoList().get(0).getUid();
+                LatLng ll=new LatLng(poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation().latitude,
+                        poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation().longitude);
+                float zoom=18;
+                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                mBaiduMap.setMapStatus(u);
+                mBaiduMap.animateMapStatus(u);
+                baidumap.setMark(ll,mBaiduMap);
+                baidumap.setInfoWindow(mBaiduMap,button1,button2,ll,name,address,true);
+                button1.setOnClickListener(v -> {
+                    mMapView.setVisibility(View.GONE);
+                    binding.card.setVisibility(View.GONE);
+                    binding.editPlace.setText(name+" ["+address+"]");
+                });
+                button2.setOnClickListener(v -> {
+                    if(i<size){
+                        name=poiDetailSearchResult.getPoiDetailInfoList().get(i).getName();
+                        address=poiDetailSearchResult.getPoiDetailInfoList().get(i).getAddress();
+                        placeId=poiDetailSearchResult.getPoiDetailInfoList().get(i).getUid();
+                        LatLng ll_ex=new LatLng(poiDetailSearchResult.getPoiDetailInfoList().get(i).getLocation().latitude,
+                                poiDetailSearchResult.getPoiDetailInfoList().get(i).getLocation().longitude);
+                        float zoom_ex=18;
+                        MapStatusUpdate u_ex = MapStatusUpdateFactory.newLatLngZoom(ll_ex,zoom_ex);
+                        mBaiduMap.setMapStatus(u_ex);
+                        mBaiduMap.animateMapStatus(u_ex);
+                        baidumap.setMark(ll_ex,mBaiduMap);
+                        baidumap.setInfoWindow(mBaiduMap,button1,button2,ll_ex,name,address,true);
+                        i++;
+                    }
+                    else
+                        Toast.makeText(Publish_Info_promote_Activity.this,"没有更多结果了\n试试搜索其他关键词？",Toast.LENGTH_SHORT).show();
+                });
+            }
         }
         @Override
         public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
@@ -191,16 +277,23 @@ public class Publish_Info_promote_Activity extends rootActivity {
 
         @Override
         public void onMapPoiClick(MapPoi mapPoi) {
-            Button button = new Button(getApplicationContext());
+            Button button1 = new Button(getApplicationContext());
+            Button button2 = new Button(getApplicationContext());
             LatLng ll = new LatLng(mapPoi.getPosition().latitude, mapPoi.getPosition().longitude);
             //初始化中心点为点击处,设初始缩放程度为17
             float zoom=18;
             MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
             mBaiduMap.setMapStatus(u);
             mBaiduMap.animateMapStatus(u);
-            String name=mapPoi.getName();
+            name=mapPoi.getName();
+            placeId=mapPoi.getUid();
             baidumap.setMark(ll,mBaiduMap);
-            baidumap.setInfoWindow(mBaiduMap,button,ll,name,"");
+            baidumap.setInfoWindow(mBaiduMap,button1,button2,ll,name,"",false);
+            button1.setOnClickListener(v -> {
+                mMapView.setVisibility(View.GONE);
+                binding.card.setVisibility(View.GONE);
+                binding.editPlace.setText(name);
+            });
         }
     };
 
@@ -405,6 +498,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setPicture2(ret_list_2());
                                 info.setPicture3(ret_list_3());
                                 info.setPicture4(ret_list_4());
+                                info.setPlaceId("0");
                                 Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -460,6 +554,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setPicture2(ret_list_2());
                                 info.setPicture3(ret_list_3());
                                 info.setPicture4(ret_list_4());
+                                info.setPlaceId("0");
                                 Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -515,6 +610,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setPicture2(ret_list_2());
                                 info.setPicture3(ret_list_3());
                                 info.setPicture4(ret_list_4());
+                                info.setPlaceId("0");
                                 Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -570,6 +666,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setPicture2(ret_list_2());
                                 info.setPicture3(ret_list_3());
                                 info.setPicture4(ret_list_4());
+                                info.setPlaceId("0");
                                 Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -627,6 +724,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 info.setPicture2(ret_list_2());
                                 info.setPicture3(ret_list_3());
                                 info.setPicture4(ret_list_4());
+                                info.setPlaceId(placeId);
                                 Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                                 long timecurrentTimeMillis = System.currentTimeMillis();
@@ -663,6 +761,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             info.setPicture2(ret_list_2());
                             info.setPicture3(ret_list_3());
                             info.setPicture4(ret_list_4());
+                            info.setPlaceId("0");
                             Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
                             long timecurrentTimeMillis = System.currentTimeMillis();
@@ -775,6 +874,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event){
                 if(actionId== EditorInfo.IME_ACTION_SEARCH){
+                    i=1;//重置索引值
                     String kwd = binding.input.getText().toString();
                     boolean valid = false;
                     for (int i = 0; i < kwd.length(); i++) {
@@ -806,6 +906,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
             }
         });
         binding.search.setOnClickListener(v->{
+            i=1;//重置索引值
             String kwd = binding.input.getText().toString();
             boolean valid = false;
             for (int i = 0; i < kwd.length(); i++) {
@@ -881,7 +982,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(form==5){
+        if(form==5&&first==0){
             mMapView.onPause();
         }
         if(upload)
@@ -902,7 +1003,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        if(form==5){
+        if(form==5&&first==0){
             mMapView.onResume();
         }
         initPictureList();
@@ -911,10 +1012,11 @@ public class Publish_Info_promote_Activity extends rootActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(form==5){
+        if(form==5&&first==0){
             mLocationClient.stop();
             mBaiduMap.setMyLocationEnabled(false);
             mMapView.onDestroy();
+            mPoiSearch.destroy();
             mMapView = null;
         }
     }
@@ -960,7 +1062,6 @@ public class Publish_Info_promote_Activity extends rootActivity {
                 break;
             default:
                 break;
-
         }
     }
 

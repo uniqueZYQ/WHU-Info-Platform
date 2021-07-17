@@ -23,6 +23,7 @@ public class Info extends DataSupport {
     private int picture2;
     private int picture3;
     private int picture4;
+    private String placeId;
     public int getId() {
         return id;
     }
@@ -46,6 +47,14 @@ public class Info extends DataSupport {
     }
     public void setAnswered(int answered){
         this.answered=answered;
+    }
+
+    public String getPlaceId(){
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
     }
 
     public int getPicture1() {
