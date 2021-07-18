@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,12 @@ import android.widget.Toast;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
+import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
+import com.baidu.mapapi.bikenavi.adapter.IBEngineInitListener;
+import com.baidu.mapapi.bikenavi.adapter.IBRoutePlanListener;
+import com.baidu.mapapi.bikenavi.model.BikeRoutePlanError;
+import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
+import com.baidu.mapapi.bikenavi.params.BikeRouteNodeInfo;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatusUpdate;
@@ -78,7 +85,7 @@ public class Srch_Info_details_Activity extends rootActivity {
     PoiSearch mPoiSearch = PoiSearch.newInstance();
     LatLng startPt;
     LatLng endPt;
-    WalkNaviLaunchParam mParam;
+    BikeNaviLaunchParam mParam;
     private double latitude,longitude;
     private String name=new String();
     private String address=new String();
@@ -98,6 +105,7 @@ public class Srch_Info_details_Activity extends rootActivity {
 
     private void initMap(String Uid){
         mMapView = (MapView) findViewById(R.id.mapView);
+        binding.frame.setVisibility(View.VISIBLE);
         mMapView.setVisibility(View.VISIBLE);
         mBaiduMap=mMapView.getMap();
         //定位初始化为武汉大学行政楼
@@ -120,7 +128,7 @@ public class Srch_Info_details_Activity extends rootActivity {
         UiSettings mUiSettings=mBaiduMap.getUiSettings();
         mUiSettings.setRotateGesturesEnabled(false);
         if(first==1)
-            Toast.makeText(Srch_Info_details_Activity.this,"正在获取实时位置，请稍候...",Toast.LENGTH_LONG).show();
+            Toast.makeText(Srch_Info_details_Activity.this,"正在获取实时位置，请稍候...",Toast.LENGTH_SHORT).show();
     }
 
 
@@ -149,62 +157,62 @@ public class Srch_Info_details_Activity extends rootActivity {
                 mBaiduMap.animateMapStatus(u);
                 Toast.makeText(Srch_Info_details_Activity.this,"实时位置获取成功!",Toast.LENGTH_SHORT).show();
                 first=0;
-                binding.guide.setVisibility(View.VISIBLE);
+                binding.walkGuide.setVisibility(View.VISIBLE);
+                binding.bikeGuide.setVisibility(View.VISIBLE);
+                binding.Guide.setVisibility(View.VISIBLE);
+                binding.busGuide.setVisibility(View.VISIBLE);
             }
         }
     }
 
+    private void startWalkNavigation(){
+        Intent i1 = new Intent();
+
+        // 步行路线规划
+
+        i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
+                +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
+                +"&coord_type=bd09ll&mode=walking&src=andr.baidu.openAPIdemo"));
+        /*i1.setData(Uri.parse("baidumap://map/direction?region=beijing&origin=39.98871,116.43234&destination=40.057406655722,116.2964407172&coord_type=bd09ll&mode=walking&src=andr.baidu.openAPIdemo"));*/
+
+        startActivity(i1);
+       }
+
+    private void startBikeNavigation(){
+        Intent i1 = new Intent();
+
+        // 骑行路线规划
+
+        i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
+                +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
+                +"&coord_type=bd09ll&mode=riding&src=andr.baidu.openAPIdemo"));
+
+        startActivity(i1);
+    }
+
+    private void startBusNavigation(){
+        Intent i1 = new Intent();
+
+        // 公交路线规划
+
+        i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)+
+                "&destination="+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)+
+                "&coord_type=bd09ll&mode=transit&target=1&src=andr.baidu.openAPIdemo"));
+
+
+        startActivity(i1);
+    }
+
     private void startNavigation(){
-        // 获取导航控制类
-        // 引擎初始化
-        WalkNavigateHelper.getInstance().initNaviEngine(this, new IWEngineInitListener() {
+        Intent i1 = new Intent();
 
-            @Override
-            public void engineInitSuccess() {
-                //引擎初始化成功的回调
-                getStartAndEndLocation();
-                routePlanWithBikeParam();
-            }
+        // 驾车路线规划
 
-            @Override
-            public void engineInitFail() {
-                //引擎初始化失败的回调
-                Toast.makeText(Srch_Info_details_Activity.this,"步行导航引擎初始化失败，请稍后重试",Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+        i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
+                +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
+                +"&coord_type=bd09ll&mode=driving&src=andr.baidu.openAPIdemo"));
 
-    private void getStartAndEndLocation(){
-        startPt = new LatLng(latitude,longitude);
-        WalkRouteNodeInfo Walkstrinfo = new WalkRouteNodeInfo();
-        WalkRouteNodeInfo Walkendinfo = new WalkRouteNodeInfo();
-        Walkstrinfo.setLocation(startPt);
-        Walkendinfo.setLocation(endPt);
-        //构造WalkNaviLaunchParam
-        mParam = new WalkNaviLaunchParam().startNodeInfo(Walkstrinfo).endNodeInfo(Walkendinfo).extraNaviMode(0);
-    }
-
-    private void routePlanWithBikeParam(){
-        WalkNavigateHelper.getInstance().routePlanWithRouteNode(mParam, new IWRoutePlanListener() {
-            @Override
-            public void onRoutePlanStart() {
-                //开始算路的回调
-            }
-
-            @Override
-            public void onRoutePlanSuccess() {
-                //算路成功
-                //跳转至诱导页面
-                Intent intent = new Intent(Srch_Info_details_Activity.this, WNaviGuideActivity.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onRoutePlanFail(WalkRoutePlanError walkRoutePlanError) {
-                //算路失败的回调
-                Toast.makeText(Srch_Info_details_Activity.this,"步行导航算路失败，请稍后重试",Toast.LENGTH_SHORT).show();
-            }
-        });
+        startActivity(i1);
     }
 
     OnGetPoiSearchResultListener listener1 = new OnGetPoiSearchResultListener() {
@@ -415,8 +423,17 @@ public class Srch_Info_details_Activity extends rootActivity {
             else
                 initMap(Uid);
         });
-        binding.guide.setOnClickListener(v -> {
+        binding.walkGuide.setOnClickListener(v -> {
+            startWalkNavigation();
+        });
+        binding.bikeGuide.setOnClickListener(v -> {
+            startBikeNavigation();
+        });
+        binding.Guide.setOnClickListener(v -> {
             startNavigation();
+        });
+        binding.busGuide.setOnClickListener(v -> {
+            startBusNavigation();
         });
     }
 

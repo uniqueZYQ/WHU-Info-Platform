@@ -106,6 +106,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
 
     private void initMap(){
         mMapView = (MapView) findViewById(R.id.mapView);
+        binding.frame.setVisibility(View.VISIBLE);
         mMapView.setVisibility(View.VISIBLE);
         mBaiduMap=mMapView.getMap();
         if(first==0){
@@ -235,6 +236,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                 baidumap.setInfoWindow(mBaiduMap,button1,button2,ll,name,address,true);
                 button1.setOnClickListener(v -> {
                     mMapView.setVisibility(View.GONE);
+                    binding.frame.setVisibility(View.GONE);
                     binding.card.setVisibility(View.GONE);
                     binding.editPlace.setText(name+" ["+address+"]");
                 });
@@ -291,6 +293,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
             baidumap.setInfoWindow(mBaiduMap,button1,button2,ll,name,"",false);
             button1.setOnClickListener(v -> {
                 mMapView.setVisibility(View.GONE);
+                binding.frame.setVisibility(View.GONE);
                 binding.card.setVisibility(View.GONE);
                 binding.editPlace.setText(name);
             });

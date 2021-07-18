@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="@drawable/i_f">
-    <Button
+    <!--<Button
         android:id="@+id/guide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,15 +18,65 @@
         android:textSize="16sp"
         android:padding="10dp"
         android:text="开始步行导航"
-        />
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/mapView"
+        />-->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
+        android:id="@+id/frame"
         android:visibility="gone">
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:visibility="gone">
+        </com.baidu.mapapi.map.MapView>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/walkGuide"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="150dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/walk"
+            app:backgroundTint="#1296db"
+            android:visibility="gone"
+            />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bikeGuide"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="220dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/bike"
+            app:backgroundTint="#1296db"
+            android:visibility="gone"
+            />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/Guide"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="290dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/car"
+            app:backgroundTint="#1296db"
+            android:visibility="gone"
+            />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/busGuide"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="360dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/bus"
+            app:backgroundTint="#1296db"
+            android:visibility="gone"
+            />
+    </FrameLayout>
 
-    </com.baidu.mapapi.map.MapView>
     <include layout="@layout/toolbar"/>
     <LinearLayout
         android:layout_width="match_parent"

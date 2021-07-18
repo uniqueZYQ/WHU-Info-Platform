@@ -25,7 +25,7 @@
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
-        <activity android:name=".Activity.WNaviGuideActivity"></activity>
+
         <activity android:name=".Activity.Upload_Picture_promote_Activity" />
         <activity android:name=".Activity.SplashActivity">
             <intent-filter>
@@ -74,7 +74,7 @@
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="本人AK" />
+            android:value="rd3OYzcOpHfKM3xczjqacNIcHC6fHQjm" />
     </application>
 
 </manifest>
