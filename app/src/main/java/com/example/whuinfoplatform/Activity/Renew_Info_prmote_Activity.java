@@ -144,7 +144,6 @@ public class Renew_Info_prmote_Activity extends rootActivity {
     OnGetPoiSearchResultListener listener1 = new OnGetPoiSearchResultListener() {
         @Override
         public void onGetPoiResult(PoiResult poiResult) {
-            //PoiInfo 检索到的第一条信息
             if(poiResult.getTotalPoiNum()>=5){
                 PoiInfo poi0=poiResult.getAllPoi().get(0);
                 PoiInfo poi1=poiResult.getAllPoi().get(1);
@@ -160,7 +159,7 @@ public class Renew_Info_prmote_Activity extends rootActivity {
                 PoiInfo poi1=poiResult.getAllPoi().get(1);
                 PoiInfo poi2=poiResult.getAllPoi().get(2);
                 PoiInfo poi3=poiResult.getAllPoi().get(3);
-                //通过前5条检索信息对应的uid发起详细信息检索
+                //通过前4条检索信息对应的uid发起详细信息检索
                 mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
                         .poiUids(poi0.uid+","+poi1.uid+","+poi2.uid+","+poi3.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
             }
@@ -168,24 +167,25 @@ public class Renew_Info_prmote_Activity extends rootActivity {
                 PoiInfo poi0=poiResult.getAllPoi().get(0);
                 PoiInfo poi1=poiResult.getAllPoi().get(1);
                 PoiInfo poi2=poiResult.getAllPoi().get(2);
-                //通过前5条检索信息对应的uid发起详细信息检索
+                //通过前3条检索信息对应的uid发起详细信息检索
                 mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
                         .poiUids(poi0.uid+","+poi1.uid+","+poi2.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
             }
             else if(poiResult.getTotalPoiNum()==2){
                 PoiInfo poi0=poiResult.getAllPoi().get(0);
                 PoiInfo poi1=poiResult.getAllPoi().get(1);
-                //通过前5条检索信息对应的uid发起详细信息检索
+                //通过前2条检索信息对应的uid发起详细信息检索
                 mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
                         .poiUids(poi0.uid+","+poi1.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
             }
             else if(poiResult.getTotalPoiNum()==1){
                 PoiInfo poi0=poiResult.getAllPoi().get(0);
-                //通过前5条检索信息对应的uid发起详细信息检索
+                //通过前1条检索信息对应的uid发起详细信息检索
                 mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
                         .poiUids(poi0.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
             }
             else{
+                //搜索结果为空
                 Toast.makeText(Renew_Info_prmote_Activity.this,"暂无该地点\n试试其他搜索关键词!",Toast.LENGTH_SHORT).show();
                 mBaiduMap.clear();
             }
