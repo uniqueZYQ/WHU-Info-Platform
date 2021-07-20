@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.Outline;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,7 +51,7 @@ public class Chat_Window_Activity extends rootActivity {
     private RecyclerView msgRecyclerView;
     private MsgAdapter adapter;
     private ActivityChatWindowBinding binding;
-    String owner="";
+    String owner=new String();
     int sub_id=0;
     int obj_id=0;
     private boolean upload=false;
@@ -59,6 +60,15 @@ public class Chat_Window_Activity extends rootActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+            window.setNavigationBarColor(Color.WHITE);
+        }
     }
 
     @Override

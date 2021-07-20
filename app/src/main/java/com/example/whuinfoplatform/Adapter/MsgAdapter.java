@@ -61,11 +61,15 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         ImageView picture_right;
         ImageView left_upload;
         ImageView right_upload;
+        LinearLayout right_layout_inner;
+        LinearLayout left_layout_inner;
         View msgView;
 
         public ViewHolder(View view){
             super(view);
             msgView=view;
+            right_layout_inner = (LinearLayout)view.findViewById(R.id.right_layout_inner);
+            left_layout_inner = (LinearLayout)view.findViewById(R.id.left_layout_inner);
             leftLayout = (LinearLayout)view.findViewById(R.id.left_layout);
             rightLayout = (LinearLayout)view.findViewById(R.id.right_layout);
             timestamp = (TextView)view.findViewById(R.id.timestamp);
@@ -91,7 +95,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         db = dbHelper.getWritableDatabase();
 
         final ViewHolder holder=new ViewHolder(view);
-        holder.msgView.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.right_layout_inner.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 int position=holder.getAdapterPosition();
@@ -265,12 +269,18 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                             params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
                             bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
                             holder.left_upload.setImageBitmap(bitmap_p);
+                            holder.left_upload.setOnClickListener(v -> {
+                                initEnlargePicture(bitmap_p);
+                            });
                         }
                         else{
                             width=ratio*height;
                             params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
                             bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
                             holder.left_upload.setImageBitmap(bitmap_p);
+                            holder.left_upload.setOnClickListener(v -> {
+                                initEnlargePicture(bitmap_p);
+                            });
                         }
                         holder.left_upload.setLayoutParams(params);
                     }
@@ -328,15 +338,53 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                             params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
                             bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
                             holder.right_upload.setImageBitmap(bitmap_p);
+                            holder.right_upload.setOnClickListener(v -> {
+                                initEnlargePicture(bitmap_p);
+                            });
                         }
                         else{
                             width=ratio*height;
                             params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
                             bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
                             holder.right_upload.setImageBitmap(bitmap_p);
+                            holder.right_upload.setOnClickListener(v -> {
+                                initEnlargePicture(bitmap_p);
+                            });
                         }
                         holder.right_upload.setLayoutParams(params);
                     }
+                    holder.right_upload.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            int position=holder.getAdapterPosition();
+                            Msg msg=mMsgList.get(position);
+                            if(msg.getType()==1){
+                                Connector.getDatabase();
+                                int sss=msg.getSub_id();
+                                int ooo=msg.getObj_id();
+                                List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(ooo),String.valueOf(sss),String.valueOf(sss),String.valueOf(ooo)).order("id asc").find(Msg.class);
+                                int id=msg1.get(position).getId();
+                                int recalled=msg.getRecalled();
+                                if(recalled==0){
+                                    String send_time=msg.getTime();
+                                    SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+                                    try {
+                                        Date current=simpleDateFormat.parse(send_time);
+                                        long time=current.getTime();
+                                        long timecurrentTimeMillis = System.currentTimeMillis();
+                                        if(timecurrentTimeMillis-time<=1000*2*60){
+                                            dialog(holder,id);
+                                        }
+                                        else
+                                            Toast.makeText(adapter_parent.getContext(),"超过两分钟的消息无法撤回!",Toast.LENGTH_SHORT).show();
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                            return true;
+                        }
+                    });
                     holder.rightMsg.setVisibility(View.GONE);
                     holder.right_upload.setVisibility(View.VISIBLE);
                 }
@@ -346,6 +394,12 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 }
             }
         }
+
+    }
+
+    private void initEnlargePicture(Bitmap bit){
+        EnlargePicture enlargePicture=new EnlargePicture();
+        enlargePicture.EnlargePicture(adapter_parent.getContext(),bit,true);
     }
 
     @Override
