@@ -105,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call call, IOException e) {
-
+                            Looper.prepare();
+                            Toast.makeText(MainActivity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                            Looper.loop();
                         }
 
                         @Override
