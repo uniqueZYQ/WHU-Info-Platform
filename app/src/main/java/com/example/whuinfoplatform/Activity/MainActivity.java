@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -22,15 +23,22 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.Info;
+import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
 
 import org.litepal.crud.DataSupport;
 
-public class MainActivity extends AppCompatActivity {
-    private DB_USER dbHelper;
+import java.io.IOException;
 
+import okhttp3.Call;
+import okhttp3.Response;
+
+public class MainActivity extends AppCompatActivity {
+    private EditText id;
+    private EditText pw;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,13 +58,11 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         ActivityCollector.addActivity(this);
-        EditText id = (EditText) findViewById(R.id.edit_stdid);
-        EditText pw = (EditText) findViewById(R.id.edit_pwd);
-        id.setText("");
-        pw.setText("");
+        id = (EditText) findViewById(R.id.edit_stdid);
+        pw = (EditText) findViewById(R.id.edit_pwd);
         Button startLogin = (Button) findViewById(R.id.log_in);
         Button startCreateUser = (Button) findViewById(R.id.create_user);
-        dbHelper = new DB_USER(this, "User.db", null, 7);
+
         pw.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -91,39 +97,51 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!(id.getText().toString().equals(""))&&!(pw.getText().toString().equals(""))) {
-                    Boolean ret = false;
-                    String tmpnkn="";
-                    String tmprnm="";
-                    int tmpid=0;
                     String currid = id.getText().toString();
                     String currpw = pw.getText().toString();
-                    SQLiteDatabase db = dbHelper.getWritableDatabase();
-                    Cursor cursor = db.rawQuery("select stdid,pwd,realname,nickname,id from User where stdid=? and pwd=?", new String[]{currid, currpw}, null);
-                    if(cursor.moveToFirst()){
-                        if (cursor.getCount() != 0) {
-                            ret = true;
-                            tmprnm=cursor.getString(cursor.getColumnIndex("realname"));
-                            tmpnkn=cursor.getString(cursor.getColumnIndex("nickname"));
-                            tmpid=cursor.getInt(cursor.getColumnIndex("id"));
+
+                    UserConnection userConnection=new UserConnection();
+                    userConnection.initLoginConnection(currid,currpw,new okhttp3.Callback(){
+
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+
                         }
-                    }
-                    cursor.close();
-                    if (ret == true) {
-                        Toast.makeText(MainActivity.this, tmprnm+"登录成功！", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(MainActivity.this, Basic_Activity.class);
-                        intent.putExtra("tmpnkn",tmpnkn);
-                        intent.putExtra("tmpid",tmpid);
-                        //Toast.makeText(MainActivity.this, currid, Toast.LENGTH_SHORT).show();//test;
-                        startActivity(intent);
-                        id.setText("");
-                        pw.setText("");
-                    } else {
-                        Toast.makeText(MainActivity.this, "学号或密码错误！", Toast.LENGTH_SHORT).show();
-                        pw.setText("");
-                    }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String result=response.body().string();
+                            User user=new User();
+                            userConnection.parseJSON(user,result);
+                            if(user.getCode()==101){
+                                Intent intent = new Intent(MainActivity.this, Basic_Activity.class);
+                                intent.putExtra("tmpnkn",user.getNickname());
+                                intent.putExtra("tmpid",user.getId());
+                                startActivity(intent);
+                                Looper.prepare();
+                                Toast.makeText(MainActivity.this, user.getRealname()+"登录成功！", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else{
+                                setPwdBlank();
+                                Looper.prepare();
+                                Toast.makeText(MainActivity.this, "学号或密码错误！", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                        }
+                    });
                 }
                 else
                     Toast.makeText(MainActivity.this, "请输入完整的信息！", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setPwdBlank(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                pw.setText("");
             }
         });
     }
@@ -163,6 +181,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         ActivityCollector.removeActivity(this);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        id.setText("");
+        pw.setText("");
     }
 }
 

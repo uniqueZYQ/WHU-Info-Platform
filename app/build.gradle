@@ -49,6 +49,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.1.0-alpha10'
     implementation files('libs/BaiduLBS_Android.jar')
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation files('libs\\BaiduLBS_Android.jar')
     testImplementation 'junit:junit:4.+'
     implementation 'org.litepal.android:core:1.6.0'
