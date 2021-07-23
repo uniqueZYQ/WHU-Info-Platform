@@ -3,6 +3,7 @@ package com.example.whuinfoplatform.Activity;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -20,19 +22,25 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityCreateUserPromoteBinding;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class Create_User_promote_Activity extends rootActivity {
-    private DB_USER dbHelper;
+
     private ActivityCreateUserPromoteBinding binding;
     ImageView picture;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbHelper=new DB_USER(this,"User.db",null,7);
     }
 
     @Override
@@ -105,37 +113,50 @@ public class Create_User_promote_Activity extends rootActivity {
             }
             else {
                 if(id.length()==13) {
-                    dbHelper.getWritableDatabase();
-                    Boolean ret = false;
-                    SQLiteDatabase db = dbHelper.getWritableDatabase();
                     picture.setDrawingCacheEnabled(true);
                     Bitmap bitmap = Bitmap.createBitmap(picture.getDrawingCache());
                     picture.setDrawingCacheEnabled(false);
                     final ByteArrayOutputStream os = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
-                    ContentValues values = new ContentValues();
-                    values.put("nickname", nnm);
-                    values.put("pwd", pw);
-                    values.put("realname", rnm);
-                    values.put("stdid", id);
-                    values.put("picture",os.toByteArray());
-                    Cursor cursor = db.rawQuery("select id from User where stdid=?", new String[]{id}, null);
-                    if(cursor.moveToFirst()) {
-                        if (cursor.getCount() != 0) {
-                            ret=true;
+                    UserConnection userConnection=new UserConnection();
+                    try {
+                        userConnection.initRegisterConnection(id,pw,rnm,nnm,os.toByteArray(),new okhttp3.Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Looper.prepare();
+                                Toast.makeText(Create_User_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String result=response.body().string();
+                                User user=new User();
+                                userConnection.parseJSON(user,result);
+                                Looper.prepare();
+                                Toast.makeText(Create_User_promote_Activity.this,user.getResponse(),Toast.LENGTH_SHORT).show();
+                                if(user.getCode()==101){
+                                    Intent intent = new Intent(Create_User_promote_Activity.this, MainActivity.class);
+                                    startActivity(intent);
+                                }
+                                Looper.loop();
+                            }
+                        });
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+
+                    /*userConnection.uploadPictureForRegister(os.toByteArray(), new UserConnection.HttpCallbackListener() {
+                        @Override
+                        public void onFinish(String response) {
+
                         }
-                    }
-                    cursor.close();
-                    if(!ret){
-                        db.insert("User", null, values);
-                        Toast.makeText(Create_User_promote_Activity.this, "创建成功！", Toast.LENGTH_SHORT).show();
-                        values.clear();
-                        Intent intent = new Intent(Create_User_promote_Activity.this, MainActivity.class);
-                        startActivity(intent);
-                    }
-                    else {
-                        Toast.makeText(Create_User_promote_Activity.this, "该学号对应账号已经存在！", Toast.LENGTH_SHORT).show();
-                    }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });*/
                 }
                 else
                     Toast.makeText(Create_User_promote_Activity.this, "学号必须为13位数字！", Toast.LENGTH_SHORT).show();
@@ -143,6 +164,7 @@ public class Create_User_promote_Activity extends rootActivity {
         });
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
         super.initWidget();

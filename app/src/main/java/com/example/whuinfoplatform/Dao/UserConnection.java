@@ -3,6 +3,7 @@ package com.example.whuinfoplatform.Dao;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Xml;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -12,7 +13,14 @@ import com.example.whuinfoplatform.Entity.User;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
@@ -26,27 +34,73 @@ public class UserConnection {
     private RequestBody formBody;
     public static String URL = "http://122.9.144.219:8080/myServlet/";
 
-   /* public void initRegisterConnection(String stdid,String pwd,String realname,String nickname){
+    public void initRegisterConnection(String stdid,String pwd,String realname,String nickname,byte[] picture,okhttp3.Callback callback) throws MalformedURLException {
         String Url=URL+"RegisterServlet";
+        String s=new String(picture);
         formBody = new FormBody.Builder()
                 .add("stdid",stdid)
                 .add("pwd", pwd)
                 .add("realname", realname)
                 .add("nickname", nickname)
+                .add("picture",s)
                 .build();
-        requestUsingOkHttp(Url,new okhttp3.Callback(){
 
+        OkHttpClient client=new OkHttpClient();
+
+        Request request=new Request.Builder().url(Url).post(formBody).build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    public interface HttpCallbackListener{
+        void onFinish(String response);
+
+        void onError(Exception e);
+    }
+
+    /*public void uploadPictureForRegister(byte[] PostData,final HttpCallbackListener listener) {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-
+            public void run() {
+                URL u = null;
+                HttpURLConnection con = null;
+                InputStream inputStream = null;
+                //尝试发送请求
+                try {
+                    u = new URL(URL+"RegisterServlet");
+                    con = (HttpURLConnection) u.openConnection();
+                    con.setRequestMethod("POST");
+                    con.setDoOutput(true);
+                    con.setDoInput(true);
+                    con.setUseCaches(false);
+                    con.setRequestProperty("Content-Type", "application/octet-stream");
+                    OutputStream outStream = con.getOutputStream();
+                    outStream.write(PostData);
+                    outStream.flush();
+                    outStream.close();
+                    //读取返回内容
+                    inputStream = con.getInputStream();
+                    BufferedReader reader=new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder response=new StringBuilder();
+                    String line;
+                    while ((line=reader.readLine())!=null){
+                        response.append(line);
+                    }
+                    if(listener!=null){
+                        listener.onFinish(response.toString());
+                    }
+                } catch (Exception e) {
+                    if(listener!=null){
+                        listener.onError(e);
+                    }
+                } finally {
+                    if (con != null) {
+                        con.disconnect();
+                    }
+                }
             }
+        }).start();
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String result=response.body().string();
-                parseJSON(result);
-            }
-        });
     }*/
 
     public void initLoginConnection(String stdid,String pwd,okhttp3.Callback callback) {
