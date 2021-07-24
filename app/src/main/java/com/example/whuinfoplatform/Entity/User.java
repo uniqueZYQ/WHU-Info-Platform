@@ -9,6 +9,7 @@ public class User {
     private String nickname;
     private String realname;
     private String stdid;
+    private byte[] picture;
 
     public void setCode(int code) {
         this.code=code;
@@ -57,5 +58,12 @@ public class User {
     }
     public String getStdid() {
         return stdid;
+    }
+
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
+    }
+    public byte[] getPicture() {
+        return picture;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -17,9 +18,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.Gravity;
@@ -33,21 +38,29 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
+import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPersonalCenterBinding;
 import com.example.whuinfoplatform.databinding.ActivityPersonalMessageBinding;
 import com.example.whuinfoplatform.databinding.ActivityRenewPermsgPromteBinding;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class Personal_Message_Activity extends rootActivity implements View.OnClickListener{
     private ActivityPersonalMessageBinding binding;
-    private DB_USER dbHelper;
     int id=0,type1=1;
     Dialog mCameraDialog;
+    Bitmap bit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,32 +78,35 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
         super.initData();
         Intent intent = getIntent();
         id=intent.getIntExtra("id",0);
-        String tmpnkn="";
-        String tmprnm="";
-        String tmpstdid="";
-        dbHelper = new DB_USER(this, "User.db", null, 7);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select stdid,realname,nickname,picture from User where id=?", new String[]{Integer.toString(id)}, null);
-        if(cursor.moveToFirst()){
-            if (cursor.getCount() != 0) {
-                tmpnkn=cursor.getString(cursor.getColumnIndex("nickname"));
-                tmprnm=cursor.getString(cursor.getColumnIndex("realname"));
-                tmpstdid=Long.toString(cursor.getLong(cursor.getColumnIndex("stdid")));
-                byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
-                Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                binding.picture.setImageBitmap(bit);
-                binding.picture.setOnClickListener(v->{
-                    EnlargePicture enlargePicture=new EnlargePicture();
-                    enlargePicture.EnlargePicture(Personal_Message_Activity.this,bit,false);
-                });
+
+        UserConnection userConnection=new UserConnection();
+        userConnection.queryUserInfo(String.valueOf(id),new okhttp3.Callback(){
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Looper.prepare();
+                Toast.makeText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                Looper.loop();
             }
-            else
-                Toast.makeText(Personal_Message_Activity.this,"头像信息读取失败",Toast.LENGTH_SHORT).show();
-        }
-        cursor.close();
-        binding.textNickname.setText("昵称:"+tmpnkn);
-        binding.textRealname.setText("真实姓名:"+tmprnm);
-        binding.textStdid.setText("学号:"+tmpstdid);
+
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result=response.body().string();
+                User user=new User();
+                userConnection.parseJSON(user,result);
+                Looper.prepare();
+                if(user.getCode()==101){
+                    String nkn=user.getNickname();
+                    String rnm=user.getRealname();
+                    String stdid=user.getStdid();
+                    byte[] in = user.getPicture();
+                    bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                    showResult(stdid,nkn,rnm,bit);
+                }
+                Looper.loop();
+            }
+        });
     }
 
     @Override
@@ -105,6 +121,24 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
         binding.buttonUpload.setOnClickListener(v->{
             type1=0;
             setDialog();
+        });
+        binding.picture.setOnClickListener(v->{
+            EnlargePicture enlargePicture=new EnlargePicture();
+            enlargePicture.EnlargePicture(Personal_Message_Activity.this,bit,false);
+        });
+    }
+
+    private void showResult(String stdid,String nkn,String rnm,Bitmap bit){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                /*here todo*/
+                binding.picture.setImageBitmap(bit);
+                /*end*/
+                binding.textNickname.setText("昵称:"+nkn);
+                binding.textRealname.setText("真实姓名:"+rnm);
+                binding.textStdid.setText("学号:"+stdid);
+            }
         });
     }
 

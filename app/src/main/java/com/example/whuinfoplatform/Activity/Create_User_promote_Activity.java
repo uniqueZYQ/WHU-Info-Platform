@@ -1,5 +1,6 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.Editable;
@@ -28,8 +30,11 @@ import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityCreateUserPromoteBinding;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.Base64;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -100,6 +105,7 @@ public class Create_User_promote_Activity extends rootActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void initClick() {
         super.initClick();
@@ -117,46 +123,33 @@ public class Create_User_promote_Activity extends rootActivity {
                     Bitmap bitmap = Bitmap.createBitmap(picture.getDrawingCache());
                     picture.setDrawingCacheEnabled(false);
                     final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                    byte[] in=os.toByteArray();
+                    String FileBuf = Base64.getEncoder().encodeToString(in);
                     UserConnection userConnection=new UserConnection();
-                    try {
-                        userConnection.initRegisterConnection(id,pw,rnm,nnm,os.toByteArray(),new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                Looper.prepare();
-                                Toast.makeText(Create_User_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String result=response.body().string();
-                                User user=new User();
-                                userConnection.parseJSON(user,result);
-                                Looper.prepare();
-                                Toast.makeText(Create_User_promote_Activity.this,user.getResponse(),Toast.LENGTH_SHORT).show();
-                                if(user.getCode()==101){
-                                    Intent intent = new Intent(Create_User_promote_Activity.this, MainActivity.class);
-                                    startActivity(intent);
-                                }
-                                Looper.loop();
-                            }
-                        });
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
-
-                    /*userConnection.uploadPictureForRegister(os.toByteArray(), new UserConnection.HttpCallbackListener() {
+                    userConnection.initRegisterConnection(id,pw,rnm,nnm,FileBuf,new okhttp3.Callback() {
                         @Override
-                        public void onFinish(String response) {
-
+                        public void onFailure(Call call, IOException e) {
+                            Looper.prepare();
+                            Toast.makeText(Create_User_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                            Looper.loop();
                         }
 
+                        @RequiresApi(api = Build.VERSION_CODES.O)
                         @Override
-                        public void onError(Exception e) {
-
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String result=response.body().string();
+                            User user=new User();
+                            userConnection.parseJSON(user,result);
+                            Looper.prepare();
+                            Toast.makeText(Create_User_promote_Activity.this,user.getResponse(),Toast.LENGTH_SHORT).show();
+                            if(user.getCode()==101){
+                                Intent intent = new Intent(Create_User_promote_Activity.this, MainActivity.class);
+                                startActivity(intent);
+                            }
+                            Looper.loop();
                         }
-                    });*/
+                    });
                 }
                 else
                     Toast.makeText(Create_User_promote_Activity.this, "学号必须为13位数字！", Toast.LENGTH_SHORT).show();

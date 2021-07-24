@@ -1,48 +1,32 @@
 package com.example.whuinfoplatform.Dao;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.os.Looper;
-import android.util.Xml;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.os.Build;
+import androidx.annotation.RequiresApi;
 
 import com.example.whuinfoplatform.Entity.User;
 
 import org.json.JSONObject;
+import java.util.Base64;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class UserConnection {
 
     private RequestBody formBody;
     public static String URL = "http://122.9.144.219:8080/myServlet/";
 
-    public void initRegisterConnection(String stdid,String pwd,String realname,String nickname,byte[] picture,okhttp3.Callback callback) throws MalformedURLException {
+    public void initRegisterConnection(String stdid,String pwd,String realname,String nickname,String picture,okhttp3.Callback callback) {
         String Url=URL+"RegisterServlet";
-        String s=new String(picture);
+
         formBody = new FormBody.Builder()
                 .add("stdid",stdid)
                 .add("pwd", pwd)
                 .add("realname", realname)
                 .add("nickname", nickname)
-                .add("picture",s)
+                .add("picture",picture)
                 .build();
 
         OkHttpClient client=new OkHttpClient();
@@ -52,56 +36,44 @@ public class UserConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public interface HttpCallbackListener{
-        void onFinish(String response);
+    public void queryUserInfo(String id,okhttp3.Callback callback) {
+        String Url=URL+"QueryUserServlet";
+        formBody=new FormBody.Builder()
+                .add("id",id)
+                .build();
+        OkHttpClient client=new OkHttpClient();
 
-        void onError(Exception e);
+        Request request=new Request.Builder().url(Url).post(formBody).build();
+
+        client.newCall(request).enqueue(callback);
     }
 
-    /*public void uploadPictureForRegister(byte[] PostData,final HttpCallbackListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                URL u = null;
-                HttpURLConnection con = null;
-                InputStream inputStream = null;
-                //尝试发送请求
-                try {
-                    u = new URL(URL+"RegisterServlet");
-                    con = (HttpURLConnection) u.openConnection();
-                    con.setRequestMethod("POST");
-                    con.setDoOutput(true);
-                    con.setDoInput(true);
-                    con.setUseCaches(false);
-                    con.setRequestProperty("Content-Type", "application/octet-stream");
-                    OutputStream outStream = con.getOutputStream();
-                    outStream.write(PostData);
-                    outStream.flush();
-                    outStream.close();
-                    //读取返回内容
-                    inputStream = con.getInputStream();
-                    BufferedReader reader=new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder response=new StringBuilder();
-                    String line;
-                    while ((line=reader.readLine())!=null){
-                        response.append(line);
-                    }
-                    if(listener!=null){
-                        listener.onFinish(response.toString());
-                    }
-                } catch (Exception e) {
-                    if(listener!=null){
-                        listener.onError(e);
-                    }
-                } finally {
-                    if (con != null) {
-                        con.disconnect();
-                    }
-                }
-            }
-        }).start();
+    public void renewUserPicture(String id,String picture,okhttp3.Callback callback) {
+        String Url=URL+"renewUserPictureServlet";
+        formBody=new FormBody.Builder()
+                .add("id",id)
+                .add("picture",picture)
+                .build();
+        OkHttpClient client=new OkHttpClient();
 
-    }*/
+        Request request=new Request.Builder().url(Url).post(formBody).build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    public void renewUserInfo(String id,String pwd,String nickname,okhttp3.Callback callback) {
+        String Url=URL+"renewUserServlet";
+        formBody=new FormBody.Builder()
+                .add("id",id)
+                .add("pwd",pwd)
+                .add("nickname",nickname)
+                .build();
+        OkHttpClient client=new OkHttpClient();
+
+        Request request=new Request.Builder().url(Url).post(formBody).build();
+
+        client.newCall(request).enqueue(callback);
+    }
 
     public void initLoginConnection(String stdid,String pwd,okhttp3.Callback callback) {
         String Url=URL+"LoginServlet";
@@ -117,7 +89,8 @@ public class UserConnection {
 
     }
 
-    public void parseJSON(User user,String json){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void parseJSON(User user, String json){
         try{
             JSONObject jsonObject=new JSONObject(json);
             int id=jsonObject.getInt("id");
@@ -126,20 +99,27 @@ public class UserConnection {
             int code=jsonObject.getInt("code");
             String stdid=jsonObject.getString("stdid");
             String response=jsonObject.getString("response");
-            showResponse(user,code,id,nickname,realname,response,stdid);
+            /*
+            图片加载方案：
+            以字节流的base64编码为String传输并存储，接收时服务器端以String传输，在此处解码
+            --2021.7.25 0:54 CityGhost
+             */
+            String ss=jsonObject.getString("picture");
+            byte[] picture = {};
+            picture = Base64.getDecoder().decode(ss);
+            showResponse(user,code,id,nickname,realname,response,stdid,picture);
         }catch (Exception e){
             e.printStackTrace();
-
         }
     }
 
-    private void showResponse(User user,int code,int id,String nickname,String realname,String response,String stdid){
+    private void showResponse(User user,int code,int id,String nickname,String realname,String response,String stdid,byte[] picture){
         user.setCode(code);
         user.setId(id);
         user.setNickname(nickname);
         user.setRealname(realname);
         user.setResponse(response);
         user.setStdid(stdid);
+        user.setPicture(picture);
     }
-
 }

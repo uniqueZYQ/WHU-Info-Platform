@@ -1,7 +1,7 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -10,11 +10,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -22,30 +20,33 @@ import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.FloatMath;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
-import com.example.whuinfoplatform.databinding.ActivityPersonalMessageBinding;
 import com.example.whuinfoplatform.databinding.ActivityRenewPermsgPromteBinding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Base64;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class Renew_Permsg_Promte_Activity extends rootActivity {
     private ActivityRenewPermsgPromteBinding binding;
-    private DB_USER dbHelper;
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
     private ImageView picture;
@@ -132,15 +133,10 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
     protected void initData() {
         super.initData();
         Intent intent1 = getIntent();
-        dbHelper = new DB_USER(this, "User.db", null, 7);
-        SQLiteDatabase db1 = dbHelper.getWritableDatabase();
         String id = Integer.toString(intent1.getIntExtra("id", 0));
         if(intent1.getIntExtra("type",0)==1) {
             binding.editNickname.setVisibility(View.VISIBLE);
             binding.editPwd.setVisibility(View.VISIBLE);
-            String newnkn = "";
-            String newrnm = "";
-            String newstdid = "";
             binding.editPwd.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -163,31 +159,36 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                     }
                 }
             });
-            Cursor cursor = db1.rawQuery("select nickname,realname,stdid from User where id=?", new String[]{id}, null);
-            if (cursor.moveToFirst()) {
-                if (cursor.getCount() != 0) {
-                    newnkn = cursor.getString(cursor.getColumnIndex("nickname"));
-                    newrnm = cursor.getString(cursor.getColumnIndex("realname"));
-                    newstdid = cursor.getString(cursor.getColumnIndex("stdid"));
+            UserConnection userConnection=new UserConnection();
+            userConnection.queryUserInfo(id, new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    Toast.makeText(Renew_Permsg_Promte_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }
-            }
-            cursor.close();
-            binding.editNickname.setText(newnkn);
-            binding.textStdidRnm.setText(newstdid + "-" + newrnm);
+
+                @RequiresApi(api = Build.VERSION_CODES.O)
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    User user=new User();
+                    userConnection.parseJSON(user,result);
+                    Looper.prepare();
+                    if(user.getCode()==101){
+                        String nkn=user.getNickname();
+                        String rnm=user.getRealname();
+                        String stdid=user.getStdid();
+                        showResult(nkn,rnm,stdid);
+                    }
+                    Looper.loop();
+                }
+            });
         }
         if(intent1.getIntExtra("type",0)>1){
             binding.picture.setVisibility(View.VISIBLE);
             binding.button1.setText("确定上传");
             binding.textStdidRnm.setText("缩放或拖动图片以适配相框");
-            /*Cursor cursor = db1.rawQuery("select picture from User where id=?", new String[]{id}, null);
-            if (cursor.moveToFirst()) {
-                if (cursor.getCount() != 0) {
-                    byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
-                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                    binding.picture.setImageBitmap(bit);
-                }
-            }
-            cursor.close();*/
             if(intent1.getIntExtra("type",0)==2){
                 picture=binding.picture;
                 if(ContextCompat.checkSelfPermission(Renew_Permsg_Promte_Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
@@ -221,32 +222,44 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void initClick() {
         super.initClick();
         binding.button1.setOnClickListener(v->{
             Intent intent1 = getIntent();
-            dbHelper = new DB_USER(this, "User.db", null, 7);
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
             if(intent1.getIntExtra("type",0)==1) {
                 String id = Integer.toString(intent1.getIntExtra("id", 0));
                 String newnkn = binding.editNickname.getText().toString();
                 String newpwd = binding.editPwd.getText().toString();
-                /*binding.picture.setDrawingCacheEnabled(true);
-                Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
-                binding.picture.setDrawingCacheEnabled(false);
-                final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);*/
+
                 if ((newnkn.equals("")) || (newpwd.equals(""))) {
                     Toast.makeText(Renew_Permsg_Promte_Activity.this, "请填入完整信息！", Toast.LENGTH_SHORT).show();
                 } else {
-                    db.execSQL("update User set nickname = ?,pwd = ? where id = ?", new String[]{newnkn, newpwd, id});
-                    /*ContentValues values = new ContentValues();
-                    values.put("picture", os.toByteArray());
-                    db.update("User", values, "id=?", new String[]{id});*/
-                    Toast.makeText(Renew_Permsg_Promte_Activity.this, "修改成功，请重新登录！", Toast.LENGTH_SHORT).show();
-                    Intent intent2 = new Intent(Renew_Permsg_Promte_Activity.this, MainActivity.class);
-                    startActivity(intent2);
+                    UserConnection userConnection=new UserConnection();
+                    userConnection.renewUserInfo(id,newpwd,newnkn, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Looper.prepare();
+                            Toast.makeText(Renew_Permsg_Promte_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+
+                        @RequiresApi(api = Build.VERSION_CODES.O)
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String result=response.body().string();
+                            User user=new User();
+                            userConnection.parseJSON(user,result);
+                            Looper.prepare();
+                            Toast.makeText(Renew_Permsg_Promte_Activity.this, user.getResponse(), Toast.LENGTH_SHORT).show();
+                            if(user.getCode()==101){
+                                Intent intent2 = new Intent(Renew_Permsg_Promte_Activity.this, MainActivity.class);
+                                startActivity(intent2);
+                            }
+                            Looper.loop();
+                        }
+                    });
                 }
             }
             if(intent1.getIntExtra("type",0)>1) {
@@ -255,13 +268,32 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                 Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
                 binding.picture.setDrawingCacheEnabled(false);
                 final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
-                ContentValues values = new ContentValues();
-                values.put("picture", os.toByteArray());
-                db.update("User", values, "id=?", new String[]{id});
-                Toast.makeText(Renew_Permsg_Promte_Activity.this, "头像修改成功！", Toast.LENGTH_SHORT).show();
-                Intent intent2 = new Intent(Renew_Permsg_Promte_Activity.this, Personal_Message_Activity.class);
-                startActivity(intent2);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                byte[] in=os.toByteArray();
+                String FileBuf = Base64.getEncoder().encodeToString(in);
+                UserConnection userConnection=new UserConnection();
+                userConnection.renewUserPicture(id,FileBuf, new okhttp3.Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Looper.prepare();
+                        Toast.makeText(Renew_Permsg_Promte_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String result=response.body().string();
+                        User user=new User();
+                        userConnection.parseJSON(user,result);
+                        Looper.prepare();
+                        Toast.makeText(Renew_Permsg_Promte_Activity.this,user.getResponse(),Toast.LENGTH_SHORT).show();
+                        if(user.getCode()==101){
+                            Intent intent = new Intent(Renew_Permsg_Promte_Activity.this, Personal_Message_Activity.class);
+                            startActivity(intent);
+                        }
+                        Looper.loop();
+                    }
+                });
             }
         });
         binding.button2.setOnClickListener(v->{
@@ -282,6 +314,16 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
             actionBar.setTitle("个人资料-选择头像");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+    }
+
+    private void showResult(String nkn,String rnm,String stdid){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                binding.editNickname.setText(nkn);
+                binding.textStdidRnm.setText(stdid + "-" + rnm);
+            }
+        });
     }
 
     // 计算两个触摸点之间的距离
