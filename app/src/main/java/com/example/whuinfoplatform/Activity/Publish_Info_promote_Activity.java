@@ -1,6 +1,7 @@
 package com.example.whuinfoplatform.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,7 +13,9 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -56,15 +59,19 @@ import com.baidu.mapapi.search.poi.PoiIndoorResult;
 import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
 import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Entity.BaiDuMap;
 import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.Picture;
+import com.example.whuinfoplatform.Entity.User;
+import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPublishInfoPromoteBinding;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -72,6 +79,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class Publish_Info_promote_Activity extends rootActivity {
     private ActivityPublishInfoPromoteBinding binding;
@@ -483,7 +493,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if(res>2||count&&res==0)
                                 Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
                             else{
-                                Connector.getDatabase();
+                                /*Connector.getDatabase();
                                 Info info = new Info();
                                 info.setOwner_id(id);
                                 info.setAnswered(0);
@@ -509,7 +519,8 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 String time = sdfTwo.format(timecurrentTimeMillis);
                                 info.setSend_date(time);
                                 info.save();
-                                startActivity(intent);
+                                startActivity(intent);*/
+                                Publish("1",String.valueOf(pos_fd),"-1","-1","","","","-1",detail,String.valueOf(reward),"0");
                             }
                         }
                         break;
@@ -539,7 +550,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if (res > 2 || count && res == 0)
                                 Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
                             else {
-                                Connector.getDatabase();
+                                /*Connector.getDatabase();
                                 Info info = new Info();
                                 info.setOwner_id(id);
                                 info.setAnswered(0);
@@ -565,7 +576,8 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 String time = sdfTwo.format(timecurrentTimeMillis);
                                 info.setSend_date(time);
                                 info.save();
-                                startActivity(intent);
+                                startActivity(intent);*/
+                                Publish("2","-1",String.valueOf(pos_help),"-1","","","","-1",detail,String.valueOf(reward),"0");
                             }
                         }
                         break;
@@ -595,7 +607,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if (res > 2 || count && res == 0)
                                 Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
                             else {
-                                Connector.getDatabase();
+                                /*Connector.getDatabase();
                                 Info info = new Info();
                                 info.setOwner_id(id);
                                 info.setAnswered(0);
@@ -621,7 +633,8 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 String time = sdfTwo.format(timecurrentTimeMillis);
                                 info.setSend_date(time);
                                 info.save();
-                                startActivity(intent);
+                                startActivity(intent);*/
+                                Publish("3","-1","-1",String.valueOf(price),"","","","-1",detail,"-1","0");
                             }
                         }
                         break;
@@ -651,7 +664,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if (res > 2 || count && res == 0)
                                 Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
                             else {
-                                Connector.getDatabase();
+                                /*Connector.getDatabase();
                                 Info info = new Info();
                                 info.setOwner_id(id);
                                 info.setAnswered(0);
@@ -677,7 +690,8 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 String time = sdfTwo.format(timecurrentTimeMillis);
                                 info.setSend_date(time);
                                 info.save();
-                                startActivity(intent);
+                                startActivity(intent);*/
+                                Publish("4","-1","-1",String.valueOf(price),"","","","-1",detail,"-1","0");
                             }
                         }
                         break;
@@ -709,7 +723,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if (res > 2 || count && res == 0)
                                 Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
                             else {
-                                Connector.getDatabase();
+                                /*Connector.getDatabase();
                                 Info info = new Info();
                                 info.setOwner_id(id);
                                 info.setAnswered(0);
@@ -735,7 +749,8 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 String time = sdfTwo.format(timecurrentTimeMillis);
                                 info.setSend_date(time);
                                 info.save();
-                                startActivity(intent);
+                                startActivity(intent);*/
+                                Publish("5","-1","-1","-1",date,place,"","-1",detail,String.valueOf(reward),String.valueOf(placeId));
                             }
                         }
                         break;
@@ -746,7 +761,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         if(detail.equals("")||lesson.equals("")||pos_score==0)
                             Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
                         else {
-                            Connector.getDatabase();
+                            /*Connector.getDatabase();
                             Info info = new Info();
                             info.setOwner_id(id);
                             info.setAnswered(0);
@@ -772,7 +787,8 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             String time = sdfTwo.format(timecurrentTimeMillis);
                             info.setSend_date(time);
                             info.save();
-                            startActivity(intent);
+                            startActivity(intent);*/
+                            Publish("6","-1","-1","-1","","",lesson,String.valueOf(pos_score),detail,"-1","0");
                         }
                         break;
                     }
@@ -945,6 +961,42 @@ public class Publish_Info_promote_Activity extends rootActivity {
         actionBar.setTitle("信息大厅-编辑新信息");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+    }
+
+    private void Publish(String form,String fd_form,String help_form,String price,String date,String place,String lesson,String score,String detail,String reward,String placeId){
+        long timecurrentTimeMillis = System.currentTimeMillis();
+        SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+        String time = sdfTwo.format(timecurrentTimeMillis);
+        InfoConnection infoConnection=new InfoConnection();
+        infoConnection.initRegisterConnection(String.valueOf(id),time,
+                "0",form,fd_form,help_form,
+                price,date,place,lesson,score,detail,reward,
+                String.valueOf(ret_list_1()),String.valueOf(ret_list_2()),String.valueOf(ret_list_3())
+                ,String.valueOf(ret_list_4()),placeId, new okhttp3.Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Looper.prepare();
+                        Toast.makeText(Publish_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
+
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String result=response.body().string();
+                        WebResponse webResponse=new WebResponse();
+                        infoConnection.parseJSONForInfoResponse(webResponse,result);
+                        Looper.prepare();
+                        if(webResponse.getCode()==101){
+                            Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
+                            startActivity(intent);
+                        }
+                        else
+                            Toast.makeText(Publish_Info_promote_Activity.this,webResponse.getResponse(),Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
+                });
     }
 
     private void setDialog() {

@@ -1,5 +1,6 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                             Looper.loop();
                         }
 
+                        @RequiresApi(api = Build.VERSION_CODES.O)
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             String result=response.body().string();
