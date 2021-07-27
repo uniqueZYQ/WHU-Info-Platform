@@ -2,56 +2,30 @@ package com.example.whuinfoplatform.Activity;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Dialog;
-import android.content.ContentUris;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
-import com.example.whuinfoplatform.databinding.ActivityPersonalCenterBinding;
 import com.example.whuinfoplatform.databinding.ActivityPersonalMessageBinding;
-import com.example.whuinfoplatform.databinding.ActivityRenewPermsgPromteBinding;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -132,9 +106,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                /*here todo*/
                 binding.picture.setImageBitmap(bit);
-                /*end*/
                 binding.textNickname.setText("昵称:"+nkn);
                 binding.textRealname.setText("真实姓名:"+rnm);
                 binding.textStdid.setText("学号:"+stdid);

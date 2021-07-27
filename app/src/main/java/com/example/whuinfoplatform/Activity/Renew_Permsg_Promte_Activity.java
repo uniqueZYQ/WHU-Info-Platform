@@ -355,7 +355,27 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                     try{
                         //显示照片
                         Bitmap bitmap= BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        picture.setImageBitmap(bitmap);
+                        //picture.setImageBitmap(bitmap);
+                        Bitmap bitmap_p;
+                        double p_width=bitmap.getWidth();
+                        double p_height=bitmap.getHeight();
+                        double width=800;//标准宽
+                        double height=800;//标准高
+                        LinearLayout.LayoutParams params;
+                        double ratio=p_width/p_height;
+                        if(ratio>1){
+                            height=width/ratio;
+                            params = new LinearLayout.LayoutParams(800,800);
+                            bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
+                            picture.setImageBitmap(bitmap_p);
+                        }
+                        else{
+                            width=ratio*height;
+                            params = new LinearLayout.LayoutParams(800,800);
+                            bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
+                            picture.setImageBitmap(bitmap_p);
+                        }
+                        picture.setLayoutParams(params);
                     }catch(FileNotFoundException e){
                         e.printStackTrace();
                     }
