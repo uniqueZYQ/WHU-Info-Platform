@@ -19,6 +19,7 @@ import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
@@ -30,7 +31,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.whuinfoplatform.Dao.PictureConnection;
+import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.Picture;
+import com.example.whuinfoplatform.Entity.User;
+import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityUploadPicturePromoteBinding;
 
@@ -40,6 +45,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Base64;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class Upload_Picture_promote_Activity extends rootActivity {
     private static final int CENTER = Gravity.CENTER;
@@ -184,6 +193,7 @@ public class Upload_Picture_promote_Activity extends rootActivity {
         binding.chatUpload.setClipToOutline(true);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void initClick() {
         Connector.getDatabase();
@@ -200,34 +210,90 @@ public class Upload_Picture_promote_Activity extends rootActivity {
             startActivity(intent);
         });
         binding.upload.setOnClickListener(v->{
-            com.example.whuinfoplatform.Entity.Picture picture=new Picture();
+            //com.example.whuinfoplatform.Entity.Picture picture=new Picture();
+            LocalPicture localPicture=new LocalPicture();
             binding.picture.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
             binding.picture.setDrawingCacheEnabled(false);
             final ByteArrayOutputStream os = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
-            picture.setPicture(os.toByteArray());
+            byte[] in=os.toByteArray();
+            String FileBuf = Base64.getEncoder().encodeToString(in);
+            localPicture.setPicture(FileBuf);
+            /*picture.setPicture(os.toByteArray());
             picture.save();
             int picture_id=picture.getId();
             //Toast.makeText(Upload_Picture_promote_Activity.this,"图片上传成功!",Toast.LENGTH_SHORT).show();
             Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
             intent.putExtra("picture_id",picture_id);
-            startActivity(intent);
+            startActivity(intent);*/
+            PictureConnection pictureConnection=new PictureConnection();
+            pictureConnection.initUploadConnection(FileBuf, new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    Toast.makeText(Upload_Picture_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    WebResponse webResponse=new WebResponse();
+                    pictureConnection.parseJSONForPictureResponse(webResponse,result);
+                    Looper.prepare();
+                    Toast.makeText(Upload_Picture_promote_Activity.this,webResponse.getResponse(),Toast.LENGTH_SHORT).show();
+                    if(webResponse.getCode()==101){
+                        Intent intent = new Intent(Upload_Picture_promote_Activity.this, Publish_Info_promote_Activity.class);
+                        intent.putExtra("picture_id",webResponse.getId());
+                        startActivity(intent);
+                    }
+                    localPicture.setCode(webResponse.getId());
+                    localPicture.save();
+                    Looper.loop();
+                }
+            });
         });
         binding.chatUpload.setOnClickListener(v -> {
-            com.example.whuinfoplatform.Entity.Picture picture=new Picture();
+            //com.example.whuinfoplatform.Entity.Picture picture=new Picture();
             binding.picture.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
             binding.picture.setDrawingCacheEnabled(false);
             final ByteArrayOutputStream os = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
-            picture.setPicture(os.toByteArray());
+            byte[] in=os.toByteArray();
+            String FileBuf = Base64.getEncoder().encodeToString(in);
+            /*picture.setPicture(os.toByteArray());
             picture.save();
             int picture_id=picture.getId();
             //Toast.makeText(Upload_Picture_promote_Activity.this,"图片上传成功!",Toast.LENGTH_SHORT).show();
-            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Chat_Window_Activity.class);
+            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
             intent.putExtra("picture_id",picture_id);
-            startActivity(intent);
+            startActivity(intent);*/
+            PictureConnection pictureConnection=new PictureConnection();
+            pictureConnection.initUploadConnection(FileBuf, new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    Toast.makeText(Upload_Picture_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    WebResponse webResponse=new WebResponse();
+                    pictureConnection.parseJSONForPictureResponse(webResponse,result);
+                    Looper.prepare();
+                    Toast.makeText(Upload_Picture_promote_Activity.this,webResponse.getResponse(),Toast.LENGTH_SHORT).show();
+                    if(webResponse.getCode()==101){
+                        Intent intent = new Intent(Upload_Picture_promote_Activity.this, Chat_Window_Activity.class);
+                        intent.putExtra("picture_id",webResponse.getId());
+                        startActivity(intent);
+                    }
+                    Looper.loop();
+                }
+            });
         });
     }
 

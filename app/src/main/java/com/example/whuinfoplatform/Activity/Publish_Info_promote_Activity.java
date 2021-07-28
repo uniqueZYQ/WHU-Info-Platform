@@ -62,6 +62,7 @@ import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Entity.BaiDuMap;
 import com.example.whuinfoplatform.Entity.Info;
+import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.Entity.WebResponse;
@@ -75,6 +76,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -493,33 +495,6 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if(res>2||count&&res==0)
                                 Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
                             else{
-                                /*Connector.getDatabase();
-                                Info info = new Info();
-                                info.setOwner_id(id);
-                                info.setAnswered(0);
-                                info.setForm(1);
-                                info.setFd_form(pos_fd);
-                                info.setHelp_form(-1);
-                                info.setPrice(-1);
-                                info.setDate("");
-                                info.setPlace("");
-                                info.setLesson("");
-                                info.setScore(-1);
-                                info.setDetail(detail);
-                                info.setReward(reward);
-                                info.setPicture1(ret_list_1());
-                                info.setPicture2(ret_list_2());
-                                info.setPicture3(ret_list_3());
-                                info.setPicture4(ret_list_4());
-                                info.setPlaceId("0");
-                                Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
-                                long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                                String time = sdfTwo.format(timecurrentTimeMillis);
-                                info.setSend_date(time);
-                                info.save();
-                                startActivity(intent);*/
                                 Publish("1",String.valueOf(pos_fd),"-1","-1","","","","-1",detail,String.valueOf(reward),"0");
                             }
                         }
@@ -550,33 +525,6 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if (res > 2 || count && res == 0)
                                 Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
                             else {
-                                /*Connector.getDatabase();
-                                Info info = new Info();
-                                info.setOwner_id(id);
-                                info.setAnswered(0);
-                                info.setForm(2);
-                                info.setFd_form(-1);
-                                info.setHelp_form(pos_help);
-                                info.setPrice(-1);
-                                info.setDate("");
-                                info.setPlace("");
-                                info.setLesson("");
-                                info.setScore(-1);
-                                info.setDetail(detail);
-                                info.setReward(reward);
-                                info.setPicture1(ret_list_1());
-                                info.setPicture2(ret_list_2());
-                                info.setPicture3(ret_list_3());
-                                info.setPicture4(ret_list_4());
-                                info.setPlaceId("0");
-                                Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
-                                long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                                String time = sdfTwo.format(timecurrentTimeMillis);
-                                info.setSend_date(time);
-                                info.save();
-                                startActivity(intent);*/
                                 Publish("2","-1",String.valueOf(pos_help),"-1","","","","-1",detail,String.valueOf(reward),"0");
                             }
                         }
@@ -607,33 +555,6 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if (res > 2 || count && res == 0)
                                 Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
                             else {
-                                /*Connector.getDatabase();
-                                Info info = new Info();
-                                info.setOwner_id(id);
-                                info.setAnswered(0);
-                                info.setForm(3);
-                                info.setFd_form(-1);
-                                info.setHelp_form(-1);
-                                info.setPrice(price);
-                                info.setDate("");
-                                info.setPlace("");
-                                info.setLesson("");
-                                info.setScore(-1);
-                                info.setDetail(detail);
-                                info.setReward(-1);
-                                info.setPicture1(ret_list_1());
-                                info.setPicture2(ret_list_2());
-                                info.setPicture3(ret_list_3());
-                                info.setPicture4(ret_list_4());
-                                info.setPlaceId("0");
-                                Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
-                                long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                                String time = sdfTwo.format(timecurrentTimeMillis);
-                                info.setSend_date(time);
-                                info.save();
-                                startActivity(intent);*/
                                 Publish("3","-1","-1",String.valueOf(price),"","","","-1",detail,"-1","0");
                             }
                         }
@@ -664,33 +585,6 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if (res > 2 || count && res == 0)
                                 Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
                             else {
-                                /*Connector.getDatabase();
-                                Info info = new Info();
-                                info.setOwner_id(id);
-                                info.setAnswered(0);
-                                info.setForm(4);
-                                info.setFd_form(-1);
-                                info.setHelp_form(-1);
-                                info.setPrice(price);
-                                info.setDate("");
-                                info.setPlace("");
-                                info.setLesson("");
-                                info.setScore(-1);
-                                info.setDetail(detail);
-                                info.setReward(-1);
-                                info.setPicture1(ret_list_1());
-                                info.setPicture2(ret_list_2());
-                                info.setPicture3(ret_list_3());
-                                info.setPicture4(ret_list_4());
-                                info.setPlaceId("0");
-                                Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
-                                long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                                String time = sdfTwo.format(timecurrentTimeMillis);
-                                info.setSend_date(time);
-                                info.save();
-                                startActivity(intent);*/
                                 Publish("4","-1","-1",String.valueOf(price),"","","","-1",detail,"-1","0");
                             }
                         }
@@ -723,33 +617,6 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             if (res > 2 || count && res == 0)
                                 Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
                             else {
-                                /*Connector.getDatabase();
-                                Info info = new Info();
-                                info.setOwner_id(id);
-                                info.setAnswered(0);
-                                info.setForm(5);
-                                info.setFd_form(-1);
-                                info.setHelp_form(-1);
-                                info.setPrice(-1);
-                                info.setDate(date);
-                                info.setPlace(place);
-                                info.setLesson("");
-                                info.setScore(-1);
-                                info.setDetail(detail);
-                                info.setReward(reward);
-                                info.setPicture1(ret_list_1());
-                                info.setPicture2(ret_list_2());
-                                info.setPicture3(ret_list_3());
-                                info.setPicture4(ret_list_4());
-                                info.setPlaceId(placeId);
-                                Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
-                                long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                                String time = sdfTwo.format(timecurrentTimeMillis);
-                                info.setSend_date(time);
-                                info.save();
-                                startActivity(intent);*/
                                 Publish("5","-1","-1","-1",date,place,"","-1",detail,String.valueOf(reward),String.valueOf(placeId));
                             }
                         }
@@ -761,33 +628,6 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         if(detail.equals("")||lesson.equals("")||pos_score==0)
                             Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
                         else {
-                            /*Connector.getDatabase();
-                            Info info = new Info();
-                            info.setOwner_id(id);
-                            info.setAnswered(0);
-                            info.setForm(6);
-                            info.setFd_form(-1);
-                            info.setHelp_form(-1);
-                            info.setPrice(-1);
-                            info.setDate("");
-                            info.setPlace("");
-                            info.setLesson(lesson);
-                            info.setScore(pos_score);
-                            info.setDetail(detail);
-                            info.setReward(-1);
-                            info.setPicture1(ret_list_1());
-                            info.setPicture2(ret_list_2());
-                            info.setPicture3(ret_list_3());
-                            info.setPicture4(ret_list_4());
-                            info.setPlaceId("0");
-                            Toast.makeText(Publish_Info_promote_Activity.this, "发布成功!\n可前往[我发布的]查看详情", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Publish_Info_promote_Activity.this, Info_Hall_Activity.class);
-                            long timecurrentTimeMillis = System.currentTimeMillis();
-                            SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                            String time = sdfTwo.format(timecurrentTimeMillis);
-                            info.setSend_date(time);
-                            info.save();
-                            startActivity(intent);*/
                             Publish("6","-1","-1","-1","","",lesson,String.valueOf(pos_score),detail,"-1","0");
                         }
                         break;
@@ -1055,6 +895,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
         setIntent(intent);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onResume(){
         super.onResume();
@@ -1076,6 +917,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initPictureList(){
         Intent intent=getIntent();
         int picture_id=intent.getIntExtra("picture_id",0);
@@ -1083,33 +925,36 @@ public class Publish_Info_promote_Activity extends rootActivity {
             picture_count++;
             pictureList.add(picture_id);
         }
-        Connector.getDatabase();
         switch(pictureList.size()){
             case 4:
                 int picture4=pictureList.get(3);
-                List<Picture> picture_4 = DataSupport.where("id=?",String.valueOf(picture4)).find(Picture.class);
-                byte[] in_4=picture_4.get(0).getPicture();
+                List<LocalPicture> picture_4 = DataSupport.where("code=?",String.valueOf(picture4)).find(LocalPicture.class);
+                String str4=picture_4.get(0).getPicture();
+                byte[] in_4=Base64.getDecoder().decode(str4);
                 binding.picture4.setVisibility(View.VISIBLE);
                 Bitmap bit_4 = BitmapFactory.decodeByteArray(in_4, 0, in_4.length);
                 binding.picture4.setImageBitmap(bit_4);
             case 3:
                 int picture3=pictureList.get(2);
-                List<Picture> picture_3 = DataSupport.where("id=?",String.valueOf(picture3)).find(Picture.class);
-                byte[] in_3=picture_3.get(0).getPicture();
+                List<LocalPicture> picture_3 = DataSupport.where("code=?",String.valueOf(picture3)).find(LocalPicture.class);
+                String str3=picture_3.get(0).getPicture();
+                byte[] in_3=Base64.getDecoder().decode(str3);
                 binding.picture3.setVisibility(View.VISIBLE);
                 Bitmap bit_3 = BitmapFactory.decodeByteArray(in_3, 0, in_3.length);
                 binding.picture3.setImageBitmap(bit_3);
             case 2:
                 int picture2=pictureList.get(1);
-                List<Picture> picture_2 = DataSupport.where("id=?",String.valueOf(picture2)).find(Picture.class);
-                byte[] in_2=picture_2.get(0).getPicture();
+                List<LocalPicture> picture_2 = DataSupport.where("code=?",String.valueOf(picture2)).find(LocalPicture.class);
+                String str2=picture_2.get(0).getPicture();
+                byte[] in_2=Base64.getDecoder().decode(str2);
                 binding.picture2.setVisibility(View.VISIBLE);
                 Bitmap bit_2 = BitmapFactory.decodeByteArray(in_2, 0, in_2.length);
                 binding.picture2.setImageBitmap(bit_2);
             case 1:
                 int picture1=pictureList.get(0);
-                List<Picture> picture_1 = DataSupport.where("id=?",String.valueOf(picture1)).find(Picture.class);
-                byte[] in_1=picture_1.get(0).getPicture();
+                List<LocalPicture> picture_1 = DataSupport.where("code=?",String.valueOf(picture1)).find(LocalPicture.class);
+                String str1=picture_1.get(0).getPicture();
+                byte[] in_1=Base64.getDecoder().decode(str1);
                 binding.picture1.setVisibility(View.VISIBLE);
                 Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
                 binding.picture1.setImageBitmap(bit_1);
