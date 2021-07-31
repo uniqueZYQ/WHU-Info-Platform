@@ -1,19 +1,26 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.Person;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.whuinfoplatform.Adapter.my_info_Adapter;
+import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Entity.Info;
+import com.example.whuinfoplatform.Entity.MyInformation;
+import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPersonalCenterBinding;
@@ -21,8 +28,12 @@ import com.example.whuinfoplatform.databinding.MyInfoItemBinding;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class Personal_Center_Activity extends rootActivity {
 
@@ -42,40 +53,12 @@ public class Personal_Center_Activity extends rootActivity {
         binding = ActivityPersonalCenterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         init();
-        adapter = new my_info_Adapter(Personal_Center_Activity.this,R.layout.my_info_item,my_info_list);
-        ListView listView=(ListView)findViewById(R.id.list_view);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                my_info myinfo = my_info_list.get(position);
-                int infoid=myinfo.getId();
-                Intent intent2 = getIntent();
-                int owner_id=intent2.getIntExtra("id",0);
-                Intent intent = new Intent(Personal_Center_Activity.this,My_Info_details_Activity.class);
-                intent.putExtra("id",infoid);
-                intent.putExtra("owner_id",owner_id);
-                startActivity(intent);
-            }
-        });
-        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
-        swipeRefresh.setColorSchemeResources(
-                android.R.color.holo_blue_light,
-                android.R.color.holo_purple);
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-
-            @Override
-            public void onRefresh() {
-                refresh_my_info();
-            }
-        });
     }
 
     private void init(){
         Intent intent=getIntent();
         id=intent.getIntExtra("id",0);
-        List<Info> info = DataSupport.where("owner_id=?",String.valueOf(id)).order("send_date desc").find(Info.class);
+        /*List<Info> info = DataSupport.where("owner_id=?",String.valueOf(id)).order("send_date desc").find(Info.class);
         for(int i=0;i<info.size();i++){
             String date=info.get(i).getSend_date();
             String form=info.get(i).getForm()==1?"私人性-学术咨询信息":info.get(i).getForm()==2?"私人性-日常求助信息":info.get(i).getForm()==3?"私人性-物品出售信息":info.get(i).getForm()==4?"私人性-物品求购信息":info.get(i).getForm()==5?"组织性信息":"课程点评信息";
@@ -87,7 +70,81 @@ public class Personal_Center_Activity extends rootActivity {
         }
         if(my_info_list.size()==0){
             binding.none.setVisibility(View.VISIBLE);
-        }
+        }*/
+        InfoConnection connection=new InfoConnection();
+        connection.queryMyInfoConnection(String.valueOf(id), new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Looper.prepare();
+                Toast.makeText(Personal_Center_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result=response.body().string();
+                int n=connection.parseJSONForMyInfoResponse(result,my_info_list);
+                if(n>0){
+                    OtherOption();
+                    //已在parseJSONForMyInfoResponse完成my_info_list的添加
+                }
+                else if(n==0){
+                    showNoneInfo();
+                    OtherOption();
+                }
+                else{
+                    Looper.prepare();
+                    Toast.makeText(Personal_Center_Activity.this,"数据解析失败！",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
+            }
+        });
+    }
+
+    private void showNoneInfo(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                binding.none.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void OtherOption(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter = new my_info_Adapter(Personal_Center_Activity.this,R.layout.my_info_item,my_info_list);
+                ListView listView=(ListView)findViewById(R.id.list_view);
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        my_info myinfo = my_info_list.get(position);
+                        int infoid=myinfo.getId();
+                        Intent intent2 = getIntent();
+                        int owner_id=intent2.getIntExtra("id",0);
+                        Intent intent = new Intent(Personal_Center_Activity.this,My_Info_details_Activity.class);
+                        intent.putExtra("id",infoid);
+                        intent.putExtra("owner_id",owner_id);
+                        startActivity(intent);
+                    }
+                });
+                swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
+                swipeRefresh.setColorSchemeResources(
+                        android.R.color.holo_blue_light,
+                        android.R.color.holo_purple);
+                swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+                    @Override
+                    public void onRefresh() {
+                        refresh_my_info();
+                    }
+                });
+            }
+        });
     }
 
     private void refresh_my_info(){
@@ -161,9 +218,8 @@ public class Personal_Center_Activity extends rootActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onPause(){
+        super.onPause();
         refresh_my_info1();
     }
-
 }
