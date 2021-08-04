@@ -1,20 +1,11 @@
 package com.example.whuinfoplatform.Entity;
 
-import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.location.LocationListener;
-import android.os.Bundle;
-import android.text.util.Linkify;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
@@ -24,33 +15,19 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.InfoWindow;
-import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
-import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.PoiInfo;
-import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
-import com.baidu.mapapi.search.poi.PoiCitySearchOption;
-import com.baidu.mapapi.search.poi.PoiDetailResult;
-import com.baidu.mapapi.search.poi.PoiDetailSearchOption;
-import com.baidu.mapapi.search.poi.PoiDetailSearchResult;
-import com.baidu.mapapi.search.poi.PoiIndoorResult;
-import com.baidu.mapapi.search.poi.PoiResult;
-import com.baidu.mapapi.search.poi.PoiSearch;
 import com.example.whuinfoplatform.Activity.Publish_Info_promote_Activity;
-import com.example.whuinfoplatform.Activity.Renew_Info_prmote_Activity;
+import com.example.whuinfoplatform.Activity.Renew_Info_promote_Activity;
 import com.example.whuinfoplatform.Activity.Srch_Info_details_Activity;
 import com.example.whuinfoplatform.R;
 
 import org.litepal.LitePalApplication;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 public class BaiDuMap extends Application {
     private static Context context;
@@ -86,7 +63,7 @@ public class BaiDuMap extends Application {
         mLocationClient.start();
     }
 
-    public void getLocation2(BaiduMap mBaiduMap, LocationClient mLocationClient, Renew_Info_prmote_Activity.MyLocationListener myLocationListener){
+    public void getLocation2(BaiduMap mBaiduMap, LocationClient mLocationClient, Renew_Info_promote_Activity.MyLocationListener myLocationListener){
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
         mBaiduMap.setMyLocationEnabled(true);
         //通过LocationClientOption设置LocationClient相关参数

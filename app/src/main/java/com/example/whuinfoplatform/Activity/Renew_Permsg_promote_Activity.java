@@ -34,7 +34,7 @@ import android.widget.Toast;
 import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
-import com.example.whuinfoplatform.databinding.ActivityRenewPermsgPromteBinding;
+import com.example.whuinfoplatform.databinding.ActivityRenewPermsgPromoteBinding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -45,8 +45,8 @@ import java.util.Base64;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class Renew_Permsg_Promte_Activity extends rootActivity {
-    private ActivityRenewPermsgPromteBinding binding;
+public class Renew_Permsg_promote_Activity extends rootActivity {
+    private ActivityRenewPermsgPromoteBinding binding;
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
     private ImageView picture;
@@ -125,7 +125,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
 
     @Override
     public void bindView() {
-        binding= ActivityRenewPermsgPromteBinding.inflate(getLayoutInflater());
+        binding= ActivityRenewPermsgPromoteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
     }
 
@@ -164,7 +164,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Looper.prepare();
-                    Toast.makeText(Renew_Permsg_Promte_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
                     Looper.loop();
                 }
 
@@ -191,8 +191,8 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
             binding.textStdidRnm.setText("缩放或拖动图片以适配相框");
             if(intent1.getIntExtra("type",0)==2){
                 picture=binding.picture;
-                if(ContextCompat.checkSelfPermission(Renew_Permsg_Promte_Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(Renew_Permsg_Promte_Activity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+                if(ContextCompat.checkSelfPermission(Renew_Permsg_promote_Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(Renew_Permsg_promote_Activity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
                 }
                 else{
                     openAlbum();
@@ -210,7 +210,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                     e.printStackTrace();
                 }
                 if(Build.VERSION.SDK_INT>=24){
-                    imageUri= FileProvider.getUriForFile(Renew_Permsg_Promte_Activity.this,"com.example.whuinfoplatform.fileprovider",outputImage);
+                    imageUri= FileProvider.getUriForFile(Renew_Permsg_promote_Activity.this,"com.example.whuinfoplatform.fileprovider",outputImage);
                 }
                 else{
                     imageUri=Uri.fromFile(outputImage);
@@ -234,14 +234,14 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                 String newpwd = binding.editPwd.getText().toString();
 
                 if ((newnkn.equals("")) || (newpwd.equals(""))) {
-                    Toast.makeText(Renew_Permsg_Promte_Activity.this, "请填入完整信息！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Renew_Permsg_promote_Activity.this, "请填入完整信息！", Toast.LENGTH_SHORT).show();
                 } else {
                     UserConnection userConnection=new UserConnection();
                     userConnection.renewUserInfo(id,newpwd,newnkn, new okhttp3.Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             Looper.prepare();
-                            Toast.makeText(Renew_Permsg_Promte_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
                             Looper.loop();
                         }
 
@@ -252,9 +252,9 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                             User user=new User();
                             userConnection.parseJSON(user,result);
                             Looper.prepare();
-                            Toast.makeText(Renew_Permsg_Promte_Activity.this, user.getResponse(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Renew_Permsg_promote_Activity.this, user.getResponse(), Toast.LENGTH_SHORT).show();
                             if(user.getCode()==101){
-                                Intent intent2 = new Intent(Renew_Permsg_Promte_Activity.this, MainActivity.class);
+                                Intent intent2 = new Intent(Renew_Permsg_promote_Activity.this, MainActivity.class);
                                 startActivity(intent2);
                             }
                             Looper.loop();
@@ -276,7 +276,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Looper.prepare();
-                        Toast.makeText(Renew_Permsg_Promte_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
                         Looper.loop();
                     }
 
@@ -286,9 +286,9 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                         User user=new User();
                         userConnection.parseJSON(user,result);
                         Looper.prepare();
-                        Toast.makeText(Renew_Permsg_Promte_Activity.this,user.getResponse(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Renew_Permsg_promote_Activity.this,user.getResponse(),Toast.LENGTH_SHORT).show();
                         if(user.getCode()==101){
-                            Intent intent = new Intent(Renew_Permsg_Promte_Activity.this, Personal_Message_Activity.class);
+                            Intent intent = new Intent(Renew_Permsg_promote_Activity.this, Personal_Message_Activity.class);
                             startActivity(intent);
                         }
                         Looper.loop();
@@ -297,7 +297,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
             }
         });
         binding.button2.setOnClickListener(v->{
-            Intent intent=new Intent(Renew_Permsg_Promte_Activity.this,Personal_Message_Activity.class);
+            Intent intent=new Intent(Renew_Permsg_promote_Activity.this,Personal_Message_Activity.class);
             startActivity(intent);
         });
     }
@@ -381,7 +381,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                     }
                 }
                 else{
-                    Intent intent=new Intent(Renew_Permsg_Promte_Activity.this,Personal_Message_Activity.class);
+                    Intent intent=new Intent(Renew_Permsg_promote_Activity.this,Personal_Message_Activity.class);
                     startActivity(intent);
                 }
                 break;
@@ -395,7 +395,7 @@ public class Renew_Permsg_Promte_Activity extends rootActivity {
                     }
                 }
                 else{
-                    Intent intent=new Intent(Renew_Permsg_Promte_Activity.this,Personal_Message_Activity.class);
+                    Intent intent=new Intent(Renew_Permsg_promote_Activity.this,Personal_Message_Activity.class);
                     startActivity(intent);
                 }
                 break;

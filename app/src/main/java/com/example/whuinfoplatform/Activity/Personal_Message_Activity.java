@@ -87,7 +87,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     protected void initClick() {
         super.initClick();
         binding.buttonUpgrade.setOnClickListener(v->{
-            Intent intent = new Intent(Personal_Message_Activity.this,Renew_Permsg_Promte_Activity.class);
+            Intent intent = new Intent(Personal_Message_Activity.this,Renew_Permsg_promote_Activity.class);
             intent.putExtra("id",id);
             intent.putExtra("type",1);
             startActivity(intent);
@@ -151,14 +151,14 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
         switch (view.getId()) {
             case R.id.btn_choose_img:
                 //选择照片按钮
-                intent = new Intent(Personal_Message_Activity.this,Renew_Permsg_Promte_Activity.class);
+                intent = new Intent(Personal_Message_Activity.this,Renew_Permsg_promote_Activity.class);
                 intent.putExtra("id",id);
                 intent.putExtra("type",2);
                 startActivity(intent);
                 break;
             case R.id.btn_open_camera:
                 //拍照按钮
-                intent = new Intent(Personal_Message_Activity.this,Renew_Permsg_Promte_Activity.class);
+                intent = new Intent(Personal_Message_Activity.this,Renew_Permsg_promote_Activity.class);
                 intent.putExtra("id",id);
                 intent.putExtra("type",3);
                 startActivity(intent);

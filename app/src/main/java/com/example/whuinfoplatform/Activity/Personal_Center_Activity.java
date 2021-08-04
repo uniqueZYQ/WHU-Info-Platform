@@ -52,6 +52,7 @@ public class Personal_Center_Activity extends rootActivity {
     public void bindView() {
         binding = ActivityPersonalCenterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        adapter = new my_info_Adapter(Personal_Center_Activity.this,R.layout.my_info_item,my_info_list);
         init();
     }
 
@@ -115,7 +116,6 @@ public class Personal_Center_Activity extends rootActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter = new my_info_Adapter(Personal_Center_Activity.this,R.layout.my_info_item,my_info_list);
                 ListView listView=(ListView)findViewById(R.id.list_view);
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -178,7 +178,7 @@ public class Personal_Center_Activity extends rootActivity {
             @Override
             public void run() {
                 try{
-                    Thread.sleep(1);
+                    Thread.sleep(1000);
                 }
                 catch (InterruptedException e){
                     e.printStackTrace();
@@ -218,8 +218,8 @@ public class Personal_Center_Activity extends rootActivity {
     }
 
     @Override
-    protected void onPause(){
-        super.onPause();
+    protected void onRestart(){
+        super.onRestart();
         refresh_my_info1();
     }
 }

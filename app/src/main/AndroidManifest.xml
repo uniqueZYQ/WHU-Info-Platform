@@ -10,8 +10,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 写外置存储。如果使用了离线地图，并且数据写在外置存储区域，则需要申请该权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 获取访问手机振动器权限，用于导航过程中的震动提示 -->
-    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 获取摄像头权限，用于AR步行导航 -->
-    <!--<uses-permission android:name="android.permission.CAMERA" />-->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".Entity.BaiDuMap"
@@ -20,8 +19,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.WHUInfoPlatform">
+        android:theme="@style/Theme.WHUInfoPlatform"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".Activity.Renew_Permsg_promote_Activity"></activity>
+        <activity android:name=".Activity.Renew_Info_promote_Activity" />
+
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
@@ -36,9 +38,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activity.Srch_Info_details_Activity" />
-        <activity android:name=".Activity.Renew_Info_prmote_Activity" />
         <activity android:name=".Activity.My_Info_details_Activity" />
-        <activity android:name=".Activity.Renew_Permsg_Promte_Activity" />
         <activity android:name=".Activity.rootActivity" />
         <activity android:name=".Activity.Basic_Activity" />
         <activity android:name=".Activity.Create_User_promote_Activity" />
