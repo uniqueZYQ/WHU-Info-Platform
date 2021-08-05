@@ -40,6 +40,20 @@ public class UserConnection {
         String Url=URL+"QueryUserServlet";
         formBody=new FormBody.Builder()
                 .add("id",id)
+                .add("need_picture","1")
+                .build();
+        OkHttpClient client=new OkHttpClient();
+
+        Request request=new Request.Builder().url(Url).post(formBody).build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    public void queryUserInfoWithoutPicture(String id,okhttp3.Callback callback) {
+        String Url=URL+"QueryUserServlet";
+        formBody=new FormBody.Builder()
+                .add("id",id)
+                .add("need_picture","0")
                 .build();
         OkHttpClient client=new OkHttpClient();
 
@@ -105,8 +119,7 @@ public class UserConnection {
             --2021.7.25 0:54 CityGhost
              */
             String ss=jsonObject.getString("picture");
-            byte[] picture = {};
-            picture = Base64.getDecoder().decode(ss);
+            byte[] picture = Base64.getDecoder().decode(ss);
             showResponse(user,code,id,nickname,realname,response,stdid,picture);
         }catch (Exception e){
             e.printStackTrace();

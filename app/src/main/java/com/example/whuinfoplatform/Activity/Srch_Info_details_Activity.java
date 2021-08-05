@@ -1,18 +1,23 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
@@ -58,34 +63,44 @@ import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
 import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
 import com.baidu.mapapi.walknavi.params.WalkRouteNodeInfo;
 import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Dao.InfoConnection;
+import com.example.whuinfoplatform.Dao.PictureConnection;
+import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.BaiDuMap;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.Info;
+import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.Msg;
+import com.example.whuinfoplatform.Entity.MyInformation;
 import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class Srch_Info_details_Activity extends rootActivity {
     private com.example.whuinfoplatform.databinding.ActivitySrchInfoDetailsBinding binding;
     int form=0;
-    private DB_USER dbHelper;
+    String owner=new String();
     private ArrayList<Integer> pictureList=new ArrayList<Integer>();
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
     BaiDuMap baidumap=new BaiDuMap();
     PoiSearch mPoiSearch = PoiSearch.newInstance();
-    LatLng startPt;
     LatLng endPt;
-    BikeNaviLaunchParam mParam;
     private double latitude,longitude;
     private String name=new String();
     private String address=new String();
@@ -104,31 +119,36 @@ public class Srch_Info_details_Activity extends rootActivity {
     }
 
     private void initMap(String Uid){
-        mMapView = (MapView) findViewById(R.id.mapView);
-        binding.frame.setVisibility(View.VISIBLE);
-        mMapView.setVisibility(View.VISIBLE);
-        mBaiduMap=mMapView.getMap();
-        //定位初始化为武汉大学行政楼
-        LatLng ll = new LatLng(30.543803317144, 114.37292090919);
-        float zoom=16;
-        MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
-        mBaiduMap.setMapStatus(u);
-        mBaiduMap.animateMapStatus(u);
-        mPoiSearch.setOnGetPoiSearchResultListener(listener1);
-        mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
-                .poiUids(Uid));
-        Srch_Info_details_Activity.MyLocationListener myLocationListener = new Srch_Info_details_Activity.MyLocationListener();
-        //定位监听初始化
-        mLocationClient = new LocationClient(this);
-        //获取实时定位
-        baidumap.getLocation3(mBaiduMap,mLocationClient,myLocationListener);
-        //配置地图
-        baidumap.configMap(mBaiduMap, MyLocationConfiguration.LocationMode.NORMAL,true, BitmapDescriptorFactory.fromResource(R.drawable.location),0x55FFFFFF,0x55FFFFFF);
-        //禁止旋转手势
-        UiSettings mUiSettings=mBaiduMap.getUiSettings();
-        mUiSettings.setRotateGesturesEnabled(false);
-        if(first==1)
-            Toast.makeText(Srch_Info_details_Activity.this,"正在获取实时位置，请稍候...",Toast.LENGTH_SHORT).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mMapView = (MapView) findViewById(R.id.mapView);
+                binding.frame.setVisibility(View.VISIBLE);
+                mMapView.setVisibility(View.VISIBLE);
+                mBaiduMap=mMapView.getMap();
+                //定位初始化为武汉大学行政楼
+                LatLng ll = new LatLng(30.543803317144, 114.37292090919);
+                float zoom=16;
+                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                mBaiduMap.setMapStatus(u);
+                mBaiduMap.animateMapStatus(u);
+                mPoiSearch.setOnGetPoiSearchResultListener(listener1);
+                mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
+                        .poiUids(Uid));
+                Srch_Info_details_Activity.MyLocationListener myLocationListener = new Srch_Info_details_Activity.MyLocationListener();
+                //定位监听初始化
+                mLocationClient = new LocationClient(Srch_Info_details_Activity.this);
+                //获取实时定位
+                baidumap.getLocation3(mBaiduMap,mLocationClient,myLocationListener);
+                //配置地图
+                baidumap.configMap(mBaiduMap, MyLocationConfiguration.LocationMode.NORMAL,true, BitmapDescriptorFactory.fromResource(R.drawable.location),0x55FFFFFF,0x55FFFFFF);
+                //禁止旋转手势
+                UiSettings mUiSettings=mBaiduMap.getUiSettings();
+                mUiSettings.setRotateGesturesEnabled(false);
+                if(first==1)
+                    Toast.makeText(Srch_Info_details_Activity.this,"正在获取实时位置，请稍候...",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
@@ -173,7 +193,6 @@ public class Srch_Info_details_Activity extends rootActivity {
         i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
                 +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
                 +"&coord_type=bd09ll&mode=walking&src=andr.baidu.openAPIdemo"));
-        /*i1.setData(Uri.parse("baidumap://map/direction?region=beijing&origin=39.98871,116.43234&destination=40.057406655722,116.2964407172&coord_type=bd09ll&mode=walking&src=andr.baidu.openAPIdemo"));*/
 
         startActivity(i1);
        }
@@ -257,146 +276,41 @@ public class Srch_Info_details_Activity extends rootActivity {
     @Override
     protected void initData() {
         super.initData();
-        Intent intent = getIntent();
-        String owner=intent.getStringExtra("owner");
-        int id= intent.getIntExtra("id",0);
+        Intent intent=getIntent();
+        owner=intent.getStringExtra("owner");
+        int id=intent.getIntExtra("id",0);
         int self=intent.getIntExtra("self",0);
         if(self==0){
             binding.answer.setVisibility(View.VISIBLE);
         }
-        dbHelper = new DB_USER(this, "User.db", null, 7);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        List<Info> info = DataSupport.where("id=?",String.valueOf(id)).find(Info.class);
-        for(int i=0;i<info.size();i++){
-            form=info.get(i).getForm();
-            binding.sendDate.setText("发布于"+(info.get(i).getSend_date()));
-            binding.form.setText("信息类别："+(info.get(i).getForm()==1?"私人性-学术咨询信息":info.get(i).getForm()==2?"私人性-日常求助信息":info.get(i).getForm()==3?"私人性-物品出售信息":info.get(i).getForm()==4?"私人性-物品求购信息":info.get(i).getForm()==5?"组织性活动信息":"课程点评信息"));
-            binding.detail.setText("具体内容：\n    "+(info.get(i).getDetail()));
-            binding.nickname.setText(owner);
-            if(info.get(i).getPicture4()!=0){
-                List<Picture> picture4=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture4())).find(Picture.class);
-                byte[] in_4 = picture4.get(0).getPicture();
-                Bitmap bit_4 = BitmapFactory.decodeByteArray(in_4, 0, in_4.length);
-                binding.picture4.setImageBitmap(bit_4);
-                binding.picture4.setVisibility(View.VISIBLE);
-                binding.picture4.setOnClickListener(v->{
-                    EnlargePicture enlargePicture=new EnlargePicture();
-                    enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_4,true);
-                });
-            }
-            if(info.get(i).getPicture3()!=0){
-                List<Picture> picture3=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture3())).find(Picture.class);
-                byte[] in_3 = picture3.get(0).getPicture();
-                Bitmap bit_3 = BitmapFactory.decodeByteArray(in_3, 0, in_3.length);
-                binding.picture3.setImageBitmap(bit_3);
-                binding.picture3.setVisibility(View.VISIBLE);
-                binding.picture3.setOnClickListener(v->{
-                    EnlargePicture enlargePicture=new EnlargePicture();
-                    enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_3,true);
-                });
-            }
-            if(info.get(i).getPicture2()!=0){
-                List<Picture> picture2=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture2())).find(Picture.class);
-                byte[] in_2 = picture2.get(0).getPicture();
-                Bitmap bit_2 = BitmapFactory.decodeByteArray(in_2, 0, in_2.length);
-                binding.picture2.setImageBitmap(bit_2);
-                binding.picture2.setVisibility(View.VISIBLE);
-                binding.picture2.setOnClickListener(v->{
-                    EnlargePicture enlargePicture=new EnlargePicture();
-                    enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_2,true);
-                });
-            }
-            if(info.get(i).getPicture1()!=0){
-                List<Picture> picture1=DataSupport.where("id=?",String.valueOf(info.get(i).getPicture1())).find(Picture.class);
-                byte[] in_1 = picture1.get(0).getPicture();
-                Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
-                binding.picture1.setImageBitmap(bit_1);
-                binding.picture1.setVisibility(View.VISIBLE);
-                binding.picture1.setOnClickListener(v->{
-                    EnlargePicture enlargePicture=new EnlargePicture();
-                    enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_1,true);
-                });
-            }
-            int owner_id=info.get(i).getOwner_id();
-            Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{String.valueOf(owner_id)}, null);
-            if(cursor.moveToFirst()){
-                if (cursor.getCount() != 0) {
-                    byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
-                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                    binding.picture.setImageBitmap(bit);
-                }
-            }
-            cursor.close();
-            if(info.get(i).getAnswered()==0) binding.answer.setText("响应信息\n(你是第一个!)");
-            else binding.answer.setText("继续响应");
-            form=info.get(i).getForm();
-            switch(info.get(i).getForm()){
-                case 1:{
-                    binding.fdForm.setText("咨询领域："+(
-                            info.get(i).getFd_form()==1?"哲学":
-                            info.get(i).getFd_form()==2?"经济学":
-                            info.get(i).getFd_form()==3?"法学":
-                            info.get(i).getFd_form()==4?"文学":
-                            info.get(i).getFd_form()==5?"历史学":
-                            info.get(i).getFd_form()==6?"理学":
-                            info.get(i).getFd_form()==7?"工学":
-                            info.get(i).getFd_form()==8?"农学":
-                            info.get(i).getFd_form()==9?"医学":
-                            info.get(i).getFd_form()==10?"管理学":
-                            info.get(i).getFd_form()==11?"教育学":"艺术学")
-                    );
-                    binding.fdForm.setVisibility(View.VISIBLE);
-                    binding.reward.setText("报酬："+(String.valueOf(info.get(i).getReward()))+"元");
-                    binding.reward.setVisibility(View.VISIBLE);
-                    binding.answered.setVisibility(View.VISIBLE);
-                    binding.answered.setText("响应情况："+(info.get(i).getAnswered()==0?"暂未被响应":"已被响应"));
-                    break;
-                }
-                case 2:{
-                    binding.helpForm.setText("求助问题："+(
-                            info.get(i).getHelp_form()==1?"代取物品":
-                            info.get(i).getHelp_form()==2?"信息求问":
-                            info.get(i).getHelp_form()==3?"寻物启事":
-                            info.get(i).getHelp_form()==4?"失物招领":"其他")
-                    );
-                    binding.helpForm.setVisibility(View.VISIBLE);
-                    binding.reward.setText("报酬："+(String.valueOf(info.get(i).getReward()))+"元");
-                    binding.reward.setVisibility(View.VISIBLE);
-                    binding.answered.setVisibility(View.VISIBLE);
-                    binding.answered.setText("响应情况："+(info.get(i).getAnswered()==0?"暂无响应":"已被响应"));
-                    break;
-                }
-                case 3:
-                case 4:{
-                    binding.price.setText("预期价格："+(String.valueOf(info.get(i).getPrice()))+"元");
-                    binding.price.setVisibility(View.VISIBLE);
-                    binding.answered.setVisibility(View.VISIBLE);
-                    binding.answered.setText("响应情况："+(info.get(i).getAnswered()==0?"暂无响应":"已被响应"));
-                    break;
-                }
-                case 5:{
-                    binding.date.setText("活动日期："+info.get(i).getDate());
-                    binding.date.setVisibility(View.VISIBLE);
-                    binding.place.setText("活动地点："+info.get(i).getPlace());
-                    binding.place.setVisibility(View.VISIBLE);
-                    binding.placeDetail.setVisibility(View.VISIBLE);
-                    binding.reward.setText("报酬："+(String.valueOf(info.get(i).getReward()))+"元");
-                    binding.reward.setVisibility(View.VISIBLE);
-                    binding.answered.setVisibility(View.VISIBLE);
-                    binding.answered.setText("响应情况："+(info.get(i).getAnswered()==0?"暂无响应":"已被响应"));
-                    break;
-                }
-                case 6:{
-                    binding.lesson.setText("课程名称："+info.get(i).getLesson());
-                    binding.lesson.setVisibility(View.VISIBLE);
-                    binding.score.setText("评分："+String.valueOf(info.get(i).getScore())+"分");
-                    binding.score.setVisibility(View.VISIBLE);
-                    binding.answer.setVisibility(View.GONE);
-                    break;
-                }
-                default:
-            }
+        else{
+            owner+="(我)";
         }
+
+        InfoConnection infoConnection=new InfoConnection();
+        infoConnection.queryInfoByIdConnection(String.valueOf(id), new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Looper.prepare();
+                Toast.makeText(Srch_Info_details_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result=response.body().string();
+                MyInformation myInformation=new MyInformation();
+                try {
+                    infoConnection.parseJSONForMyInfoDetailResponse(myInformation,result);
+                    showInfoDetails(myInformation,owner);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Looper.prepare();
+                    Toast.makeText(Srch_Info_details_Activity.this,"数据解析失败！",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
+            }
+        });
     }
 
     @Override
@@ -416,12 +330,34 @@ public class Srch_Info_details_Activity extends rootActivity {
             startActivity(intent1);
         });
         binding.placeDetail.setOnClickListener(v -> {
-            List<Info> info = DataSupport.where("id=?",String.valueOf(id)).find(Info.class);
-            String Uid=info.get(0).getPlaceId();
-            if(Uid.equals("0"))
-                Toast.makeText(Srch_Info_details_Activity.this,"地址信息获取失败!",Toast.LENGTH_SHORT).show();
-            else
-                initMap(Uid);
+            //List<Info> info = DataSupport.where("id=?",String.valueOf(id)).find(Info.class);
+            InfoConnection infoConnection=new InfoConnection();
+            infoConnection.queryInfoByIdConnection(String.valueOf(id), new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    Toast.makeText(Srch_Info_details_Activity.this,"服务器连接失败，请稍后再试",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    try {
+                        JSONObject jsonObject=new JSONObject(result);
+                        String Uid=jsonObject.getString("placeId");
+                        if(Uid.equals("0"))
+                            Toast.makeText(Srch_Info_details_Activity.this,"地址信息获取失败!",Toast.LENGTH_SHORT).show();
+                        else
+                            initMap(Uid);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Looper.prepare();
+                        Toast.makeText(Srch_Info_details_Activity.this,"数据解析失败！",Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
+                }
+            });
         });
         binding.walkGuide.setOnClickListener(v -> {
             startWalkNavigation();
@@ -475,4 +411,341 @@ public class Srch_Info_details_Activity extends rootActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
     }
+
+    private void showInfoDetails(MyInformation myInformation,String owner){
+        runOnUiThread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+                form=myInformation.getForm();
+                binding.sendDate.setText("发布于"+(myInformation.getSend_date()));
+                binding.form.setText("信息类别："+(myInformation.getForm()==1?"私人性-学术咨询信息":myInformation.getForm()==2?"私人性-日常求助信息":myInformation.getForm()==3?"私人性-物品出售信息":myInformation.getForm()==4?"私人性-物品求购信息":myInformation.getForm()==5?"组织性活动信息":"课程点评信息"));
+                binding.detail.setText("具体内容：\n    "+(myInformation.getDetail()));
+                binding.nickname.setText(owner);
+                if(myInformation.getPicture4()!=0){
+                    binding.picture4.setVisibility(View.VISIBLE);
+                    binding.picture4.setImageResource(R.drawable.downloading);
+                    List<LocalPicture> picture4=DataSupport.where("code=?",String.valueOf(myInformation.getPicture4())).find(LocalPicture.class);
+                    if(picture4.size()!=0){
+                        byte[] in_4 = Base64.getDecoder().decode(picture4.get(0).getPicture());
+                        Bitmap bit_4 = BitmapFactory.decodeByteArray(in_4, 0, in_4.length);
+                        binding.picture4.setImageBitmap(bit_4);
+                        binding.picture4.setOnClickListener(v->{
+                            EnlargePicture enlargePicture=new EnlargePicture();
+                            enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_4,true);
+                        });
+                    }
+                    else{
+                        PictureConnection pictureConnection=new PictureConnection();
+                        pictureConnection.initDownloadConnection(String.valueOf(myInformation.getPicture4()), new okhttp3.Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Looper.prepare();
+                                setNullImage(binding.picture4);
+                                Toast.makeText(Srch_Info_details_Activity.this,"服务器连接失败，请稍后再试",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String result=response.body().string();
+                                LocalPicture picture=new LocalPicture();
+                                pictureConnection.parseJSONForDownloadPictureResponse(picture,result);
+                                if(picture.getCode()==101){
+                                    byte[] in_4=Base64.getDecoder().decode(picture.getPicture());
+                                    setImage(binding.picture4,in_4);
+                                    picture.infoPictureAddToLocal(myInformation.getPicture4(),picture.getPicture());
+                                }
+                                else{
+                                    Looper.prepare();
+                                    setNullImage(binding.picture4);
+                                    Toast.makeText(Srch_Info_details_Activity.this,picture.getResponse(),Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                            }
+                        });
+                    }
+                }
+                if(myInformation.getPicture3()!=0){
+                    binding.picture3.setVisibility(View.VISIBLE);
+                    binding.picture3.setImageResource(R.drawable.downloading);
+                    List<LocalPicture> picture3=DataSupport.where("code=?",String.valueOf(myInformation.getPicture3())).find(LocalPicture.class);
+                    if(picture3.size()!=0){
+                        byte[] in_3 = Base64.getDecoder().decode(picture3.get(0).getPicture());
+                        Bitmap bit_3 = BitmapFactory.decodeByteArray(in_3, 0, in_3.length);
+                        binding.picture3.setImageBitmap(bit_3);
+                        binding.picture3.setOnClickListener(v->{
+                            EnlargePicture enlargePicture=new EnlargePicture();
+                            enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_3,true);
+                        });
+                    }
+                    else{
+                        PictureConnection pictureConnection=new PictureConnection();
+                        pictureConnection.initDownloadConnection(String.valueOf(myInformation.getPicture3()), new okhttp3.Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Looper.prepare();
+                                setNullImage(binding.picture3);
+                                Toast.makeText(Srch_Info_details_Activity.this,"服务器连接失败，请稍后再试",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String result=response.body().string();
+                                LocalPicture picture=new LocalPicture();
+                                pictureConnection.parseJSONForDownloadPictureResponse(picture,result);
+                                if(picture.getCode()==101){
+                                    byte[] in_3=Base64.getDecoder().decode(picture.getPicture());
+                                    setImage(binding.picture3,in_3);
+                                    picture.infoPictureAddToLocal(myInformation.getPicture3(),picture.getPicture());
+                                }
+                                else{
+                                    Looper.prepare();
+                                    setNullImage(binding.picture3);
+                                    Toast.makeText(Srch_Info_details_Activity.this,picture.getResponse(),Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                            }
+                        });
+                    }
+                }
+                if(myInformation.getPicture2()!=0){
+                    binding.picture2.setVisibility(View.VISIBLE);
+                    binding.picture2.setImageResource(R.drawable.downloading);
+                    List<LocalPicture> picture2=DataSupport.where("code=?",String.valueOf(myInformation.getPicture2())).find(LocalPicture.class);
+                    if(picture2.size()!=0){
+                        byte[] in_2 = Base64.getDecoder().decode(picture2.get(0).getPicture());
+                        Bitmap bit_2 = BitmapFactory.decodeByteArray(in_2, 0, in_2.length);
+                        binding.picture2.setImageBitmap(bit_2);
+                        binding.picture2.setOnClickListener(v->{
+                            EnlargePicture enlargePicture=new EnlargePicture();
+                            enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_2,true);
+                        });
+                    }
+                    else{
+                        PictureConnection pictureConnection=new PictureConnection();
+                        pictureConnection.initDownloadConnection(String.valueOf(myInformation.getPicture2()), new okhttp3.Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Looper.prepare();
+                                setNullImage(binding.picture2);
+                                Toast.makeText(Srch_Info_details_Activity.this,"服务器连接失败，请稍后再试",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String result=response.body().string();
+                                LocalPicture picture=new LocalPicture();
+                                pictureConnection.parseJSONForDownloadPictureResponse(picture,result);
+                                if(picture.getCode()==101){
+                                    byte[] in_2=Base64.getDecoder().decode(picture.getPicture());
+                                    setImage(binding.picture2,in_2);
+                                    picture.infoPictureAddToLocal(myInformation.getPicture2(),picture.getPicture());
+                                }
+                                else{
+                                    Looper.prepare();
+                                    setNullImage(binding.picture2);
+                                    Toast.makeText(Srch_Info_details_Activity.this,picture.getResponse(),Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                            }
+                        });
+                    }
+                }
+                if(myInformation.getPicture1()!=0){
+                    binding.picture1.setVisibility(View.VISIBLE);
+                    binding.picture1.setImageResource(R.drawable.downloading);
+                    List<LocalPicture> picture1=DataSupport.where("code=?",String.valueOf(myInformation.getPicture1())).find(LocalPicture.class);
+                    if(picture1.size()!=0){
+                        byte[] in_1 = Base64.getDecoder().decode(picture1.get(0).getPicture());
+                        Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
+                        binding.picture1.setImageBitmap(bit_1);
+                        binding.picture1.setOnClickListener(v->{
+                            EnlargePicture enlargePicture=new EnlargePicture();
+                            enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit_1,true);
+                        });
+                    }
+                    else{
+                        PictureConnection pictureConnection=new PictureConnection();
+                        pictureConnection.initDownloadConnection(String.valueOf(myInformation.getPicture1()), new okhttp3.Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Looper.prepare();
+                                setNullImage(binding.picture1);
+                                Toast.makeText(Srch_Info_details_Activity.this,"服务器连接失败，请稍后再试",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String result=response.body().string();
+                                LocalPicture picture=new LocalPicture();
+                                pictureConnection.parseJSONForDownloadPictureResponse(picture,result);
+                                if(picture.getCode()==101){
+                                    byte[] in_1=Base64.getDecoder().decode(picture.getPicture());
+                                    setImage(binding.picture1,in_1);
+                                    picture.infoPictureAddToLocal(myInformation.getPicture1(),picture.getPicture());
+                                }
+                                else{
+                                    Looper.prepare();
+                                    setNullImage(binding.picture1);
+                                    Toast.makeText(Srch_Info_details_Activity.this,picture.getResponse(),Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                            }
+                        });
+                    }
+                }
+                int owner_id=myInformation.getOwner_id();
+                List<LocalPicture> localPictures=DataSupport.where("user_code=?",String.valueOf(owner_id)).find(LocalPicture.class);
+                if(localPictures.size()!=0){
+                    String picture=localPictures.get(0).getPicture();
+                    showUserPicture(picture);
+                }
+                else{
+                    UserConnection userConnection=new UserConnection();
+                    userConnection.queryUserInfo(String.valueOf(owner_id), new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Looper.prepare();
+                            Toast.makeText(Srch_Info_details_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String result=response.body().string();
+                            try {
+                                JSONObject jsonObject=new JSONObject(result);
+                                String picture=jsonObject.getString("picture");
+                                LocalPicture localPicture=new LocalPicture();
+                                localPicture.userPictureAddToLocal(owner_id,picture);
+                                showUserPicture(picture);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Looper.prepare();
+                                Toast.makeText(Srch_Info_details_Activity.this,"数据解析失败！",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                        }
+                    });
+                }
+                if(myInformation.getAnswered()==0) binding.answer.setText("响应信息\n(你是第一个!)");
+                else binding.answer.setText("继续响应");
+                form=myInformation.getForm();
+                switch(myInformation.getForm()){
+                    case 1:{
+                        binding.fdForm.setText("咨询领域："+(
+                                myInformation.getFd_form()==1?"哲学":
+                                myInformation.getFd_form()==2?"经济学":
+                                myInformation.getFd_form()==3?"法学":
+                                myInformation.getFd_form()==4?"文学":
+                                myInformation.getFd_form()==5?"历史学":
+                                myInformation.getFd_form()==6?"理学":
+                                myInformation.getFd_form()==7?"工学":
+                                myInformation.getFd_form()==8?"农学":
+                                myInformation.getFd_form()==9?"医学":
+                                myInformation.getFd_form()==10?"管理学":
+                                myInformation.getFd_form()==11?"教育学":"艺术学")
+                        );
+                        binding.fdForm.setVisibility(View.VISIBLE);
+                        binding.reward.setText("报酬："+(String.valueOf(myInformation.getReward()))+"元");
+                        binding.reward.setVisibility(View.VISIBLE);
+                        binding.answered.setVisibility(View.VISIBLE);
+                        binding.answered.setText("响应情况："+(myInformation.getAnswered()==0?"暂未被响应":"已被响应"));
+                        break;
+                    }
+                    case 2:{
+                        binding.helpForm.setText("求助问题："+(
+                                myInformation.getHelp_form()==1?"代取物品":
+                                myInformation.getHelp_form()==2?"信息求问":
+                                myInformation.getHelp_form()==3?"寻物启事":
+                                myInformation.getHelp_form()==4?"失物招领":"其他")
+                        );
+                        binding.helpForm.setVisibility(View.VISIBLE);
+                        binding.reward.setText("报酬："+(String.valueOf(myInformation.getReward()))+"元");
+                        binding.reward.setVisibility(View.VISIBLE);
+                        binding.answered.setVisibility(View.VISIBLE);
+                        binding.answered.setText("响应情况："+(myInformation.getAnswered()==0?"暂无响应":"已被响应"));
+                        break;
+                    }
+                    case 3:
+                    case 4:{
+                        binding.price.setText("预期价格："+(String.valueOf(myInformation.getPrice()))+"元");
+                        binding.price.setVisibility(View.VISIBLE);
+                        binding.answered.setVisibility(View.VISIBLE);
+                        binding.answered.setText("响应情况："+(myInformation.getAnswered()==0?"暂无响应":"已被响应"));
+                        break;
+                    }
+                    case 5:{
+                        binding.date.setText("活动日期："+myInformation.getDate());
+                        binding.date.setVisibility(View.VISIBLE);
+                        binding.place.setText("活动地点："+myInformation.getPlace());
+                        binding.place.setVisibility(View.VISIBLE);
+                        binding.placeDetail.setVisibility(View.VISIBLE);
+                        binding.reward.setText("报酬："+(String.valueOf(myInformation.getReward()))+"元");
+                        binding.reward.setVisibility(View.VISIBLE);
+                        binding.answered.setVisibility(View.VISIBLE);
+                        binding.answered.setText("响应情况："+(myInformation.getAnswered()==0?"暂无响应":"已被响应"));
+                        break;
+                    }
+                    case 6:{
+                        binding.lesson.setText("课程名称："+myInformation.getLesson());
+                        binding.lesson.setVisibility(View.VISIBLE);
+                        binding.score.setText("评分："+String.valueOf(myInformation.getScore())+"分");
+                        binding.score.setVisibility(View.VISIBLE);
+                        binding.answer.setVisibility(View.GONE);
+                        break;
+                    }
+                    default:
+                }
+            }
+        });
+    }
+
+    private void showUserPicture(String picture){
+        runOnUiThread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+                byte[] in = Base64.getDecoder().decode(picture);
+                Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                binding.picture.setImageBitmap(bit);
+            }
+        });
+    }
+
+    private void setNullImage(ImageView imageView){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                imageView.setVisibility(View.VISIBLE);
+                imageView.setImageResource(R.drawable.download_failed);
+                imageView.setClickable(false);
+            }
+        });
+    }
+
+    private void setImage(ImageView imageView,byte[] in){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                imageView.setImageBitmap(bit);
+                imageView.setVisibility(View.VISIBLE);
+                imageView.setOnClickListener(v->{
+                    EnlargePicture enlargePicture=new EnlargePicture();
+                    enlargePicture.EnlargePicture(Srch_Info_details_Activity.this,bit,true);
+                });
+            }
+        });
+    }
+
+
 }

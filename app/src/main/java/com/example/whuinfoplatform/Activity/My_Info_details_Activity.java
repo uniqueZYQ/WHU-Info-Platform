@@ -35,6 +35,7 @@ import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityMyInfoDetailsBinding;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -58,6 +59,7 @@ public class My_Info_details_Activity extends rootActivity {
         setContentView(binding.getRoot());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void initData() {
         super.initData();
@@ -74,24 +76,57 @@ public class My_Info_details_Activity extends rootActivity {
             binding.picture.setImageBitmap(bit);
         }
         cursor.close();*/
-        UserConnection userConnection=new UserConnection();
-        userConnection.queryUserInfo(String.valueOf(owner_id), new okhttp3.Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Looper.prepare();
-                Toast.makeText(My_Info_details_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
-                Looper.loop();
-            }
+        List<LocalPicture> localPictures=DataSupport.where("user_code=?",String.valueOf(owner_id)).find(LocalPicture.class);
+        if(localPictures.size()!=0){
+            byte[] in=Base64.getDecoder().decode(localPictures.get(0).getPicture());
+            UserConnection userConnection=new UserConnection();
+            userConnection.queryUserInfoWithoutPicture(String.valueOf(owner_id), new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    Toast.makeText(My_Info_details_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
 
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String result=response.body().string();
-                User user=new User();
-                userConnection.parseJSON(user,result);
-                setPictureAndNickname(user);
-            }
-        });
+                @RequiresApi(api = Build.VERSION_CODES.O)
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    try {
+                        JSONObject jsonObject=new JSONObject(result);
+                        String nkn=jsonObject.getString("nickname");
+                        setPictureAndNicknameWithoutDownloadingPicture(nkn,in);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Looper.prepare();
+                        Toast.makeText(My_Info_details_Activity.this,"数据解析失败！",Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
+                }
+            });
+        }
+        else{
+            UserConnection userConnection=new UserConnection();
+            userConnection.queryUserInfo(String.valueOf(owner_id), new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    Toast.makeText(My_Info_details_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
+
+                @RequiresApi(api = Build.VERSION_CODES.O)
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    User user=new User();
+                    userConnection.parseJSON(user,result);
+                    setPictureAndNickname(user);
+                    LocalPicture localPicture=new LocalPicture();
+                    localPicture.userPictureAddToLocal(owner_id,Base64.getEncoder().encodeToString(user.getPicture()));
+                }
+            });
+        }
         /*List<Info> info = DataSupport.where("id=?",String.valueOf(id)).find(Info.class);
         for(int i=0;i<info.size();i++){
             form=info.get(i).getForm();
@@ -319,11 +354,23 @@ public class My_Info_details_Activity extends rootActivity {
         });
     }
 
+    private void setPictureAndNicknameWithoutDownloadingPicture(String nickname,byte[] in){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                binding.nickname.setText(nickname);
+                Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                binding.picture.setImageBitmap(bit);
+            }
+        });
+    }
+
     private void setNullImage(ImageView imageView){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 imageView.setVisibility(View.VISIBLE);
+                imageView.setImageResource(R.drawable.download_failed);
                 imageView.setClickable(false);
             }
         });
@@ -354,12 +401,13 @@ public class My_Info_details_Activity extends rootActivity {
                 binding.form.setText("信息类别："+(myInformation.getForm()==1?"私人性-学术咨询信息":myInformation.getForm()==2?"私人性-日常求助信息":myInformation.getForm()==3?"私人性-物品出售信息":myInformation.getForm()==4?"私人性-物品求购信息":myInformation.getForm()==5?"组织性活动信息":"课程点评信息"));
                 binding.detail.setText("具体内容：\n    "+(myInformation.getDetail()));
                 if(myInformation.getPicture4()!=0){
+                    binding.picture4.setVisibility(View.VISIBLE);
+                    binding.picture4.setImageResource(R.drawable.downloading);
                     List<LocalPicture> picture4=DataSupport.where("code=?",String.valueOf(myInformation.getPicture4())).find(LocalPicture.class);
                     if(picture4.size()!=0){
                         byte[] in_4 = Base64.getDecoder().decode(picture4.get(0).getPicture());
                         Bitmap bit_4 = BitmapFactory.decodeByteArray(in_4, 0, in_4.length);
                         binding.picture4.setImageBitmap(bit_4);
-                        binding.picture4.setVisibility(View.VISIBLE);
                         binding.picture4.setOnClickListener(v->{
                             EnlargePicture enlargePicture=new EnlargePicture();
                             enlargePicture.EnlargePicture(My_Info_details_Activity.this,bit_4,true);
@@ -385,6 +433,7 @@ public class My_Info_details_Activity extends rootActivity {
                                 if(picture.getCode()==101){
                                     byte[] in_4=Base64.getDecoder().decode(picture.getPicture());
                                     setImage(binding.picture4,in_4);
+                                    picture.infoPictureAddToLocal(myInformation.getPicture4(),picture.getPicture());
                                 }
                                 else{
                                     Looper.prepare();
@@ -397,12 +446,13 @@ public class My_Info_details_Activity extends rootActivity {
                     }
                 }
                 if(myInformation.getPicture3()!=0){
+                    binding.picture3.setVisibility(View.VISIBLE);
+                    binding.picture3.setImageResource(R.drawable.downloading);
                     List<LocalPicture> picture3=DataSupport.where("code=?",String.valueOf(myInformation.getPicture3())).find(LocalPicture.class);
                     if(picture3.size()!=0){
                         byte[] in_3 = Base64.getDecoder().decode(picture3.get(0).getPicture());
                         Bitmap bit_3 = BitmapFactory.decodeByteArray(in_3, 0, in_3.length);
                         binding.picture3.setImageBitmap(bit_3);
-                        binding.picture3.setVisibility(View.VISIBLE);
                         binding.picture3.setOnClickListener(v->{
                             EnlargePicture enlargePicture=new EnlargePicture();
                             enlargePicture.EnlargePicture(My_Info_details_Activity.this,bit_3,true);
@@ -428,6 +478,7 @@ public class My_Info_details_Activity extends rootActivity {
                                 if(picture.getCode()==101){
                                     byte[] in_3=Base64.getDecoder().decode(picture.getPicture());
                                     setImage(binding.picture3,in_3);
+                                    picture.infoPictureAddToLocal(myInformation.getPicture3(),picture.getPicture());
                                 }
                                 else{
                                     Looper.prepare();
@@ -440,12 +491,13 @@ public class My_Info_details_Activity extends rootActivity {
                     }
                 }
                 if(myInformation.getPicture2()!=0){
+                    binding.picture2.setVisibility(View.VISIBLE);
+                    binding.picture2.setImageResource(R.drawable.downloading);
                     List<LocalPicture> picture2=DataSupport.where("code=?",String.valueOf(myInformation.getPicture2())).find(LocalPicture.class);
                     if(picture2.size()!=0){
                         byte[] in_2 = Base64.getDecoder().decode(picture2.get(0).getPicture());
                         Bitmap bit_2 = BitmapFactory.decodeByteArray(in_2, 0, in_2.length);
                         binding.picture2.setImageBitmap(bit_2);
-                        binding.picture2.setVisibility(View.VISIBLE);
                         binding.picture2.setOnClickListener(v->{
                             EnlargePicture enlargePicture=new EnlargePicture();
                             enlargePicture.EnlargePicture(My_Info_details_Activity.this,bit_2,true);
@@ -471,6 +523,7 @@ public class My_Info_details_Activity extends rootActivity {
                                 if(picture.getCode()==101){
                                     byte[] in_2=Base64.getDecoder().decode(picture.getPicture());
                                     setImage(binding.picture2,in_2);
+                                    picture.infoPictureAddToLocal(myInformation.getPicture2(),picture.getPicture());
                                 }
                                 else{
                                     Looper.prepare();
@@ -483,12 +536,13 @@ public class My_Info_details_Activity extends rootActivity {
                     }
                 }
                 if(myInformation.getPicture1()!=0){
+                    binding.picture1.setVisibility(View.VISIBLE);
+                    binding.picture1.setImageResource(R.drawable.downloading);
                     List<LocalPicture> picture1=DataSupport.where("code=?",String.valueOf(myInformation.getPicture1())).find(LocalPicture.class);
                     if(picture1.size()!=0){
                         byte[] in_1 = Base64.getDecoder().decode(picture1.get(0).getPicture());
                         Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
                         binding.picture1.setImageBitmap(bit_1);
-                        binding.picture1.setVisibility(View.VISIBLE);
                         binding.picture1.setOnClickListener(v->{
                             EnlargePicture enlargePicture=new EnlargePicture();
                             enlargePicture.EnlargePicture(My_Info_details_Activity.this,bit_1,true);
@@ -514,6 +568,7 @@ public class My_Info_details_Activity extends rootActivity {
                                 if(picture.getCode()==101){
                                     byte[] in_1=Base64.getDecoder().decode(picture.getPicture());
                                     setImage(binding.picture1,in_1);
+                                    picture.infoPictureAddToLocal(myInformation.getPicture1(),picture.getPicture());
                                 }
                                 else{
                                     Looper.prepare();
@@ -592,6 +647,5 @@ public class My_Info_details_Activity extends rootActivity {
                 }
             }
         });
-
     }
 }

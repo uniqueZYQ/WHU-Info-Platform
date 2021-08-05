@@ -87,16 +87,16 @@ public class Personal_Center_Activity extends rootActivity {
                 String result=response.body().string();
                 int n=connection.parseJSONForMyInfoResponse(result,my_info_list);
                 if(n>0){
-                    OtherOption();
+                    OtherOptions();
                     //已在parseJSONForMyInfoResponse完成my_info_list的添加
                 }
                 else if(n==0){
                     showNoneInfo();
-                    OtherOption();
+                    OtherOptions();
                 }
                 else{
                     Looper.prepare();
-                    Toast.makeText(Personal_Center_Activity.this,"数据解析失败！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Personal_Center_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
                     Looper.loop();
                 }
             }
@@ -112,7 +112,7 @@ public class Personal_Center_Activity extends rootActivity {
         });
     }
 
-    private void OtherOption(){
+    private void OtherOptions(){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -140,45 +140,20 @@ public class Personal_Center_Activity extends rootActivity {
 
                     @Override
                     public void onRefresh() {
-                        refresh_my_info();
+                        refresh_my_info(2000);
                     }
                 });
             }
         });
     }
 
-    private void refresh_my_info(){
+    private void refresh_my_info(int s){
         new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try{
-                    Thread.sleep(2000);
-                }
-                catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-                runOnUiThread((new Runnable(){
-
-                    @Override
-                    public void run() {
-                        adapter.clear();
-                        init();
-                        adapter.notifyDataSetChanged();
-                        swipeRefresh.setRefreshing(false);
-                    }
-                }));
-            }
-        }).start();
-    }
-
-    private void refresh_my_info1(){
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try{
-                    Thread.sleep(1000);
+                    Thread.sleep(s);
                 }
                 catch (InterruptedException e){
                     e.printStackTrace();
@@ -220,6 +195,6 @@ public class Personal_Center_Activity extends rootActivity {
     @Override
     protected void onRestart(){
         super.onRestart();
-        refresh_my_info1();
+        refresh_my_info(1);
     }
 }

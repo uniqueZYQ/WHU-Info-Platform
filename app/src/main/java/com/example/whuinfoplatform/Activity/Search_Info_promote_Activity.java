@@ -1,39 +1,45 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.whuinfoplatform.Adapter.my_info_Adapter;
 import com.example.whuinfoplatform.Adapter.srch_info_Adapter;
-import com.example.whuinfoplatform.DB.DB_USER;
-import com.example.whuinfoplatform.Entity.Info;
-import com.example.whuinfoplatform.Entity.my_info;
+import com.example.whuinfoplatform.Dao.InfoConnection;
+import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.srch_info;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivitySearchInfoPromoteBinding;
 
-import org.litepal.crud.DataSupport;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class Search_Info_promote_Activity extends rootActivity {
     private ActivitySearchInfoPromoteBinding binding;
     private List<srch_info> srch_info_list = new ArrayList<>();
     private SwipeRefreshLayout swipeRefresh;
     private srch_info_Adapter adapter;
-    private DB_USER dbHelper;
+    int locid=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,87 +48,129 @@ public class Search_Info_promote_Activity extends rootActivity {
     @Override
     public void bindView() {
         binding=ActivitySearchInfoPromoteBinding.inflate(getLayoutInflater());
+        adapter = new srch_info_Adapter(Search_Info_promote_Activity.this,R.layout.srch_info_item,srch_info_list);
         setContentView(binding.getRoot());
         Intent intent1 = getIntent();
-        int locid=intent1.getIntExtra("id",0);
+        locid=intent1.getIntExtra("id",0);
         init();
-        adapter = new srch_info_Adapter(Search_Info_promote_Activity.this,R.layout.srch_info_item,srch_info_list);
-        ListView listView=(ListView)findViewById(R.id.list_view);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                srch_info srchinfo = srch_info_list.get(position);
-                int infoid=srchinfo.getId();
-                List<Info> info = DataSupport.where("id=?",String.valueOf(infoid)).find(Info.class);
-                int ownerid=info.get(0).getOwner_id();
-                int cuself=srchinfo.getSelf();
-                String cuowner=srchinfo.getOwner();
-                Intent intent = new Intent(Search_Info_promote_Activity.this,Srch_Info_details_Activity.class);
-                intent.putExtra("id",infoid);
-                intent.putExtra("locid",locid);
-                intent.putExtra("owner",cuowner);
-                intent.putExtra("self",cuself);
-                intent.putExtra("ownerid",ownerid);
-                startActivity(intent);
-            }
-        });
-
-        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
-        swipeRefresh.setColorSchemeResources(
-                android.R.color.holo_blue_light,
-                android.R.color.holo_purple);
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-
-            @Override
-            public void onRefresh() {
-                refresh_my_info();
-            }
-        });
     }
 
     private void init(){
-        String owner="";
-        int self=0;
         Intent intent=getIntent();
         String kwd=intent.getStringExtra("kwd");
         int id=intent.getIntExtra("id",0);
-        dbHelper = new DB_USER(this, "User.db", null, 7);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        List<Info> info = DataSupport.where("detail like ? or lesson like ?","%"+kwd+"%","%"+kwd+"%").order("send_date desc").find(Info.class);
-        for(int i=0;i<info.size();i++){
-            String date=info.get(i).getSend_date();
-            String form=" 信息类别："+(info.get(i).getForm()==1?"私人性-学术咨询信息":info.get(i).getForm()==2?"私人性-日常求助信息":info.get(i).getForm()==3?"私人性-物品出售信息":info.get(i).getForm()==4?"私人性-物品求购信息":info.get(i).getForm()==5?"组织性信息":"课程点评信息");
-            String detail=" 内容："+info.get(i).getDetail();
-            int owner_id=info.get(i).getOwner_id();
-            if(owner_id==id) self=1;
-            else self=0;
-            Cursor cursor = db.rawQuery("select nickname from User where id=?", new String[]{String.valueOf(owner_id)}, null);
-            if(cursor.moveToFirst()){
-                if (cursor.getCount() != 0) {
-                    if(self==0)owner=cursor.getString(cursor.getColumnIndex("nickname"));
-                    else owner=cursor.getString(cursor.getColumnIndex("nickname"))+"(我)";
+
+        //List<Info> info = DataSupport.where("detail like ? or lesson like ?","%"+kwd+"%","%"+kwd+"%").order("send_date desc").find(Info.class);
+        InfoConnection infoConnection=new InfoConnection();
+        infoConnection.queryInfoByKwdConnection(kwd, new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Looper.prepare();
+                Toast.makeText(Search_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result=response.body().string();
+                int n=infoConnection.parseJSONForInfoResponse(Search_Info_promote_Activity.this,result,id,srch_info_list);
+                if(n==0){
+                    showNoneInfo();
+                    OtherOptions(0);
+                }
+                else if(n>0){
+                    OtherOptions(locid);
+                }
+                else if(n==-1){
+                    Looper.prepare();
+                    Toast.makeText(Search_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }
             }
-            cursor.close();
-            int infoid=info.get(i).getId();
-            srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self);
-            srch_info_list.add(srchinfo);
-        }
-        if(srch_info_list.size()==0){
-           binding.none.setVisibility(View.VISIBLE);
-        }
-
+        });
     }
 
-    private void refresh_my_info(){
+
+    private void showNoneInfo(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                binding.none.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void OtherOptions(int locid){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ListView listView=(ListView)findViewById(R.id.list_view);
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        srch_info srchinfo = srch_info_list.get(position);
+                        int infoid=srchinfo.getId();
+                        InfoConnection infoConnection=new InfoConnection();
+                        infoConnection.queryInfoByIdConnection(String.valueOf(infoid), new okhttp3.Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Looper.prepare();
+                                Toast.makeText(Search_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String result=response.body().string();
+                                JSONObject jsonObject= null;
+                                try {
+                                    jsonObject = new JSONObject(result);
+                                    int ownerid=jsonObject.getInt("owner_id");
+                                    int cuself=srchinfo.getSelf();
+                                    String cuowner=srchinfo.getOwner();
+                                    Intent intent = new Intent(Search_Info_promote_Activity.this,Srch_Info_details_Activity.class);
+                                    intent.putExtra("id",infoid);
+                                    intent.putExtra("locid",locid);
+                                    intent.putExtra("owner",cuowner);
+                                    intent.putExtra("self",cuself);
+                                    intent.putExtra("ownerid",ownerid);
+                                    startActivity(intent);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    Looper.prepare();
+                                    Toast.makeText(Search_Info_promote_Activity.this,"数据解析失败！",Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                            }
+                        });
+                    }
+                });
+
+                swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
+                swipeRefresh.setColorSchemeResources(
+                        android.R.color.holo_blue_light,
+                        android.R.color.holo_purple);
+                swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+                    @Override
+                    public void onRefresh() {
+                        refresh_info(2000);
+                    }
+                });
+            }
+        });
+    }
+
+    private void refresh_info(int s){
         new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try{
-                    Thread.sleep(2000);
+                    Thread.sleep(s);
                 }
                 catch (InterruptedException e){
                     e.printStackTrace();
@@ -166,5 +214,11 @@ public class Search_Info_promote_Activity extends rootActivity {
             actionBar.setTitle("\""+kwd+"\"的搜索结果");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    protected void onRestart(){
+        super.onRestart();
+        refresh_info(1);
     }
 }

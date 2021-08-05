@@ -1,28 +1,40 @@
 package com.example.whuinfoplatform.Dao;
 
+import android.content.Context;
 import android.os.Build;
+import android.os.Looper;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.MyInformation;
-import com.example.whuinfoplatform.Entity.User;
+import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.Entity.my_info;
+import com.example.whuinfoplatform.Entity.srch_info;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.crud.DataSupport;
 
-import java.util.Base64;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class InfoConnection {
     private RequestBody formBody;
+    int i,self=0;
+    String owner=new String();
+    String owner_picture=new String();
     public static String URL = "http://122.9.144.219:8080/myServlet/";
 
     public void initRegisterConnection(String owner_id,String send_date,String answered,String form,String fd_form,String help_form,String price,String date,
@@ -199,6 +211,36 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
+    public void queryInfoByKwdConnection(String kwd,okhttp3.Callback callback) {
+        String Url=URL+"QueryMyInfoServlet";
+
+        formBody = new FormBody.Builder()
+                .add("kwd",kwd)
+                .add("type","3")
+                .build();
+
+        OkHttpClient client=new OkHttpClient();
+
+        Request request=new Request.Builder().url(Url).post(formBody).build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    public void queryInfoByIdConnection(String id,okhttp3.Callback callback) {
+        String Url=URL+"QueryMyInfoServlet";
+
+        formBody = new FormBody.Builder()
+                .add("id",id)
+                .add("type","1")
+                .build();
+
+        OkHttpClient client=new OkHttpClient();
+
+        Request request=new Request.Builder().url(Url).post(formBody).build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseJSONForInfoResponse(WebResponse Response, String json){
         try{
@@ -215,18 +257,15 @@ public class InfoConnection {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public int parseJSONForMyInfoResponse(String json, List<my_info> my_info_list){
         try{
-            //JSONObject jsonObject=new JSONObject(json);
-            /*int code=jsonObject.getInt("code");
-            String response=jsonObject.getString("response");*/
             JSONArray jsonArray=new JSONArray(json);
-            /*for(int i=0;i<jsonArray.length();i++){
-                jsonArray.getJSONObject(0).
-            }*/
             for(int i=0;i<jsonArray.length();i++){
                 /*无论是无历史发布信息还是只有一条历史发布信息，返回的length都是1，在此做出判断*/
                 int code=jsonArray.getJSONObject(i).getInt("code");
                 if(code==102){
                     return 0;
+                }
+                else if(code!=101){
+                    return -1;
                 }
                 String date=jsonArray.getJSONObject(i).getString("send_date");
                 String form=
@@ -238,6 +277,67 @@ public class InfoConnection {
                 int infoid=jsonArray.getJSONObject(i).getInt("id");
                 my_info myinfo=new my_info(infoid,date,form,detail,answered);
                 my_info_list.add(myinfo);
+            }
+            return jsonArray.length();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public int parseJSONForInfoResponse(Context context, String json, int id, List<srch_info> srch_info_list){
+        try{
+            JSONArray jsonArray=new JSONArray(json);
+            for(i=0;i<jsonArray.length();i++){
+                int code=jsonArray.getJSONObject(i).getInt("code");
+                if(code==102){
+                    return 0;
+                }
+                else if(code!=101){
+                    return -1;
+                }
+                String date=jsonArray.getJSONObject(i).getString("send_date");
+                String form=" 信息类别："+(
+                        jsonArray.getJSONObject(i).getInt("form")==1?"私人性-学术咨询信息":
+                        jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
+                        jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":
+                        jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
+                        jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息");
+                String detail=" 内容："+jsonArray.getJSONObject(i).getString("detail");
+                int owner_id=jsonArray.getJSONObject(i).getInt("owner_id");
+                owner=jsonArray.getJSONObject(i).getString("owner_nickname");
+                List<LocalPicture> localPictures= DataSupport.where("user_code=?",String.valueOf(owner_id)).find(LocalPicture.class);
+                if(localPictures.size()!=0){
+                    owner_picture=localPictures.get(0).getPicture();
+                    if(owner_id==id) {
+                        self=1;
+                    }
+                    else {
+                        self=0;
+                    }
+                    int infoid=jsonArray.getJSONObject(i).getInt("id");
+                    srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self,owner_picture);
+                    srch_info_list.add(srchinfo);
+                }
+                else{
+                    owner_picture=jsonArray.getJSONObject(i).getString("owner_picture");
+                    if(owner_id==id) {
+                        self=1;
+                    }
+                    else {
+                        self=0;
+                    }
+                    int infoid=jsonArray.getJSONObject(i).getInt("id");
+                    srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self,owner_picture);
+                    srch_info_list.add(srchinfo);
+                    LocalPicture localPicture=new LocalPicture();
+                    localPicture.setPicture(owner_picture);
+                    localPicture.setChat_code(0);
+                    localPicture.setResponse("");
+                    localPicture.setUser_code(owner_id);
+                    localPicture.setCode(0);localPicture.save();
+                }
             }
             return jsonArray.length();
         }catch (Exception e){

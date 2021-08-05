@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,11 +22,16 @@ import android.widget.Toast;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
+import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPersonalMessageBinding;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -47,40 +53,74 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
         setContentView(binding.getRoot());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void initData() {
         super.initData();
         Intent intent = getIntent();
         id=intent.getIntExtra("id",0);
-
         UserConnection userConnection=new UserConnection();
-        userConnection.queryUserInfo(String.valueOf(id),new okhttp3.Callback(){
+        List<LocalPicture> localPictures=DataSupport.where("user_code=?",String.valueOf(id)).find(LocalPicture.class);
+        if(localPictures.size()!=0){
+            byte[] in=Base64.getDecoder().decode(localPictures.get(0).getPicture());
+            userConnection.queryUserInfoWithoutPicture(String.valueOf(id),new okhttp3.Callback(){
 
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Looper.prepare();
-                Toast.makeText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
-                Looper.loop();
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String result=response.body().string();
-                User user=new User();
-                userConnection.parseJSON(user,result);
-                Looper.prepare();
-                if(user.getCode()==101){
-                    String nkn=user.getNickname();
-                    String rnm=user.getRealname();
-                    String stdid=user.getStdid();
-                    byte[] in = user.getPicture();
-                    bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                    showResult(stdid,nkn,rnm,bit);
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    Toast.makeText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }
-                Looper.loop();
-            }
-        });
+
+                @RequiresApi(api = Build.VERSION_CODES.O)
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    User user=new User();
+                    userConnection.parseJSON(user,result);
+                    Looper.prepare();
+                    if(user.getCode()==101){
+                        String nkn=user.getNickname();
+                        String rnm=user.getRealname();
+                        String stdid=user.getStdid();
+                        bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                        showResult(stdid,nkn,rnm,bit);
+                    }
+                    Looper.loop();
+                }
+            });
+        }
+        else{
+            userConnection.queryUserInfo(String.valueOf(id),new okhttp3.Callback(){
+
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    Toast.makeText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
+
+                @RequiresApi(api = Build.VERSION_CODES.O)
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    User user=new User();
+                    userConnection.parseJSON(user,result);
+                    Looper.prepare();
+                    if(user.getCode()==101){
+                        String nkn=user.getNickname();
+                        String rnm=user.getRealname();
+                        String stdid=user.getStdid();
+                        byte[] in = user.getPicture();
+                        bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                        showResult(stdid,nkn,rnm,bit);
+                        LocalPicture localPicture=new LocalPicture();
+                        localPicture.userPictureAddToLocal(id,Base64.getEncoder().encodeToString(in));
+                    }
+                    Looper.loop();
+                }
+            });
+        }
     }
 
     @Override
@@ -175,6 +215,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
         super.onPause();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onResume() {
         super.onResume();

@@ -32,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityRenewPermsgPromoteBinding;
@@ -160,7 +161,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                 }
             });
             UserConnection userConnection=new UserConnection();
-            userConnection.queryUserInfo(id, new okhttp3.Callback() {
+            userConnection.queryUserInfoWithoutPicture(id, new okhttp3.Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Looper.prepare();
@@ -288,6 +289,9 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                         Looper.prepare();
                         Toast.makeText(Renew_Permsg_promote_Activity.this,user.getResponse(),Toast.LENGTH_SHORT).show();
                         if(user.getCode()==101){
+                            LocalPicture localPicture=new LocalPicture();
+                            localPicture.setPicture(FileBuf);
+                            localPicture.updateAll("user_code=?",id);
                             Intent intent = new Intent(Renew_Permsg_promote_Activity.this, Personal_Message_Activity.class);
                             startActivity(intent);
                         }
