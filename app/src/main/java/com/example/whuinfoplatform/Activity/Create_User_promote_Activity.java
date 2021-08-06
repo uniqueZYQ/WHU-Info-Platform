@@ -2,38 +2,26 @@ package com.example.whuinfoplatform.Activity;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityCreateUserPromoteBinding;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.util.Base64;
 
 import okhttp3.Call;
@@ -110,6 +98,7 @@ public class Create_User_promote_Activity extends rootActivity {
     protected void initClick() {
         super.initClick();
         binding.button1.setOnClickListener(v->{
+            SenseCheck senseCheck=new SenseCheck();
             String nnm = binding.editNickname.getText().toString();
             String pw = binding.editPwd.getText().toString();
             String rnm = binding.editRealname.getText().toString();
@@ -118,7 +107,11 @@ public class Create_User_promote_Activity extends rootActivity {
                 Toast.makeText(Create_User_promote_Activity.this,"请完善信息！",Toast.LENGTH_SHORT).show();
             }
             else {
-                if(id.length()==13) {
+                if(!senseCheck.SenseCheckAllBlankOrNull(nnm)){
+                    Toast.makeText(Create_User_promote_Activity.this,"昵称不能为无实义内容！",Toast.LENGTH_SHORT).show();
+                    binding.editNickname.setText("");
+                }
+                else if(id.length()==13) {
                     picture.setDrawingCacheEnabled(true);
                     Bitmap bitmap = Bitmap.createBitmap(picture.getDrawingCache());
                     picture.setDrawingCacheEnabled(false);

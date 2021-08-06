@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,14 +21,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.ActivityCollector;
-import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
-
-import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 

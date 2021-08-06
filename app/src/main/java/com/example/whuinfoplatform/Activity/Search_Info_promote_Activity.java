@@ -16,13 +16,10 @@ import android.widget.Toast;
 
 import com.example.whuinfoplatform.Adapter.srch_info_Adapter;
 import com.example.whuinfoplatform.Dao.InfoConnection;
-import com.example.whuinfoplatform.Dao.UserConnection;
-import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.srch_info;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivitySearchInfoPromoteBinding;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

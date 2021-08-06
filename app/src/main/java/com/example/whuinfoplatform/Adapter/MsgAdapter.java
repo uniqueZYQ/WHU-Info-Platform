@@ -1,23 +1,13 @@
 package com.example.whuinfoplatform.Adapter;
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.PointF;
-import android.graphics.Rect;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,10 +16,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.whuinfoplatform.Activity.MainActivity;
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.AboutTime;
-import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Entity.Picture;
@@ -42,7 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     private List<Msg> mMsgList;

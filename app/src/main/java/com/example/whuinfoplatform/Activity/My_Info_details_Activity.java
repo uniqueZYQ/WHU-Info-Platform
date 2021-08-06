@@ -3,13 +3,10 @@ package com.example.whuinfoplatform.Activity;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -19,18 +16,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Dao.PictureConnection;
 import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
-import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.MyInformation;
-import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.Entity.WebResponse;
-import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityMyInfoDetailsBinding;
 
@@ -123,7 +116,7 @@ public class My_Info_details_Activity extends rootActivity {
                     userConnection.parseJSON(user,result);
                     setPictureAndNickname(user);
                     LocalPicture localPicture=new LocalPicture();
-                    localPicture.userPictureAddToLocal(owner_id,Base64.getEncoder().encodeToString(user.getPicture()));
+                    localPicture.userPictureAddToLocal(My_Info_details_Activity.this,owner_id,Base64.getEncoder().encodeToString(user.getPicture()));
                 }
             });
         }

@@ -11,9 +11,7 @@ import com.example.whuinfoplatform.Entity.AboutTime;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.R;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 public class my_info_Adapter extends ArrayAdapter<my_info> {
     private int resourceId;

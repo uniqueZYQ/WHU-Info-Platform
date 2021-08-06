@@ -3,21 +3,15 @@ package com.example.whuinfoplatform.Activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -28,18 +22,14 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CalendarView;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*import com.example.whuinfoplatform.DB.DB_INFO;*/
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatusUpdate;
@@ -58,26 +48,20 @@ import com.baidu.mapapi.search.poi.PoiDetailSearchResult;
 import com.baidu.mapapi.search.poi.PoiIndoorResult;
 import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
-import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Entity.BaiDuMap;
-import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.LocalPicture;
-import com.example.whuinfoplatform.Entity.Picture;
-import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPublishInfoPromoteBinding;
 
 import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.Connector;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -430,12 +414,11 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         binding.editCommobj.setVisibility(View.GONE);
 
                 }
-                //Toast.makeText(Publish_Info_promote_Activity.this,"NOW "+(int)id,Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                //Toast.makeText(Publish_Info_promote_Activity.this,"NOW NONE",Toast.LENGTH_SHORT).show();
+
             }
         });
     }

@@ -1,7 +1,6 @@
 package com.example.whuinfoplatform.Activity;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
@@ -13,20 +12,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.whuinfoplatform.Adapter.my_info_Adapter;
 import com.example.whuinfoplatform.Adapter.my_msg_Adapter;
 import com.example.whuinfoplatform.DB.DB_USER;
-import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.Last;
 import com.example.whuinfoplatform.Entity.Msg;
-import com.example.whuinfoplatform.Entity.last_show;
-import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.Entity.my_msg;
 import com.example.whuinfoplatform.R;
-import com.example.whuinfoplatform.databinding.ActivityBasicBinding;
 import com.example.whuinfoplatform.databinding.ActivityMessageCenterBinding;
-import com.example.whuinfoplatform.databinding.ActivityPersonalCenterBinding;
-import com.example.whuinfoplatform.databinding.MyInfoItemBinding;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;

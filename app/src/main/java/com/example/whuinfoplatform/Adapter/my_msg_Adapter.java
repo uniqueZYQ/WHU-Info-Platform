@@ -13,18 +13,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.Activity.Personal_Message_Activity;
 import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.AboutTime;
-import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.Entity.my_msg;
 import com.example.whuinfoplatform.R;
 
-import java.sql.Time;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+
 
 
 public class my_msg_Adapter extends ArrayAdapter<my_msg> {

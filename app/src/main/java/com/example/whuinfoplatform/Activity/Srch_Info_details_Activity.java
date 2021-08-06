@@ -2,13 +2,11 @@ package com.example.whuinfoplatform.Activity;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -23,12 +21,6 @@ import android.widget.Toast;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
-import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
-import com.baidu.mapapi.bikenavi.adapter.IBEngineInitListener;
-import com.baidu.mapapi.bikenavi.adapter.IBRoutePlanListener;
-import com.baidu.mapapi.bikenavi.model.BikeRoutePlanError;
-import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
-import com.baidu.mapapi.bikenavi.params.BikeRouteNodeInfo;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatusUpdate;
@@ -38,7 +30,6 @@ import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.PoiInfo;
 import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
 import com.baidu.mapapi.search.poi.PoiDetailResult;
 import com.baidu.mapapi.search.poi.PoiDetailSearchOption;
@@ -46,23 +37,6 @@ import com.baidu.mapapi.search.poi.PoiDetailSearchResult;
 import com.baidu.mapapi.search.poi.PoiIndoorResult;
 import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
-import com.baidu.mapapi.search.route.BikingRouteResult;
-import com.baidu.mapapi.search.route.DrivingRouteResult;
-import com.baidu.mapapi.search.route.IndoorRouteResult;
-import com.baidu.mapapi.search.route.MassTransitRouteResult;
-import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
-import com.baidu.mapapi.search.route.PlanNode;
-import com.baidu.mapapi.search.route.RoutePlanSearch;
-import com.baidu.mapapi.search.route.TransitRouteResult;
-import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
-import com.baidu.mapapi.search.route.WalkingRouteResult;
-import com.baidu.mapapi.walknavi.WalkNavigateHelper;
-import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
-import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
-import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
-import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
-import com.baidu.mapapi.walknavi.params.WalkRouteNodeInfo;
-import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Dao.PictureConnection;
 import com.example.whuinfoplatform.Dao.UserConnection;
@@ -70,22 +44,17 @@ import com.example.whuinfoplatform.Entity.BaiDuMap;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.LocalPicture;
-import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Entity.MyInformation;
-import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.Connector;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -321,13 +290,58 @@ public class Srch_Info_details_Activity extends rootActivity {
         int sub_id=intent.getIntExtra("locid",0);
         int obj_id=intent.getIntExtra("ownerid",0);
         binding.answer.setOnClickListener(v->{
-            Info info=new Info();
-            info.setAnswered(1);
-            info.updateAll("id=?",String.valueOf(id));
-            Intent intent1 = new Intent(Srch_Info_details_Activity.this,Chat_Window_Activity.class);
-            intent1.putExtra("sub_id",sub_id);
-            intent1.putExtra("obj_id",obj_id);
-            startActivity(intent1);
+
+            AlertDialog.Builder dialog = new AlertDialog.Builder(Srch_Info_details_Activity.this);
+            dialog.setTitle("响应本信息");
+            dialog.setMessage("信息发布者将会收到您的信息\n确定响应？");
+            dialog.setCancelable(false);
+            dialog.setNegativeButton("不，我再想想", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            dialog.setPositiveButton("是",new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    InfoConnection infoConnection=new InfoConnection();
+                    infoConnection.answerInfoConnection(String.valueOf(id), new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Looper.prepare();
+                            Toast.makeText(Srch_Info_details_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String result=response.body().string();
+                            try {
+                                JSONObject jsonObject=new JSONObject(result);
+                                if(jsonObject.getInt("code")==101){
+                                    Intent intent1 = new Intent(Srch_Info_details_Activity.this,Chat_Window_Activity.class);
+                                    intent1.putExtra("sub_id",sub_id);
+                                    intent1.putExtra("obj_id",obj_id);
+                                    intent1.putExtra("nickname",owner);
+                                    startActivity(intent1);
+                                }
+                                else{
+                                    Looper.prepare();
+                                    Toast.makeText(Srch_Info_details_Activity.this,jsonObject.getString("response"),Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Looper.prepare();
+                                Toast.makeText(Srch_Info_details_Activity.this,"数据解析失败！",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                        }
+                    });
+                }
+            });
+            dialog.show();
         });
         binding.placeDetail.setOnClickListener(v -> {
             //List<Info> info = DataSupport.where("id=?",String.valueOf(id)).find(Info.class);
@@ -625,7 +639,7 @@ public class Srch_Info_details_Activity extends rootActivity {
                                 JSONObject jsonObject=new JSONObject(result);
                                 String picture=jsonObject.getString("picture");
                                 LocalPicture localPicture=new LocalPicture();
-                                localPicture.userPictureAddToLocal(owner_id,picture);
+                                localPicture.userPictureAddToLocal(Srch_Info_details_Activity.this,owner_id,picture);
                                 showUserPicture(picture);
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -746,6 +760,4 @@ public class Srch_Info_details_Activity extends rootActivity {
             }
         });
     }
-
-
 }

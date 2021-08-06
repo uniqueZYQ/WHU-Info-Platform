@@ -115,7 +115,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
                         bit = BitmapFactory.decodeByteArray(in, 0, in.length);
                         showResult(stdid,nkn,rnm,bit);
                         LocalPicture localPicture=new LocalPicture();
-                        localPicture.userPictureAddToLocal(id,Base64.getEncoder().encodeToString(in));
+                        localPicture.userPictureAddToLocal(Personal_Message_Activity.this,id,Base64.getEncoder().encodeToString(in));
                     }
                     Looper.loop();
                 }

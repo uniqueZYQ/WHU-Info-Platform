@@ -4,24 +4,20 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.whuinfoplatform.R;
 
-import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
-import java.util.List;
 
 public class EnlargePicture {
     private Dialog mCameraDialog;

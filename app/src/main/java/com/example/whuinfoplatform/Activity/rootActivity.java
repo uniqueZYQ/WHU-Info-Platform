@@ -12,7 +12,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.whuinfoplatform.R;
-import com.example.whuinfoplatform.databinding.ActivityRootBinding;
 
 public abstract  class rootActivity extends AppCompatActivity {
     private Toolbar toolbar;

@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.LocalPicture;
+import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityRenewPermsgPromoteBinding;
@@ -229,6 +230,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
         super.initClick();
         binding.button1.setOnClickListener(v->{
             Intent intent1 = getIntent();
+            SenseCheck senseCheck=new SenseCheck();
             if(intent1.getIntExtra("type",0)==1) {
                 String id = Integer.toString(intent1.getIntExtra("id", 0));
                 String newnkn = binding.editNickname.getText().toString();
@@ -236,7 +238,12 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
 
                 if ((newnkn.equals("")) || (newpwd.equals(""))) {
                     Toast.makeText(Renew_Permsg_promote_Activity.this, "请填入完整信息！", Toast.LENGTH_SHORT).show();
-                } else {
+                }
+                else if(!senseCheck.SenseCheckAllBlankOrNull(newnkn)){
+                    Toast.makeText(Renew_Permsg_promote_Activity.this, "昵称不能为无实义内容！", Toast.LENGTH_SHORT).show();
+                    binding.editNickname.setText("");
+                }
+                else {
                     UserConnection userConnection=new UserConnection();
                     userConnection.renewUserInfo(id,newpwd,newnkn, new okhttp3.Callback() {
                         @Override
@@ -359,7 +366,6 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                     try{
                         //显示照片
                         Bitmap bitmap= BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        //picture.setImageBitmap(bitmap);
                         Bitmap bitmap_p;
                         double p_width=bitmap.getWidth();
                         double p_height=bitmap.getHeight();

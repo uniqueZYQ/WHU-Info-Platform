@@ -1,36 +1,21 @@
 package com.example.whuinfoplatform.Activity;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.Last;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityBasicBinding;
-import com.example.whuinfoplatform.databinding.ToolbarBinding;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Basic_Activity extends rootActivity{

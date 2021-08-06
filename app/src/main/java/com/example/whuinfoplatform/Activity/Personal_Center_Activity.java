@@ -2,14 +2,12 @@ package com.example.whuinfoplatform.Activity;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.core.app.Person;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,15 +16,9 @@ import android.widget.Toast;
 
 import com.example.whuinfoplatform.Adapter.my_info_Adapter;
 import com.example.whuinfoplatform.Dao.InfoConnection;
-import com.example.whuinfoplatform.Entity.Info;
-import com.example.whuinfoplatform.Entity.MyInformation;
-import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPersonalCenterBinding;
-import com.example.whuinfoplatform.databinding.MyInfoItemBinding;
-
-import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 import java.util.ArrayList;

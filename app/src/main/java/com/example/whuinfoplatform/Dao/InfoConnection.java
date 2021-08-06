@@ -9,7 +9,6 @@ import androidx.annotation.RequiresApi;
 
 import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.MyInformation;
-import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.Entity.srch_info;
@@ -19,16 +18,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class InfoConnection {
     private RequestBody formBody;
@@ -241,6 +236,21 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
+    public void answerInfoConnection(String id,okhttp3.Callback callback) {
+        String Url=URL+"QueryMyInfoServlet";
+
+        formBody = new FormBody.Builder()
+                .add("id",id)
+                .add("type","4")
+                .build();
+
+        OkHttpClient client=new OkHttpClient();
+
+        Request request=new Request.Builder().url(Url).post(formBody).build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseJSONForInfoResponse(WebResponse Response, String json){
         try{
@@ -270,8 +280,8 @@ public class InfoConnection {
                 String date=jsonArray.getJSONObject(i).getString("send_date");
                 String form=
                         jsonArray.getJSONObject(i).getInt("form")==1?"私人性-学术咨询信息":jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
-                        jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
-                        jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息";
+                                jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
+                                        jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息";
                 String detail=jsonArray.getJSONObject(i).getString("detail");
                 String answered=jsonArray.getJSONObject(i).getInt("answered")==0?"暂无响应":"已被响应";
                 int infoid=jsonArray.getJSONObject(i).getInt("id");
@@ -294,20 +304,40 @@ public class InfoConnection {
                 if(code==102){
                     return 0;
                 }
-                else if(code!=101){
+                else if(code!=101&&code!=103){
                     return -1;
                 }
                 String date=jsonArray.getJSONObject(i).getString("send_date");
                 String form=" 信息类别："+(
                         jsonArray.getJSONObject(i).getInt("form")==1?"私人性-学术咨询信息":
-                        jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
-                        jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":
-                        jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
-                        jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息");
+                                jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
+                                        jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":
+                                                jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
+                                                        jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息");
                 String detail=" 内容："+jsonArray.getJSONObject(i).getString("detail");
                 int owner_id=jsonArray.getJSONObject(i).getInt("owner_id");
                 owner=jsonArray.getJSONObject(i).getString("owner_nickname");
-                List<LocalPicture> localPictures= DataSupport.where("user_code=?",String.valueOf(owner_id)).find(LocalPicture.class);
+                if(code==103){
+                    List<LocalPicture> localPictures=DataSupport.where("user_code=?",String.valueOf(owner_id)).find(LocalPicture.class);
+                    if(localPictures.size()!=0){
+                        owner_picture=localPictures.get(0).getPicture();
+                        if(owner_id==id) {
+                            self=1;
+                        }
+                        else {
+                            self=0;
+                        }
+                        int infoid=jsonArray.getJSONObject(i).getInt("id");
+                        srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self,owner_picture);
+                        srch_info_list.add(srchinfo);
+                    }
+                    else{
+                        Looper.prepare();
+                        Toast.makeText(context,"本地数据获取失败！",Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
+                }
+                /*List<LocalPicture> localPictures= DataSupport.where("user_code=?",String.valueOf(owner_id)).find(LocalPicture.class);
                 if(localPictures.size()!=0){
                     owner_picture=localPictures.get(0).getPicture();
                     if(owner_id==id) {
@@ -319,7 +349,7 @@ public class InfoConnection {
                     int infoid=jsonArray.getJSONObject(i).getInt("id");
                     srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self,owner_picture);
                     srch_info_list.add(srchinfo);
-                }
+                }*/
                 else{
                     owner_picture=jsonArray.getJSONObject(i).getString("owner_picture");
                     if(owner_id==id) {
@@ -332,11 +362,7 @@ public class InfoConnection {
                     srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self,owner_picture);
                     srch_info_list.add(srchinfo);
                     LocalPicture localPicture=new LocalPicture();
-                    localPicture.setPicture(owner_picture);
-                    localPicture.setChat_code(0);
-                    localPicture.setResponse("");
-                    localPicture.setUser_code(owner_id);
-                    localPicture.setCode(0);localPicture.save();
+                    localPicture.userPictureAddToLocal(context,owner_id,owner_picture);
                 }
             }
             return jsonArray.length();
@@ -376,3 +402,4 @@ public class InfoConnection {
         Response.setResponse(response);
     }
 }
+

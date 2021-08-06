@@ -33,8 +33,6 @@ import android.widget.Toast;
 
 import com.example.whuinfoplatform.Dao.PictureConnection;
 import com.example.whuinfoplatform.Entity.LocalPicture;
-import com.example.whuinfoplatform.Entity.Picture;
-import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityUploadPicturePromoteBinding;

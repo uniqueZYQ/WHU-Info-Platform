@@ -1,23 +1,17 @@
 package com.example.whuinfoplatform.Activity;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.R;
-import com.example.whuinfoplatform.databinding.ActivityBasicBinding;
+import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.databinding.ActivityInfoHallBinding;
-import com.example.whuinfoplatform.databinding.ActivityRootBinding;
 
 public class Info_Hall_Activity extends rootActivity {
     private ActivityInfoHallBinding binding;
@@ -40,14 +34,8 @@ public class Info_Hall_Activity extends rootActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event){
                 if(actionId== EditorInfo.IME_ACTION_SEARCH){
                     String kwd = binding.startEditText.getText().toString();
-                    boolean valid = false;
-                    for (int i = 0; i < kwd.length(); i++) {
-                        if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
-                            continue;
-                        else
-                            valid = true;
-                    }
-                    if(valid){
+                    SenseCheck senseCheck=new SenseCheck();
+                    if(senseCheck.SenseCheckAllBlankOrNull(kwd)){
                         Intent intent = new Intent(Info_Hall_Activity.this, Search_Info_promote_Activity.class);
                         intent.putExtra("kwd",kwd);
                         Intent intent1=getIntent();

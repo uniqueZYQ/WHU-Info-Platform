@@ -9,8 +9,6 @@ import com.example.whuinfoplatform.Entity.WebResponse;
 
 import org.json.JSONObject;
 
-import java.util.Base64;
-
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

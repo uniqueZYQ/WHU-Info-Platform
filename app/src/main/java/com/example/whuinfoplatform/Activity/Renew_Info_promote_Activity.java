@@ -3,7 +3,6 @@ package com.example.whuinfoplatform.Activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -43,21 +42,17 @@ import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
 import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Entity.BaiDuMap;
-import com.example.whuinfoplatform.Entity.Info;
 import com.example.whuinfoplatform.Entity.MyInformation;
 import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.R;
 
 import org.json.JSONException;
-import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.Connector;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import okhttp3.Call;

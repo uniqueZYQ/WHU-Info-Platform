@@ -1,15 +1,11 @@
 package com.example.whuinfoplatform.Activity;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.os.Build;
@@ -18,7 +14,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.Window;
@@ -28,10 +23,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.whuinfoplatform.DB.DB_USER;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Adapter.MsgAdapter;
-import com.example.whuinfoplatform.Entity.Picture;
+import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityChatWindowBinding;
 
@@ -44,7 +38,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class Chat_Window_Activity extends rootActivity {
-    private DB_USER dbHelper;
     private List<Msg> msgList=new ArrayList<>();
     private EditText inputText;
     private Button send;
@@ -52,8 +45,7 @@ public class Chat_Window_Activity extends rootActivity {
     private MsgAdapter adapter;
     private ActivityChatWindowBinding binding;
     String owner=new String();
-    int sub_id=0;
-    int obj_id=0;
+    int sub_id=0,obj_id=0;
     private boolean upload=false;
     private Dialog mCameraDialog;
 
@@ -86,16 +78,7 @@ public class Chat_Window_Activity extends rootActivity {
         if(sub_id==0) sub_id=intent.getIntExtra("sub_id1",0);
         obj_id=intent.getIntExtra("obj_id",0);
         if(obj_id==0) obj_id=intent.getIntExtra("obj_id1",0);
-        dbHelper=new DB_USER(this,"User.db",null,7);
-        dbHelper.getWritableDatabase();
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from User where id=?", new String[]{String.valueOf(obj_id)}, null);
-        if(cursor.moveToFirst()) {
-            if (cursor.getCount() != 0) {
-                owner=cursor.getString(cursor.getColumnIndex("nickname"));
-            }
-        }
-        cursor.close();
+        owner=intent.getStringExtra("nickname");
         inputText = (EditText) findViewById(R.id.inputText);
         send = (Button) findViewById(R.id.send);
         msgRecyclerView = (RecyclerView) findViewById(R.id.msg_recycler_view);
@@ -130,14 +113,8 @@ public class Chat_Window_Activity extends rootActivity {
             @Override
             public void onClick(View v) {
                 String content = inputText.getText().toString();
-                boolean valid = false;
-                for (int i = 0; i < content.length(); i++) {
-                    if (content.charAt(i) == '\0' || content.charAt(i) == '\n' || content.charAt(i) == ' ')
-                        continue;
-                    else
-                        valid = true;
-                }
-                if (valid) {
+                SenseCheck senseCheck=new SenseCheck();
+                if (senseCheck.SenseCheckAllBlankOrNullOrEnter(content)) {
                     long timecurrentTimeMillis = System.currentTimeMillis();
                     SimpleDateFormat sdfTwo = new SimpleDateFormat("YYYY年MM月dd日 HH:mm", Locale.getDefault());
                     String time = sdfTwo.format(timecurrentTimeMillis);
