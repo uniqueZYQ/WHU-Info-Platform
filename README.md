@@ -1,6 +1,4 @@
-2021年软件工程课程小组作业
-
-java-based Android信息交互平台客户端
+此项目为WHU信息交互平台Android客户端
 
   开发者：city ghost
   
