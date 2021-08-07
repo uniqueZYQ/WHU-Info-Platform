@@ -77,8 +77,6 @@ public class Basic_Activity extends rootActivity{
     protected void initWidget() {
         ActionBar actionBar =getSupportActionBar();
         actionBar.setTitle(tmpnkn);
-        /*actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDefaultDisplayHomeAsUpEnabled(true);*/
     }
 
     @Override

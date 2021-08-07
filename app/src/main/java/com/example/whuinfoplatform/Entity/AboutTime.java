@@ -15,7 +15,7 @@ public class AboutTime {
         long timecurrentTimeMillis = System.currentTimeMillis();
         SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
         String time = sdfTwo.format(timecurrentTimeMillis);
-        int year=Integer.decode(String.valueOf(time.charAt(0))+String.valueOf(time.charAt(1))+String.valueOf(time.charAt(2))+String.valueOf(time.charAt(3)));
+        int year=Integer.valueOf(String.valueOf(time.charAt(0))+String.valueOf(time.charAt(1))+String.valueOf(time.charAt(2))+String.valueOf(time.charAt(3))).intValue();
         return year;
     }
 
@@ -25,9 +25,9 @@ public class AboutTime {
         String time = sdfTwo.format(timecurrentTimeMillis);
         int month;
         if(!String.valueOf(time.charAt(5)).equals("0"))
-            month=Integer.decode(String.valueOf(time.charAt(5))+String.valueOf(time.charAt(6)));
+            month=Integer.valueOf(String.valueOf(time.charAt(5))+String.valueOf(time.charAt(6))).intValue();
         else
-            month=Integer.decode(String.valueOf(time.charAt(6)));
+            month=Integer.valueOf(String.valueOf(time.charAt(6))).intValue();
         return month;
     }
 
@@ -37,9 +37,9 @@ public class AboutTime {
         String time = sdfTwo.format(timecurrentTimeMillis);
         int day;
         if(!String.valueOf(time.charAt(8)).equals("0"))
-            day=Integer.decode(String.valueOf(time.charAt(8))+String.valueOf(time.charAt(9)));
+            day=Integer.valueOf(String.valueOf(time.charAt(8))+String.valueOf(time.charAt(9))).intValue();
         else
-            day=Integer.decode(String.valueOf(time.charAt(9)));
+            day=Integer.valueOf(String.valueOf(time.charAt(9))).intValue();
         return day;
     }
 
@@ -49,9 +49,9 @@ public class AboutTime {
         String time = sdfTwo.format(timecurrentTimeMillis);
         int hour;
         if(!String.valueOf(time.charAt(12)).equals("0"))
-            hour=Integer.decode(String.valueOf(time.charAt(12))+String.valueOf(time.charAt(13)));
+            hour=Integer.valueOf(String.valueOf(time.charAt(12))+String.valueOf(time.charAt(13))).intValue();
         else
-            hour=Integer.decode(String.valueOf(time.charAt(13)));
+            hour=Integer.valueOf(String.valueOf(time.charAt(13))).intValue();
         return hour;
     }
 
@@ -61,9 +61,9 @@ public class AboutTime {
         String time = sdfTwo.format(timecurrentTimeMillis);
         int minute;
         if(!String.valueOf(time.charAt(15)).equals("0"))
-            minute=Integer.decode(String.valueOf(time.charAt(15))+String.valueOf(time.charAt(16)));
+            minute=Integer.valueOf(String.valueOf(time.charAt(15))+String.valueOf(time.charAt(16))).intValue();
         else
-            minute=Integer.decode(String.valueOf(time.charAt(16)));
+            minute=Integer.valueOf(String.valueOf(time.charAt(16))).intValue();
         return minute;
     }
 
@@ -71,7 +71,7 @@ public class AboutTime {
         long timecurrentTimeMillis = System.currentTimeMillis();
         SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
         String time = sdfTwo.format(timecurrentTimeMillis);
-        int second=Integer.decode(String.valueOf(time.charAt(18))+String.valueOf(time.charAt(19)));
+        int second=Integer.valueOf(String.valueOf(time.charAt(18))+String.valueOf(time.charAt(19))).intValue();
         return second;
     }
 
@@ -80,15 +80,15 @@ public class AboutTime {
         int currentYear=getYear();
         int currentMonth=getMonth();
         int currentDay=getDay();
-        int itemYear=Integer.decode(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3)));
-        int itemMonth=Integer.decode(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6)));
-        int itemDay=Integer.decode(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9)));
-        int itemHour=Integer.decode(String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13)));
+        int itemYear=Integer.valueOf(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3))).intValue();
+        int itemMonth=Integer.valueOf(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))).intValue();
+        int itemDay=Integer.valueOf(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))).intValue();
+        int itemHour=Integer.valueOf(String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))).intValue();
         int itemMinute;
         if(!String.valueOf(time_ex.charAt(15)).equals("0"))
-            itemMinute=Integer.decode(String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16)));
+            itemMinute=Integer.valueOf(String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16)));
         else
-            itemMinute=Integer.decode(String.valueOf(time_ex.charAt(16)));
+            itemMinute=Integer.valueOf(String.valueOf(time_ex.charAt(16))).intValue();
         if(itemYear!=currentYear){
             timestamp=time_ex;
         }

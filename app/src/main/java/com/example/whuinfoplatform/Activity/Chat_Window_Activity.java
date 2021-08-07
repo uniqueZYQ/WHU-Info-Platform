@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Outline;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -23,19 +24,21 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.whuinfoplatform.Dao.MsgConnection;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Adapter.MsgAdapter;
 import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityChatWindowBinding;
 
-import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.Connector;
-
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class Chat_Window_Activity extends rootActivity {
     private List<Msg> msgList=new ArrayList<>();
@@ -84,7 +87,32 @@ public class Chat_Window_Activity extends rootActivity {
         msgRecyclerView = (RecyclerView) findViewById(R.id.msg_recycler_view);
         adapter = new MsgAdapter(msgList);
         binding.objnm.setText(owner);
-        List<Msg> targetMsg= DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=? ",String.valueOf(sub_id),String.valueOf(obj_id),String.valueOf(obj_id),String.valueOf(sub_id)).find(Msg.class);
+
+        MsgConnection msgConnection=new MsgConnection();
+        msgConnection.queryMsgAboutUser(String.valueOf(sub_id),String.valueOf(obj_id), new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Looper.prepare();
+                Toast.makeText(Chat_Window_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result=response.body().string();
+                int n=msgConnection.parseJSONMsgResponse(result,sub_id,msgList);
+                if(n==-1){
+                    Looper.prepare();
+                    Toast.makeText(Chat_Window_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
+                else{
+                    freshRecyclerView();
+                }
+            }
+        });
+        /*<Msg> targetMsg= DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=? ",String.valueOf(sub_id),String.valueOf(obj_id),String.valueOf(obj_id),String.valueOf(sub_id)).find(Msg.class);
         for(int i=0;i<targetMsg.size();i++){
             Msg cumsg=new Msg();
             cumsg.setTime(targetMsg.get(i).getTime());
@@ -96,7 +124,7 @@ public class Chat_Window_Activity extends rootActivity {
             if(sub_id==targetMsg.get(i).getSub_id())cumsg.setType(1);
             else cumsg.setType(0);
             msgList.add(cumsg);
-        }
+        }*/
         binding.send.setOutlineProvider(new ViewOutlineProvider() {
             @Override
             public void getOutline(View view, Outline outline) {
@@ -130,6 +158,8 @@ public class Chat_Window_Activity extends rootActivity {
                     adapter.notifyItemInserted(msgList.size() - 1);
                     msgRecyclerView.scrollToPosition(msgList.size() - 1);
                     inputText.setText("");
+                    //todo
+                    /*
                     Connector.getDatabase();
                     Msg addmsg = new Msg();
                     addmsg.setType(1);
@@ -139,7 +169,7 @@ public class Chat_Window_Activity extends rootActivity {
                     addmsg.setPicture(0);
                     addmsg.setRecalled(0);
                     addmsg.setTime(time);
-                    addmsg.save();
+                    addmsg.save();*/
                 } else {
                     inputText.setText("");
                     Toast.makeText(Chat_Window_Activity.this, "不能发送无意义的内容!", Toast.LENGTH_SHORT).show();
@@ -262,6 +292,7 @@ public class Chat_Window_Activity extends rootActivity {
             adapter.notifyItemInserted(msgList.size() - 1);
             msgRecyclerView.scrollToPosition(msgList.size() - 1);
             inputText.setText("");
+            /*todo
             Connector.getDatabase();
             Msg addmsg = new Msg();
             addmsg.setType(1);
@@ -271,7 +302,20 @@ public class Chat_Window_Activity extends rootActivity {
             addmsg.setPicture(picture);
             addmsg.setRecalled(0);
             addmsg.setTime(time);
-            addmsg.save();
+            addmsg.save();*/
         }
+    }
+
+    private void freshRecyclerView(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LinearLayoutManager layoutManager = new LinearLayoutManager(Chat_Window_Activity.this);
+                msgRecyclerView.setLayoutManager(layoutManager);
+                msgRecyclerView.setTag(1);
+                msgRecyclerView.setAdapter(adapter);
+                msgRecyclerView.scrollToPosition(msgList.size() - 1);//最下方显示最新消息
+            }
+        });
     }
 }

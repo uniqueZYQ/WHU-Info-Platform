@@ -293,7 +293,7 @@ public class Srch_Info_details_Activity extends rootActivity {
 
             AlertDialog.Builder dialog = new AlertDialog.Builder(Srch_Info_details_Activity.this);
             dialog.setTitle("响应本信息");
-            dialog.setMessage("信息发布者将会收到您的信息\n确定响应？");
+            dialog.setMessage("信息发布者将会收到您的信息。\n确定响应？");
             dialog.setCancelable(false);
             dialog.setNegativeButton("不，我再想想", new DialogInterface.OnClickListener() {
                 @Override

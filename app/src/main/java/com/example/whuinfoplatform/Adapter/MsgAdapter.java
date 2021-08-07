@@ -1,10 +1,10 @@
 package com.example.whuinfoplatform.Adapter;
 
 import android.content.DialogInterface;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.whuinfoplatform.DB.DB_USER;
+import com.example.whuinfoplatform.Dao.MsgConnection;
 import com.example.whuinfoplatform.Entity.AboutTime;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
+import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.R;
@@ -26,16 +28,21 @@ import com.example.whuinfoplatform.R;
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Response;
+
 public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     private List<Msg> mMsgList;
-    private DB_USER dbHelper;
-    SQLiteDatabase db;
     ViewGroup adapter_parent;
+    int recalled=0;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         LinearLayout leftLayout;
@@ -78,8 +85,6 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         adapter_parent=parent;
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.msg_item,parent,false);
-        dbHelper = new DB_USER(parent.getContext(),"User.db",null,7);
-        db = dbHelper.getWritableDatabase();
 
         final ViewHolder holder=new ViewHolder(view);
         holder.right_layout_inner.setOnLongClickListener(new View.OnLongClickListener() {
@@ -145,27 +150,46 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         dialog.show();
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(ViewHolder holder,int position){
         Msg msg = mMsgList.get(position);
         //重新进行撤回判断，否则刷新时撤回失效
-        Connector.getDatabase();
+        //Connector.getDatabase();
         int sss=msg.getSub_id();
         int ooo=msg.getObj_id();
-        List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(ooo),String.valueOf(sss),String.valueOf(sss),String.valueOf(ooo)).order("id asc").find(Msg.class);
-        int recalled=msg1.get(position).getRecalled();
+        List<Msg> msg1=new ArrayList<Msg>();
+        //List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(ooo),String.valueOf(sss),String.valueOf(sss),String.valueOf(ooo)).order("id asc").find(Msg.class);
+        MsgConnection msgConnection=new MsgConnection();
+        msgConnection.queryMsgAboutUser(String.valueOf(sss),String.valueOf(ooo), new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Looper.prepare();
+                Toast.makeText(adapter_parent.getContext(),"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result=response.body().string();
+                msgConnection.parseJSONMsgResponse(result,sss,msg1);
+                recalled=msg1.get(position).getRecalled();
+            }
+        });
+
 
         //当前项时间获取
         String time_ex=msg.getTime();
-        int itemYear=Integer.decode(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3)));
-        int itemMonth=Integer.decode(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6)));
-        int itemDay=Integer.decode(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9)));
-        int itemHour=Integer.decode(String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13)));
+        int itemYear=Integer.valueOf(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3))).intValue();
+        int itemMonth=Integer.valueOf(String.valueOf(time_ex.charAt(5))+String.valueOf(time_ex.charAt(6))).intValue();
+        int itemDay=Integer.valueOf(String.valueOf(time_ex.charAt(8))+String.valueOf(time_ex.charAt(9))).intValue();
+        int itemHour=Integer.valueOf(String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))).intValue();
         int itemMinute;
         if(!String.valueOf(time_ex.charAt(15)).equals("0"))
-            itemMinute=Integer.decode(String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16)));
+            itemMinute=Integer.valueOf(String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16))).intValue();
         else
-            itemMinute=Integer.decode(String.valueOf(time_ex.charAt(16)));
+            itemMinute=Integer.valueOf(String.valueOf(time_ex.charAt(16))).intValue();
         //现在时间获取
         AboutTime aboutTime=new AboutTime();
         String timestamp;
@@ -179,15 +203,15 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             Msg last_msg=mMsgList.get(position-1);
             String last_time_ex=last_msg.getTime();
             //上一项时间获取
-            int last_itemYear=Integer.decode(String.valueOf(last_time_ex.charAt(0))+String.valueOf(last_time_ex.charAt(1))+String.valueOf(last_time_ex.charAt(2))+String.valueOf(last_time_ex.charAt(3)));
-            int last_itemMonth=Integer.decode(String.valueOf(last_time_ex.charAt(5))+String.valueOf(last_time_ex.charAt(6)));
-            int last_itemDay=Integer.decode(String.valueOf(last_time_ex.charAt(8))+String.valueOf(last_time_ex.charAt(9)));
-            int last_itemHour=Integer.decode(String.valueOf(last_time_ex.charAt(12))+String.valueOf(last_time_ex.charAt(13)));
+            int last_itemYear=Integer.valueOf(String.valueOf(last_time_ex.charAt(0))+String.valueOf(last_time_ex.charAt(1))+String.valueOf(last_time_ex.charAt(2))+String.valueOf(last_time_ex.charAt(3))).intValue();
+            int last_itemMonth=Integer.valueOf(String.valueOf(last_time_ex.charAt(5))+String.valueOf(last_time_ex.charAt(6))).intValue();
+            int last_itemDay=Integer.valueOf(String.valueOf(last_time_ex.charAt(8))+String.valueOf(last_time_ex.charAt(9))).intValue();
+            int last_itemHour=Integer.valueOf(String.valueOf(last_time_ex.charAt(12))+String.valueOf(last_time_ex.charAt(13))).intValue();
             int last_itemMinute;
             if(!String.valueOf(last_time_ex.charAt(15)).equals("0"))
-                last_itemMinute=Integer.decode(String.valueOf(last_time_ex.charAt(15))+String.valueOf(last_time_ex.charAt(16)));
+                last_itemMinute=Integer.valueOf(String.valueOf(last_time_ex.charAt(15))+String.valueOf(last_time_ex.charAt(16))).intValue();
             else
-                last_itemMinute=Integer.decode(String.valueOf(last_time_ex.charAt(16)));
+                last_itemMinute=Integer.valueOf(String.valueOf(last_time_ex.charAt(16))).intValue();
             if(last_itemYear!=itemYear){
                 holder.timestamp.setVisibility(View.VISIBLE);
                 holder.timestamp.setText(timestamp);
@@ -226,7 +250,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 holder.leftMsg.setText(msg.getContent());
                 //holder.time_left.setText(msg.getTime());
                 int id=msg.getSub_id();
-                Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
+                /*Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
                 if(cursor.moveToFirst()){
                     if (cursor.getCount() != 0) {
                         byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
@@ -234,7 +258,8 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                         holder.picture_left.setImageBitmap(bit);
                     }
                 }
-                cursor.close();
+                cursor.close();*/
+                getUserPicture(id,"left",holder);
                 int picture_id=msg.getPicture();
                 if(picture_id!=0){
                     Connector.getDatabase();
@@ -295,7 +320,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 holder.rightMsg.setText(msg.getContent());
                 //holder.time_right.setText(msg.getTime());
                 int id=msg.getSub_id();
-                Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
+                /*Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
                 if(cursor.moveToFirst()){
                     if (cursor.getCount() != 0) {
                         byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
@@ -303,7 +328,8 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                         holder.picture_right.setImageBitmap(bit);
                     }
                 }
-                cursor.close();
+                cursor.close();*/
+                getUserPicture(id,"right",holder);
                 int picture_id=msg.getPicture();
                 if(picture_id!=0){
                     Connector.getDatabase();
@@ -392,5 +418,25 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     @Override
     public int getItemCount(){
         return mMsgList.size();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void getUserPicture(int id, String type, ViewHolder holder){
+        List<LocalPicture> localPictures=DataSupport.where("user_code=?",String.valueOf(id)).find(LocalPicture.class);
+        if(localPictures.size()!=0){
+            byte[] in = Base64.getDecoder().decode(localPictures.get(0).getPicture());
+            Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+            if(type.equals("left")){
+                holder.picture_left.setImageBitmap(bit);
+            }
+            else{
+                holder.picture_right.setImageBitmap(bit);
+            }
+        }
+        else{
+            Looper.prepare();
+            Toast.makeText(adapter_parent.getContext(),"头像信息获取失败！",Toast.LENGTH_SHORT).show();
+            Looper.loop();
+        }
     }
 }
