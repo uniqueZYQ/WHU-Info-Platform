@@ -1,5 +1,7 @@
 此项目为WHU信息交互平台Android客户端
 
+  IDE：Android Studio
+
   开发者：city ghost
   
   具体使用说明详见需求定义文档。
