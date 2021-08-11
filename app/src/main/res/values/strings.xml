@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">WHU信息平台</string>
     <string name="search_place_extend"><u>不是这里？显示下一结果</u></string>
+    <string name="cf">服务器连接失败，请检查网络设置</string>
 </resources>

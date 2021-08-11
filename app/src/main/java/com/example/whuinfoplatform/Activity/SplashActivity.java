@@ -37,23 +37,16 @@ public class SplashActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.TRANSPARENT);
             window.setNavigationBarColor(Color.TRANSPARENT);
         }
-
         setContentView(R.layout.activity_splash);
         splash = findViewById(R.id.img_splash);
 
-        //开启一个子线程执行跳转任务
         new Thread() {
             @Override
             public void run() {
                 super.run();
                 try {
-                    Thread.sleep(1500);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            animateImage();
-                        }
-                    });
+                    Thread.sleep(500);
+                    runOnUiThread(() -> animateImage());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

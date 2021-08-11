@@ -4,7 +4,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -17,12 +16,15 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.ActivityCollector;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
 
@@ -34,6 +36,8 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
     private EditText id;
     private EditText pw;
+    private LinearLayout layout,edit;
+    Button startLogin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
         ActivityCollector.addActivity(this);
         id = (EditText) findViewById(R.id.edit_stdid);
         pw = (EditText) findViewById(R.id.edit_pwd);
-        Button startLogin = (Button) findViewById(R.id.log_in);
+        layout = (LinearLayout) findViewById(R.id.main_activity_layout);
+        edit = (LinearLayout) findViewById(R.id.edit);
+        startLogin = (Button) findViewById(R.id.log_in);
         Button startCreateUser = (Button) findViewById(R.id.create_user);
 
         pw.addTextChangedListener(new TextWatcher() {
@@ -81,66 +87,83 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        startCreateUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Create_User_promote_Activity.class);
-                startActivity(intent);
-            }
+        startCreateUser.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, Create_User_promote_Activity.class);
+            startActivity(intent);
         });
-        startLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!(id.getText().toString().equals(""))&&!(pw.getText().toString().equals(""))) {
-                    String currid = id.getText().toString();
-                    String currpw = pw.getText().toString();
+        startLogin.setOnClickListener(v -> {
+            if(!(id.getText().toString().equals(""))&&!(pw.getText().toString().equals(""))) {
+                String currid = id.getText().toString();
+                String currpw = pw.getText().toString();
 
-                    UserConnection userConnection=new UserConnection();
-                    userConnection.initLoginConnection(currid,currpw,new okhttp3.Callback(){
+                UserConnection userConnection=new UserConnection();
+                userConnection.initLoginConnection(currid,currpw,new okhttp3.Callback(){
 
-                        @Override
-                        public void onFailure(Call call, IOException e) {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Looper.prepare();
+                        BToast.showText(MainActivity.this, "服务器连接失败，请检查网络设置", false);
+                        shake();
+                        Looper.loop();
+                    }
+
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String result=response.body().string();
+                        User user=new User();
+                        userConnection.parseJSON(user,result);
+                        if(user.getCode()==101){
+                            Intent intent = new Intent(MainActivity.this, Basic_Activity.class);
+                            intent.putExtra("tmpnkn",user.getNickname());
+                            intent.putExtra("tmpid",user.getId());
+                            startActivity(intent);
                             Looper.prepare();
-                            Toast.makeText(MainActivity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                            BToast.showText(MainActivity.this, user.getRealname()+"登录成功！", true);
                             Looper.loop();
                         }
-
-                        @RequiresApi(api = Build.VERSION_CODES.O)
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String result=response.body().string();
-                            User user=new User();
-                            userConnection.parseJSON(user,result);
-                            if(user.getCode()==101){
-                                Intent intent = new Intent(MainActivity.this, Basic_Activity.class);
-                                intent.putExtra("tmpnkn",user.getNickname());
-                                intent.putExtra("tmpid",user.getId());
-                                startActivity(intent);
-                                Looper.prepare();
-                                Toast.makeText(MainActivity.this, user.getRealname()+"登录成功！", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-                            else{
-                                setPwdBlank();
-                                Looper.prepare();
-                                Toast.makeText(MainActivity.this, "学号或密码错误！", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
+                        else{
+                            Looper.prepare();
+                            shakeAndSetPwdBlank();
+                            Looper.loop();
                         }
-                    });
-                }
-                else
-                    Toast.makeText(MainActivity.this, "请输入完整的信息！", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            else{
+                BToast.showText(MainActivity.this, "请输入完整的信息！", false);
+                Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake_button);//给组件播放动画效果
+                layout.startAnimation(shake);
             }
         });
     }
 
-    private void setPwdBlank(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                pw.setText("");
-            }
+    private void shakeAndSetPwdBlank(){
+        runOnUiThread(() -> {
+            pw.setText("");
+            BToast.showText(MainActivity.this, "学号或密码错误！", false);
+            Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake_button);//给组件播放动画效果
+            //findViewById(R.id.bt).startAnimation(shake);  //写法一
+            edit.startAnimation(shake);  //写法二
+            pw.setBackgroundColor(getResources().getColor(R.color.light_red));
+            id.setBackgroundColor(getResources().getColor(R.color.light_red));
+        });
+        try{
+            Thread.sleep(2500);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        runOnUiThread(() -> {
+            pw.setBackgroundColor(getResources().getColor(R.color.gray));
+            id.setBackgroundColor(getResources().getColor(R.color.gray));
+        });
+    }
+
+    private void shake(){
+        runOnUiThread(() -> {
+            Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake_button);//给组件播放动画效果
+            //findViewById(R.id.bt).startAnimation(shake);  //写法一
+            layout.startAnimation(shake);  //写法二
         });
     }
 
@@ -158,20 +181,8 @@ public class MainActivity extends AppCompatActivity {
         dialog.setTitle("未登录");
         dialog.setMessage("确定退出WHU平台？");
         dialog.setCancelable(true);
-        dialog.setPositiveButton("是",new DialogInterface.OnClickListener(){
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ActivityCollector.finishAll();
-            }
-        });
-        dialog.setNegativeButton("不，我再想想",new DialogInterface.OnClickListener(){
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
+        dialog.setPositiveButton("是", (dialog1, which) -> ActivityCollector.finishAll());
+        dialog.setNegativeButton("不，我再想想", (dialog12, which) -> {});
         dialog.show();
     };
 

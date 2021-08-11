@@ -23,7 +23,6 @@ public class my_info_Adapter extends ArrayAdapter<my_info> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         my_info myinfo = getItem(position);
-        //View view= LayoutInflater.from(getContext()).inflate(resourceId,parent,false);
         View view;
         if(convertView==null){
             view = LayoutInflater.from(getContext()).inflate(resourceId,parent,false);
@@ -34,7 +33,6 @@ public class my_info_Adapter extends ArrayAdapter<my_info> {
         TextView form = (TextView) view.findViewById(R.id.form);
         TextView detail = (TextView) view.findViewById(R.id.detail);
         TextView answered = (TextView) view.findViewById(R.id.answered);
-        //time.setText(myinfo.getTime());
         String time_ex=myinfo.getTime();
         int currentYear=Integer.valueOf(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3))).intValue();
 
@@ -75,11 +73,12 @@ public class my_info_Adapter extends ArrayAdapter<my_info> {
             time.setText(new_time);
         }
         form.setText(myinfo.getForm());
-        if(myinfo.getDetail().length()>57){
-            detail.setText(myinfo.getDetail().substring(0,56)+"...");
+        String new_detail=myinfo.getDetail().replace("\n"," ");
+        if(new_detail.length()>57){
+            detail.setText(new_detail.substring(0,56)+"...");
         }
         else
-            detail.setText(myinfo.getDetail());
+            detail.setText(new_detail);
         answered.setText(myinfo.getAnswered());
         return view;
     }

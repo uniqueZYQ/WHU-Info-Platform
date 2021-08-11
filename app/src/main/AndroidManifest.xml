@@ -21,7 +21,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WHUInfoPlatform"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.Renew_Permsg_promote_Activity"></activity>
+
+        <activity android:name=".Activity.Renew_Permsg_promote_Activity" />
         <activity android:name=".Activity.Renew_Info_promote_Activity" />
 
         <service
@@ -40,7 +41,9 @@
         <activity android:name=".Activity.Srch_Info_details_Activity" />
         <activity android:name=".Activity.My_Info_details_Activity" />
         <activity android:name=".Activity.rootActivity" />
-        <activity android:name=".Activity.Basic_Activity" />
+        <activity
+            android:name=".Activity.Basic_Activity"
+            android:launchMode="singleTask" />
         <activity android:name=".Activity.Create_User_promote_Activity" />
         <activity
             android:name=".Activity.Publish_Info_promote_Activity"

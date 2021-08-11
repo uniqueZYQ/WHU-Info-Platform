@@ -22,14 +22,17 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.whuinfoplatform.Dao.MsgConnection;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.Adapter.MsgAdapter;
 import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityChatWindowBinding;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -93,7 +96,7 @@ public class Chat_Window_Activity extends rootActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 Looper.prepare();
-                Toast.makeText(Chat_Window_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                BToast.showText(Chat_Window_Activity.this,"服务器连接失败，请请检查网络设置",false);
                 Looper.loop();
             }
 
@@ -104,7 +107,7 @@ public class Chat_Window_Activity extends rootActivity {
                 int n=msgConnection.parseJSONMsgResponse(result,sub_id,msgList);
                 if(n==-1){
                     Looper.prepare();
-                    Toast.makeText(Chat_Window_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Chat_Window_Activity.this,"服务器连接失败，请请检查网络设置",false);
                     Looper.loop();
                 }
                 else{
@@ -112,19 +115,7 @@ public class Chat_Window_Activity extends rootActivity {
                 }
             }
         });
-        /*<Msg> targetMsg= DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=? ",String.valueOf(sub_id),String.valueOf(obj_id),String.valueOf(obj_id),String.valueOf(sub_id)).find(Msg.class);
-        for(int i=0;i<targetMsg.size();i++){
-            Msg cumsg=new Msg();
-            cumsg.setTime(targetMsg.get(i).getTime());
-            cumsg.setObj_id(targetMsg.get(i).getObj_id());
-            cumsg.setSub_id(targetMsg.get(i).getSub_id());
-            cumsg.setContent(targetMsg.get(i).getContent());
-            cumsg.setPicture(targetMsg.get(i).getPicture());
-            cumsg.setRecalled(targetMsg.get(i).getRecalled());
-            if(sub_id==targetMsg.get(i).getSub_id())cumsg.setType(1);
-            else cumsg.setType(0);
-            msgList.add(cumsg);
-        }*/
+
         binding.send.setOutlineProvider(new ViewOutlineProvider() {
             @Override
             public void getOutline(View view, Outline outline) {
@@ -137,43 +128,58 @@ public class Chat_Window_Activity extends rootActivity {
 
     @Override
     protected void initClick() {
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String content = inputText.getText().toString();
-                SenseCheck senseCheck=new SenseCheck();
-                if (senseCheck.SenseCheckAllBlankOrNullOrEnter(content)) {
-                    long timecurrentTimeMillis = System.currentTimeMillis();
-                    SimpleDateFormat sdfTwo = new SimpleDateFormat("YYYY年MM月dd日 HH:mm", Locale.getDefault());
-                    String time = sdfTwo.format(timecurrentTimeMillis);
-                    Msg msg = new Msg();
-                    msg.setContent(content);
-                    msg.setTime(time);
-                    msg.setType(1);
-                    msg.setSub_id(sub_id);
-                    msg.setObj_id(obj_id);
-                    msg.setRecalled(0);
-                    msg.setPicture(0);
-                    msgList.add(msg);
-                    adapter.notifyItemInserted(msgList.size() - 1);
-                    msgRecyclerView.scrollToPosition(msgList.size() - 1);
-                    inputText.setText("");
-                    //todo
-                    /*
-                    Connector.getDatabase();
-                    Msg addmsg = new Msg();
-                    addmsg.setType(1);
-                    addmsg.setContent(content);
-                    addmsg.setSub_id(sub_id);
-                    addmsg.setObj_id(obj_id);
-                    addmsg.setPicture(0);
-                    addmsg.setRecalled(0);
-                    addmsg.setTime(time);
-                    addmsg.save();*/
-                } else {
-                    inputText.setText("");
-                    Toast.makeText(Chat_Window_Activity.this, "不能发送无意义的内容!", Toast.LENGTH_SHORT).show();
-                }
+        send.setOnClickListener(v -> {
+            String content = inputText.getText().toString();
+            SenseCheck senseCheck=new SenseCheck();
+            if (senseCheck.SenseCheckAllBlankOrNullOrEnter(content)) {
+                long timecurrentTimeMillis = System.currentTimeMillis();
+                SimpleDateFormat sdfTwo = new SimpleDateFormat("YYYY年MM月dd日 HH:mm:ss", Locale.getDefault());
+                String time = sdfTwo.format(timecurrentTimeMillis);
+                Msg msg = new Msg();
+                msg.setContent(content);
+                msg.setTime(time);
+                msg.setType(1);
+                msg.setSub_id(sub_id);
+                msg.setObj_id(obj_id);
+                msg.setRecalled(0);
+                msg.setPicture(0);
+                inputText.setText("");
+
+                MsgConnection msgConnection=new MsgConnection();
+                msgConnection.sendMsgWithoutPicture(String.valueOf(sub_id),String.valueOf(obj_id),content,time, new okhttp3.Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Looper.prepare();
+                        BToast.showText(Chat_Window_Activity.this,"服务器连接失败，请检查网络设置",false);
+                        Looper.loop();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String result=response.body().string();
+                        try{
+                            JSONObject jsonObject=new JSONObject(result);
+                            if(jsonObject.getInt("code")!=101){
+                                Looper.prepare();
+                                BToast.showText(Chat_Window_Activity.this,jsonObject.getString("response"),false);
+                                Looper.loop();
+                            }
+                            else{
+                                msg.setId(jsonObject.getInt("id"));
+                                msgList.add(msg);
+                                afterSend();
+                            }
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                            Looper.prepare();
+                            BToast.showText(Chat_Window_Activity.this,"数据解析失败！",false);
+                            Looper.loop();
+                        }
+                    }
+                });
+            } else {
+                inputText.setText("");
+                BToast.showText(Chat_Window_Activity.this,"不能发送无意义的内容！",false);
             }
         });
         binding.sendPicture.setOnClickListener(v->{
@@ -278,7 +284,7 @@ public class Chat_Window_Activity extends rootActivity {
         int picture=intent.getIntExtra("picture_id",0);
         if(picture!=0){
             long timecurrentTimeMillis = System.currentTimeMillis();
-            SimpleDateFormat sdfTwo = new SimpleDateFormat("YYYY年MM月dd日 HH:mm", Locale.getDefault());
+            SimpleDateFormat sdfTwo = new SimpleDateFormat("YYYY年MM月dd日 HH:mm:ss", Locale.getDefault());
             String time = sdfTwo.format(timecurrentTimeMillis);
             Msg msg = new Msg();
             msg.setContent("");
@@ -288,34 +294,57 @@ public class Chat_Window_Activity extends rootActivity {
             msg.setObj_id(obj_id);
             msg.setRecalled(0);
             msg.setPicture(picture);
-            msgList.add(msg);
-            adapter.notifyItemInserted(msgList.size() - 1);
-            msgRecyclerView.scrollToPosition(msgList.size() - 1);
             inputText.setText("");
-            /*todo
-            Connector.getDatabase();
-            Msg addmsg = new Msg();
-            addmsg.setType(1);
-            addmsg.setContent("");
-            addmsg.setSub_id(sub_id);
-            addmsg.setObj_id(obj_id);
-            addmsg.setPicture(picture);
-            addmsg.setRecalled(0);
-            addmsg.setTime(time);
-            addmsg.save();*/
+
+            MsgConnection msgConnection=new MsgConnection();
+            msgConnection.sendMsgPicture(String.valueOf(sub_id),String.valueOf(obj_id),String.valueOf(picture),time, new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    BToast.showText(Chat_Window_Activity.this,"服务器连接失败，请检查网络设置",false);
+                    Looper.loop();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    try {
+                        JSONObject jsonObject=new JSONObject(result);
+                        if(jsonObject.getInt("code")!=101){
+                            Looper.prepare();
+                            BToast.showText(Chat_Window_Activity.this,jsonObject.getString("response"),false);
+                            Looper.loop();
+                        }
+                        else{
+                            msg.setId(jsonObject.getInt("id"));
+                            msgList.add(msg);
+                            afterSend();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Looper.prepare();
+                        BToast.showText(Chat_Window_Activity.this,"数据解析失败",false);
+                        Looper.loop();
+                    }
+                }
+            });
         }
     }
 
     private void freshRecyclerView(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                LinearLayoutManager layoutManager = new LinearLayoutManager(Chat_Window_Activity.this);
-                msgRecyclerView.setLayoutManager(layoutManager);
-                msgRecyclerView.setTag(1);
-                msgRecyclerView.setAdapter(adapter);
-                msgRecyclerView.scrollToPosition(msgList.size() - 1);//最下方显示最新消息
-            }
+        runOnUiThread(() -> {
+            LinearLayoutManager layoutManager = new LinearLayoutManager(Chat_Window_Activity.this);
+            msgRecyclerView.setLayoutManager(layoutManager);
+            msgRecyclerView.setTag(1);
+            msgRecyclerView.setAdapter(adapter);
+            msgRecyclerView.scrollToPosition(msgList.size() - 1);//最下方显示最新消息
+        });
+    }
+
+    private void afterSend(){
+        runOnUiThread(() -> {
+            adapter.notifyItemInserted(msgList.size() - 1);
+            msgRecyclerView.scrollToPosition(msgList.size() - 1);
         });
     }
 }

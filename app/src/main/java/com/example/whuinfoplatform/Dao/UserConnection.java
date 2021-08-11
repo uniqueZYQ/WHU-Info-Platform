@@ -113,11 +113,6 @@ public class UserConnection {
             int code=jsonObject.getInt("code");
             String stdid=jsonObject.getString("stdid");
             String response=jsonObject.getString("response");
-            /*
-            图片加载方案：
-            以字节流的base64编码为String传输并存储，接收时服务器端以String传输，在此处解码
-            --2021.7.25 0:54 CityGhost
-             */
             String ss=jsonObject.getString("picture");
             byte[] picture = Base64.getDecoder().decode(ss);
             showResponse(user,code,id,nickname,realname,response,stdid,picture);

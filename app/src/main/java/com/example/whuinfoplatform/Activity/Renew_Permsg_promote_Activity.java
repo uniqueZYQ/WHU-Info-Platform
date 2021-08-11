@@ -32,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.Entity.User;
@@ -67,61 +68,59 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
     private PointF midPoint = new PointF();
     // 初始的两个手指按下的触摸点的距离
     private float oriDis = 1f;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mImageView = (ImageView) this.findViewById(R.id.picture);
-        mImageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ImageView view = (ImageView) v;
+        mImageView.setOnTouchListener((v, event) -> {
+            ImageView view = (ImageView) v;
 
-                // 进行与操作是为了判断多点触摸
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN:
-                        // 第一个手指按下事件
-                        matrix.set(view.getImageMatrix());
+            // 进行与操作是为了判断多点触摸
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN:
+                    // 第一个手指按下事件
+                    matrix.set(view.getImageMatrix());
+                    savedMatrix.set(matrix);
+                    startPoint.set(event.getX(), event.getY());
+                    mode = DRAG;
+                    break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    // 第二个手指按下事件
+                    oriDis = distance(event);
+                    if (oriDis > 10f) {
                         savedMatrix.set(matrix);
-                        startPoint.set(event.getX(), event.getY());
-                        mode = DRAG;
-                        break;
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        // 第二个手指按下事件
-                        oriDis = distance(event);
-                        if (oriDis > 10f) {
-                            savedMatrix.set(matrix);
-                            midPoint = middle(event);
-                            mode = ZOOM;
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_POINTER_UP:
-                        // 手指放开事件
-                        mode = NONE;
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        // 手指滑动事件
-                        if (mode == DRAG) {
-                            // 是一个手指拖动
+                        midPoint = middle(event);
+                        mode = ZOOM;
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_POINTER_UP:
+                    // 手指放开事件
+                    mode = NONE;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    // 手指滑动事件
+                    if (mode == DRAG) {
+                        // 是一个手指拖动
+                        matrix.set(savedMatrix);
+                        matrix.postTranslate(event.getX() - startPoint.x, event.getY()
+                                - startPoint.y);
+                    } else if (mode == ZOOM) {
+                        // 两个手指滑动
+                        float newDist = distance(event);
+                        if (newDist > 10f) {
                             matrix.set(savedMatrix);
-                            matrix.postTranslate(event.getX() - startPoint.x, event.getY()
-                                    - startPoint.y);
-                        } else if (mode == ZOOM) {
-                            // 两个手指滑动
-                            float newDist = distance(event);
-                            if (newDist > 10f) {
-                                matrix.set(savedMatrix);
-                                float scale = newDist / oriDis;
-                                matrix.postScale(scale, scale, midPoint.x, midPoint.y);
-                            }
+                            float scale = newDist / oriDis;
+                            matrix.postScale(scale, scale, midPoint.x, midPoint.y);
                         }
-                        break;
-                }
-
-                // 设置ImageView的Matrix
-                view.setImageMatrix(matrix);
-                return true;
+                    }
+                    break;
             }
+
+            // 设置ImageView的Matrix
+            view.setImageMatrix(matrix);
+            return true;
         });
     }
 
@@ -166,7 +165,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Looper.prepare();
-                    Toast.makeText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
 
@@ -237,10 +236,10 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                 String newpwd = binding.editPwd.getText().toString();
 
                 if ((newnkn.equals("")) || (newpwd.equals(""))) {
-                    Toast.makeText(Renew_Permsg_promote_Activity.this, "请填入完整信息！", Toast.LENGTH_SHORT).show();
+                    BToast.showText(Renew_Permsg_promote_Activity.this,"请填入完整信息！",false);
                 }
                 else if(!senseCheck.SenseCheckAllBlankOrNull(newnkn)){
-                    Toast.makeText(Renew_Permsg_promote_Activity.this, "昵称不能为无实义内容！", Toast.LENGTH_SHORT).show();
+                    BToast.showText(Renew_Permsg_promote_Activity.this,"昵称不能为无实义内容！",false);
                     binding.editNickname.setText("");
                 }
                 else {
@@ -249,7 +248,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             Looper.prepare();
-                            Toast.makeText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                             Looper.loop();
                         }
 
@@ -260,10 +259,12 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                             User user=new User();
                             userConnection.parseJSON(user,result);
                             Looper.prepare();
-                            Toast.makeText(Renew_Permsg_promote_Activity.this, user.getResponse(), Toast.LENGTH_SHORT).show();
                             if(user.getCode()==101){
+                                BToast.showText(Renew_Permsg_promote_Activity.this,user.getResponse(),true);
                                 Intent intent2 = new Intent(Renew_Permsg_promote_Activity.this, MainActivity.class);
                                 startActivity(intent2);
+                            }else{
+                                BToast.showText(Renew_Permsg_promote_Activity.this,user.getResponse(),false);
                             }
                             Looper.loop();
                         }
@@ -271,6 +272,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                 }
             }
             if(intent1.getIntExtra("type",0)>1) {
+                BToast.showToast(Renew_Permsg_promote_Activity.this,"上传中，请稍候...", Toast.LENGTH_LONG,2);
                 String id = Integer.toString(intent1.getIntExtra("id", 0));
                 binding.picture.setDrawingCacheEnabled(true);
                 Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
@@ -284,7 +286,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Looper.prepare();
-                        Toast.makeText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                        BToast.showText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                         Looper.loop();
                     }
 
@@ -294,13 +296,15 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                         User user=new User();
                         userConnection.parseJSON(user,result);
                         Looper.prepare();
-                        Toast.makeText(Renew_Permsg_promote_Activity.this,user.getResponse(),Toast.LENGTH_SHORT).show();
                         if(user.getCode()==101){
+                            BToast.showText(Renew_Permsg_promote_Activity.this,user.getResponse(),true);
                             LocalPicture localPicture=new LocalPicture();
                             localPicture.setPicture(FileBuf);
                             localPicture.updateAll("user_code=?",id);
                             Intent intent = new Intent(Renew_Permsg_promote_Activity.this, Personal_Message_Activity.class);
                             startActivity(intent);
+                        }else{
+                            BToast.showText(Renew_Permsg_promote_Activity.this,user.getResponse(),false);
                         }
                         Looper.loop();
                     }
@@ -328,12 +332,9 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
     }
 
     private void showResult(String nkn,String rnm,String stdid){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                binding.editNickname.setText(nkn);
-                binding.textStdidRnm.setText(stdid + "-" + rnm);
-            }
+        runOnUiThread(() -> {
+            binding.editNickname.setText(nkn);
+            binding.textStdidRnm.setText(stdid + "-" + rnm);
         });
     }
 
@@ -341,7 +342,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
     private float distance(MotionEvent event) {
         float x = event.getX(0) - event.getX(1);
         float y = event.getY(0) - event.getY(1);
-        return /*FloatMath.sqrt(x * x + y * y);*/(float) Math.sqrt(x*x+y*y);
+        return (float) Math.sqrt(x*x+y*y);
     }
 
     // 计算两个触摸点的中点
@@ -422,7 +423,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                     openAlbum();
                 }
                 else{
-                    Toast.makeText(this,"没有权限访问相册！",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Renew_Permsg_promote_Activity.this,"没有权限访问相册！",false);
                 }
                 break;
             default:
@@ -478,7 +479,6 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
     private void displayImage(String imagePath){
         if(imagePath!=null){
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            //picture.setImageBitmap(bitmap);
             Bitmap bitmap_p;
             double p_width=bitmap.getWidth();
             double p_height=bitmap.getHeight();
@@ -501,7 +501,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
             picture.setLayoutParams(params);
         }
         else {
-            Toast.makeText(this,"获取图片失败！",Toast.LENGTH_SHORT).show();
+            BToast.showText(Renew_Permsg_promote_Activity.this,"获取图片失败！",false);
         }
     }
 }

@@ -1,8 +1,6 @@
 package com.example.whuinfoplatform.Entity;
 
-import org.litepal.crud.DataSupport;
-
-public class Msg extends DataSupport {
+public class Msg{
     private int id;
     public static final int TYPE_RECEIVED = 0;
     public static final int TYPE_SENT = 1;
@@ -13,7 +11,14 @@ public class Msg extends DataSupport {
     private String time;
     private int picture;
     private int recalled;
+    private String oppo_nickname;
 
+    public String getOppo_nickname() {
+        return oppo_nickname;
+    }
+    public void setOppo_nickname(String oppo_nickname) {
+        this.oppo_nickname = oppo_nickname;
+    }
     public int getId(){
         return id;
     }

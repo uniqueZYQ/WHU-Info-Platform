@@ -1,6 +1,6 @@
 package com.example.whuinfoplatform.Adapter;
 
-import android.content.DialogInterface;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -11,27 +11,30 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whuinfoplatform.Dao.MsgConnection;
+import com.example.whuinfoplatform.Dao.PictureConnection;
+import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.AboutTime;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.Msg;
-import com.example.whuinfoplatform.Entity.Picture;
 import com.example.whuinfoplatform.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
+import org.litepal.exceptions.DataSupportException;
 import org.litepal.tablemanager.Connector;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -39,10 +42,10 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Response;
 
+
 public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     private List<Msg> mMsgList;
     ViewGroup adapter_parent;
-    int recalled=0;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         LinearLayout leftLayout;
@@ -87,98 +90,86 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.msg_item,parent,false);
 
         final ViewHolder holder=new ViewHolder(view);
-        holder.right_layout_inner.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                int position=holder.getAdapterPosition();
-                Msg msg=mMsgList.get(position);
-                if(msg.getType()==1){
-                    Connector.getDatabase();
-                    int sss=msg.getSub_id();
-                    int ooo=msg.getObj_id();
-                    List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(ooo),String.valueOf(sss),String.valueOf(sss),String.valueOf(ooo)).order("id asc").find(Msg.class);
-                    int id=msg1.get(position).getId();
-                    int recalled=msg.getRecalled();
-                    if(recalled==0){
-                        String send_time=msg.getTime();
-                        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
-                        try {
-                            Date current=simpleDateFormat.parse(send_time);
-                            long time=current.getTime();
-                            long timecurrentTimeMillis = System.currentTimeMillis();
-                            if(timecurrentTimeMillis-time<=1000*2*60){
-                                dialog(holder,id);
-                            }
-                            else
-                                Toast.makeText(adapter_parent.getContext(),"超过两分钟的消息无法撤回!",Toast.LENGTH_SHORT).show();
-                        } catch (ParseException e) {
-                            e.printStackTrace();
+        holder.right_layout_inner.setOnLongClickListener(v -> {
+            int position=holder.getAdapterPosition();
+            Msg msg=mMsgList.get(position);
+            if(msg.getType()==1){
+                int id=msg.getId();
+                int recalled=msg.getRecalled();
+                if(recalled==0){
+                    String send_time=msg.getTime();
+                    SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+                    try {
+                        Date current=simpleDateFormat.parse(send_time);
+                        long time=current.getTime();
+                        long timecurrentTimeMillis = System.currentTimeMillis();
+                        if(timecurrentTimeMillis-time<=1000*2*60){
+                            dialog(holder,id,position);
                         }
+                        else
+                            BToast.showText(adapter_parent.getContext(),"超过两分钟的消息无法撤回！",false);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
                 }
-                return true;
             }
+            return true;
         });
 
         return holder;
     }
 
-    protected void dialog(ViewHolder holder,int id){
+    protected void dialog(ViewHolder holder,int id,int position){
         AlertDialog.Builder dialog = new AlertDialog.Builder(adapter_parent.getContext());
         dialog.setTitle("撤回消息");
         dialog.setMessage("确定撤回？该操作不可恢复！");
         dialog.setCancelable(true);
-        dialog.setPositiveButton("是",new DialogInterface.OnClickListener(){
+        dialog.setPositiveButton("是", (dialog1, which) -> {
+            MsgConnection msgConnection=new MsgConnection();
+            msgConnection.recallMsgById(String.valueOf(id), new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    BToast.showText(adapter_parent.getContext(),"服务器连接失败，请检查网络设置",false);
+                    Looper.loop();
+                }
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Msg cumsg=new Msg();
-                cumsg.setRecalled(1);
-                cumsg.updateAll("id=?",String.valueOf(id));
-                holder.rightLayout.setVisibility(View.GONE);
-                holder.recalled.setVisibility(View.VISIBLE);
-                holder.recalled.setText("你撤回了一条消息");
-            }
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    try {
+                        JSONObject jsonObject=new JSONObject(result);
+                        if(jsonObject.getInt("code")!=101){
+                            Looper.prepare();
+                            BToast.showText(adapter_parent.getContext(),jsonObject.getString("response"),false);
+                            Looper.loop();
+                        }
+                        else{
+                            mMsgList.get(position).setRecalled(1);
+                            ((Activity)adapter_parent.getContext()).runOnUiThread(() -> {
+                                holder.rightLayout.setVisibility(View.GONE);
+                                holder.recalled.setVisibility(View.VISIBLE);
+                                holder.recalled.setText("你撤回了一条消息");
+                            });
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Looper.prepare();
+                        BToast.showText(adapter_parent.getContext(),"数据解析失败！",false);
+                        Looper.loop();
+                    }
+                }
+            });
         });
-        dialog.setNegativeButton("不，我再想想",new DialogInterface.OnClickListener(){
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
+        dialog.setNegativeButton("不，我再想想", (dialog12, which) -> {});
         dialog.show();
     };
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void onBindViewHolder(ViewHolder holder,int position){
+    public void onBindViewHolder(ViewHolder holder,int position) throws DataSupportException {
         Msg msg = mMsgList.get(position);
-        //重新进行撤回判断，否则刷新时撤回失效
-        //Connector.getDatabase();
-        int sss=msg.getSub_id();
-        int ooo=msg.getObj_id();
-        List<Msg> msg1=new ArrayList<Msg>();
-        //List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(ooo),String.valueOf(sss),String.valueOf(sss),String.valueOf(ooo)).order("id asc").find(Msg.class);
-        MsgConnection msgConnection=new MsgConnection();
-        msgConnection.queryMsgAboutUser(String.valueOf(sss),String.valueOf(ooo), new okhttp3.Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Looper.prepare();
-                Toast.makeText(adapter_parent.getContext(),"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
-                Looper.loop();
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String result=response.body().string();
-                msgConnection.parseJSONMsgResponse(result,sss,msg1);
-                recalled=msg1.get(position).getRecalled();
-            }
-        });
-
-
+        int recalled=msg.getRecalled();
         //当前项时间获取
         String time_ex=msg.getTime();
         int itemYear=Integer.valueOf(String.valueOf(time_ex.charAt(0))+String.valueOf(time_ex.charAt(1))+String.valueOf(time_ex.charAt(2))+String.valueOf(time_ex.charAt(3))).intValue();
@@ -248,56 +239,55 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 holder.leftLayout.setVisibility(View.VISIBLE);
                 holder.rightLayout.setVisibility(View.GONE);
                 holder.leftMsg.setText(msg.getContent());
-                //holder.time_left.setText(msg.getTime());
                 int id=msg.getSub_id();
-                /*Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
-                if(cursor.moveToFirst()){
-                    if (cursor.getCount() != 0) {
-                        byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
-                        Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                        holder.picture_left.setImageBitmap(bit);
-                    }
-                }
-                cursor.close();*/
                 getUserPicture(id,"left",holder);
                 int picture_id=msg.getPicture();
-                if(picture_id!=0){
+                if(picture_id!=0) {
                     Connector.getDatabase();
-                    List<Picture> picture = DataSupport.where("id=?",String.valueOf(picture_id)).find(Picture.class);
-                    for(int i=0;i<picture.size();i++) {
-                        byte[] in = picture.get(i).getPicture();
-                        Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                        holder.left_upload.setImageBitmap(bit);
+                    holder.left_upload.setImageResource(R.drawable.downloading);
+                    try {
+                        List<LocalPicture> picture = DataSupport.where("chat_code=?", String.valueOf(picture_id)).find(LocalPicture.class);
+                        if (picture.size() != 0) {
+                            byte[] in = Base64.getDecoder().decode(picture.get(0).getPicture());
+                            Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                            holder.left_upload.setImageBitmap(bit);
 
-                        Bitmap bitmap_p;
-                        double p_width=bit.getWidth();
-                        double p_height=bit.getHeight();
-                        double width=800;//标准宽
-                        double height=1200;//标准高
-                        LinearLayout.LayoutParams params;
-                        double ratio=p_width/p_height,st_ratio=width/height;
-                        if(ratio>st_ratio){
-                            height=width/ratio;
-                            params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
-                            bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
-                            holder.left_upload.setImageBitmap(bitmap_p);
-                            holder.left_upload.setOnClickListener(v -> {
-                                initEnlargePicture(bitmap_p);
-                            });
+                            Bitmap bitmap_p;
+                            double p_width = bit.getWidth();
+                            double p_height = bit.getHeight();
+                            double width = 800;//标准宽
+                            double height = 1200;//标准高
+                            LinearLayout.LayoutParams params;
+                            double ratio = p_width / p_height, st_ratio = width / height;
+                            if (ratio > st_ratio) {
+                                height = width / ratio;
+                                params = new LinearLayout.LayoutParams((int) width, (int) (height) - 1);
+                                bitmap_p = Bitmap.createScaledBitmap(bit, (int) width, (int) (height) - 1, true);
+                                holder.left_upload.setImageBitmap(bitmap_p);
+                                holder.left_upload.setOnClickListener(v -> {
+                                    initEnlargePicture(bitmap_p);
+                                });
+                            } else {
+                                width = ratio * height;
+                                params = new LinearLayout.LayoutParams((int) (width) - 1, (int) height);
+                                bitmap_p = Bitmap.createScaledBitmap(bit, (int) width - 1, (int) (height), true);
+                                holder.left_upload.setImageBitmap(bitmap_p);
+                                holder.left_upload.setOnClickListener(v -> {
+                                    initEnlargePicture(bitmap_p);
+                                });
+                            }
+                            holder.left_upload.setLayoutParams(params);
+                        } else {
+                            downloadAndInsertLocal(holder.left_upload, picture_id);
                         }
-                        else{
-                            width=ratio*height;
-                            params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
-                            bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
-                            holder.left_upload.setImageBitmap(bitmap_p);
-                            holder.left_upload.setOnClickListener(v -> {
-                                initEnlargePicture(bitmap_p);
-                            });
-                        }
-                        holder.left_upload.setLayoutParams(params);
+                        holder.leftMsg.setVisibility(View.GONE);
+                        holder.left_upload.setVisibility(View.VISIBLE);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        holder.leftMsg.setVisibility(View.GONE);
+                        holder.left_upload.setVisibility(View.VISIBLE);
+                        BToast.showText(adapter_parent.getContext(),"图片过大，加载失败",false);
                     }
-                    holder.leftMsg.setVisibility(View.GONE);
-                    holder.left_upload.setVisibility(View.VISIBLE);
                 }
                 else{
                     holder.leftMsg.setVisibility(View.VISIBLE);
@@ -318,88 +308,79 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 holder.rightLayout.setVisibility(View.VISIBLE);
                 holder.leftLayout.setVisibility(View.GONE);
                 holder.rightMsg.setText(msg.getContent());
-                //holder.time_right.setText(msg.getTime());
                 int id=msg.getSub_id();
-                /*Cursor cursor = db.rawQuery("select picture from User where id=?", new String[]{Integer.toString(id)}, null);
-                if(cursor.moveToFirst()){
-                    if (cursor.getCount() != 0) {
-                        byte[] in = cursor.getBlob(cursor.getColumnIndex("picture"));
-                        Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                        holder.picture_right.setImageBitmap(bit);
-                    }
-                }
-                cursor.close();*/
                 getUserPicture(id,"right",holder);
                 int picture_id=msg.getPicture();
-                if(picture_id!=0){
+                if(picture_id!=0) {
                     Connector.getDatabase();
-                    List<Picture> picture = DataSupport.where("id=?",String.valueOf(picture_id)).find(Picture.class);
-                    for(int i=0;i<picture.size();i++) {
-                        byte[] in = picture.get(i).getPicture();
-                        Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
-                        holder.right_upload.setImageBitmap(bit);
+                    holder.right_upload.setImageResource(R.drawable.downloading);
+                    try {
+                        List<LocalPicture> picture = DataSupport.where("chat_code=?", String.valueOf(picture_id)).find(LocalPicture.class);
+                        if (picture.size() != 0) {
+                            byte[] in = Base64.getDecoder().decode(picture.get(0).getPicture());
+                            Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                            holder.right_upload.setImageBitmap(bit);
 
-                        Bitmap bitmap_p;
-                        double p_width=bit.getWidth();
-                        double p_height=bit.getHeight();
-                        double width=800;//标准宽
-                        double height=1200;//标准高
-                        LinearLayout.LayoutParams params;
-                        double ratio=p_width/p_height,st_ratio=width/height;
-                        if(ratio>st_ratio){
-                            height=width/ratio;
-                            params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
-                            bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
-                            holder.right_upload.setImageBitmap(bitmap_p);
-                            holder.right_upload.setOnClickListener(v -> {
-                                initEnlargePicture(bitmap_p);
-                            });
+                            Bitmap bitmap_p;
+                            double p_width = bit.getWidth();
+                            double p_height = bit.getHeight();
+                            double width = 800;//标准宽
+                            double height = 1200;//标准高
+                            LinearLayout.LayoutParams params;
+                            double ratio = p_width / p_height, st_ratio = width / height;
+                            if (ratio > st_ratio) {
+                                height = width / ratio;
+                                params = new LinearLayout.LayoutParams((int) width, (int) (height) - 1);
+                                bitmap_p = Bitmap.createScaledBitmap(bit, (int) width, (int) (height) - 1, true);
+                                holder.right_upload.setImageBitmap(bitmap_p);
+                                holder.right_upload.setOnClickListener(v -> {
+                                    initEnlargePicture(bitmap_p);
+                                });
+                            } else {
+                                width = ratio * height;
+                                params = new LinearLayout.LayoutParams((int) (width) - 1, (int) height);
+                                bitmap_p = Bitmap.createScaledBitmap(bit, (int) width - 1, (int) (height), true);
+                                holder.right_upload.setImageBitmap(bitmap_p);
+                                holder.right_upload.setOnClickListener(v -> {
+                                    initEnlargePicture(bitmap_p);
+                                });
+                            }
+                            holder.right_upload.setLayoutParams(params);
+                        } else {
+                            downloadAndInsertLocal(holder.right_upload, picture_id);
                         }
-                        else{
-                            width=ratio*height;
-                            params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
-                            bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
-                            holder.right_upload.setImageBitmap(bitmap_p);
-                            holder.right_upload.setOnClickListener(v -> {
-                                initEnlargePicture(bitmap_p);
-                            });
-                        }
-                        holder.right_upload.setLayoutParams(params);
-                    }
-                    holder.right_upload.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            int position=holder.getAdapterPosition();
-                            Msg msg=mMsgList.get(position);
-                            if(msg.getType()==1){
-                                Connector.getDatabase();
-                                int sss=msg.getSub_id();
-                                int ooo=msg.getObj_id();
-                                List<Msg> msg1=DataSupport.where("sub_id=? and obj_id=? or sub_id=? and obj_id=?",String.valueOf(ooo),String.valueOf(sss),String.valueOf(sss),String.valueOf(ooo)).order("id asc").find(Msg.class);
-                                int id=msg1.get(position).getId();
-                                int recalled=msg.getRecalled();
-                                if(recalled==0){
-                                    String send_time=msg.getTime();
-                                    SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+                        holder.right_upload.setOnLongClickListener(v -> {
+                            int position1 = holder.getAdapterPosition();
+                            Msg msg1 = mMsgList.get(position1);
+                            if (msg1.getType() == 1) {
+                                int id1 = msg1.getId();
+                                int recalled1 = msg1.getRecalled();
+                                if (recalled1 == 0) {
+                                    String send_time = msg1.getTime();
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
                                     try {
-                                        Date current=simpleDateFormat.parse(send_time);
-                                        long time=current.getTime();
+                                        Date current = simpleDateFormat.parse(send_time);
+                                        long time = current.getTime();
                                         long timecurrentTimeMillis = System.currentTimeMillis();
-                                        if(timecurrentTimeMillis-time<=1000*2*60){
-                                            dialog(holder,id);
-                                        }
-                                        else
-                                            Toast.makeText(adapter_parent.getContext(),"超过两分钟的消息无法撤回!",Toast.LENGTH_SHORT).show();
+                                        if (timecurrentTimeMillis - time <= 1000 * 2 * 60) {
+                                            dialog(holder, id1, position1);
+                                        } else
+                                            BToast.showText(adapter_parent.getContext(), "超过两分钟的消息无法撤回！", false);
                                     } catch (ParseException e) {
                                         e.printStackTrace();
                                     }
                                 }
                             }
                             return true;
-                        }
-                    });
-                    holder.rightMsg.setVisibility(View.GONE);
-                    holder.right_upload.setVisibility(View.VISIBLE);
+                        });
+                        holder.rightMsg.setVisibility(View.GONE);
+                        holder.right_upload.setVisibility(View.VISIBLE);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        holder.rightMsg.setVisibility(View.GONE);
+                        holder.right_upload.setVisibility(View.VISIBLE);
+                        BToast.showText(adapter_parent.getContext(),"图片过大，加载失败",false);
+                    }
                 }
                 else{
                     holder.rightMsg.setVisibility(View.VISIBLE);
@@ -413,6 +394,80 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     private void initEnlargePicture(Bitmap bit){
         EnlargePicture enlargePicture=new EnlargePicture();
         enlargePicture.EnlargePicture(adapter_parent.getContext(),bit,true);
+    }
+
+    private void downloadAndInsertLocal(ImageView imageView,int picture_id){
+        PictureConnection pictureConnection=new PictureConnection();
+        pictureConnection.initDownloadConnection(String.valueOf(picture_id), new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                ((Activity)adapter_parent.getContext()).runOnUiThread(() -> {
+                    imageView.setImageResource(R.drawable.download_failed);
+                    Looper.prepare();
+                    BToast.showText(adapter_parent.getContext(),"服务器连接失败，请检查网络设置",false);
+                    Looper.loop();
+                });
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result=response.body().string();
+                try {
+                    JSONObject jsonObject=new JSONObject(result);
+                    if(jsonObject.getInt("code")!=101){
+                        Looper.prepare();
+                        BToast.showText(adapter_parent.getContext(),jsonObject.getString("response"),false);
+                        Looper.loop();
+                    }
+                    else{
+                        ((Activity)adapter_parent.getContext()).runOnUiThread(() -> {
+                            try {
+                                byte[] in = Base64.getDecoder().decode(jsonObject.getString("picture"));
+                                Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                                imageView.setImageBitmap(bit);
+
+                                Bitmap bitmap_p;
+                                double p_width=bit.getWidth();
+                                double p_height=bit.getHeight();
+                                double width=800;//标准宽
+                                double height=1200;//标准高
+                                LinearLayout.LayoutParams params;
+                                double ratio=p_width/p_height,st_ratio=width/height;
+                                if(ratio>st_ratio){
+                                    height=width/ratio;
+                                    params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
+                                    bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
+                                    imageView.setImageBitmap(bitmap_p);
+                                    imageView.setOnClickListener(v -> {
+                                        initEnlargePicture(bitmap_p);
+                                    });
+                                }
+                                else{
+                                    width=ratio*height;
+                                    params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
+                                    bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
+                                    imageView.setImageBitmap(bitmap_p);
+                                    imageView.setOnClickListener(v -> {
+                                        initEnlargePicture(bitmap_p);
+                                    });
+                                }
+                                imageView.setLayoutParams(params);
+                                LocalPicture localPicture=new LocalPicture();
+                                localPicture.chatPictureAddToLocal(picture_id,jsonObject.getString("picture"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Looper.prepare();
+                    BToast.showText(adapter_parent.getContext(),"数据解析失败！",false);
+                    Looper.loop();
+                }
+            }
+        });
     }
 
     @Override
@@ -434,9 +489,62 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             }
         }
         else{
-            Looper.prepare();
-            Toast.makeText(adapter_parent.getContext(),"头像信息获取失败！",Toast.LENGTH_SHORT).show();
-            Looper.loop();
+            UserConnection userConnection=new UserConnection();
+            userConnection.queryUserInfo(String.valueOf(id), new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    ((Activity)adapter_parent.getContext()).runOnUiThread(() -> {
+                        if(type.equals("left")){
+                            holder.picture_left.setImageResource(R.drawable.download_failed);
+                        }
+                        else{
+                            holder.picture_right.setImageResource(R.drawable.download_failed);
+                        }
+                        Looper.prepare();
+                        BToast.showText(adapter_parent.getContext(),"服务器连接失败，请检查网络设置",false);
+                        Looper.loop();
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    try {
+                        JSONObject jsonObject=new JSONObject(result);
+                        if(jsonObject.getInt("code")!=101){
+                            Looper.prepare();
+                            BToast.showText(adapter_parent.getContext(),jsonObject.getString("response"),false);
+                            Looper.loop();
+                        }
+                        else{
+                            ((Activity)adapter_parent.getContext()).runOnUiThread(() -> {
+                                try {
+                                    byte[] in = Base64.getDecoder().decode(jsonObject.getString("picture"));
+                                    Bitmap bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                                    if(type.equals("left")){
+                                        holder.picture_left.setImageBitmap(bit);
+                                    }
+                                    else{
+                                        holder.picture_right.setImageBitmap(bit);
+                                    }
+                                    LocalPicture localPicture=new LocalPicture();
+                                    localPicture.userPictureAddToLocal(id,jsonObject.getString("picture"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    Looper.prepare();
+                                    BToast.showText(adapter_parent.getContext(),"数据解析失败！",false);
+                                    Looper.loop();
+                                }
+                            });
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Looper.prepare();
+                        BToast.showText(adapter_parent.getContext(),"数据解析失败！",false);
+                        Looper.loop();
+                    }
+                }
+            });
         }
     }
 }

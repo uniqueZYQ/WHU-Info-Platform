@@ -1,5 +1,6 @@
 package com.example.whuinfoplatform.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -32,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.whuinfoplatform.Dao.PictureConnection;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.R;
@@ -71,62 +73,58 @@ public class Upload_Picture_promote_Activity extends rootActivity {
     private float oriDis = 1f;
     int chat=0;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mImageView = (ImageView) this.findViewById(R.id.picture);
-        mImageView.setOnTouchListener(new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ImageView view = (ImageView) v;
+        mImageView.setOnTouchListener((v, event) -> {
+            ImageView view = (ImageView) v;
 
-                // 进行与操作是为了判断多点触摸
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN:
-                        // 第一个手指按下事件
-                        matrix.set(view.getImageMatrix());
+            // 进行与操作是为了判断多点触摸
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN:
+                    // 第一个手指按下事件
+                    matrix.set(view.getImageMatrix());
+                    savedMatrix.set(matrix);
+                    startPoint.set(event.getX(), event.getY());
+                    mode = DRAG;
+                    break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    // 第二个手指按下事件
+                    oriDis = distance(event);
+                    if (oriDis > 10f) {
                         savedMatrix.set(matrix);
-                        startPoint.set(event.getX(), event.getY());
-                        mode = DRAG;
-                        break;
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        // 第二个手指按下事件
-                        oriDis = distance(event);
-                        if (oriDis > 10f) {
-                            savedMatrix.set(matrix);
-                            midPoint = middle(event);
-                            mode = ZOOM;
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_POINTER_UP:
-                        // 手指放开事件
-                        mode = NONE;
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        // 手指滑动事件
-                        if (mode == DRAG) {
-                            // 是一个手指拖动
+                        midPoint = middle(event);
+                        mode = ZOOM;
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_POINTER_UP:
+                    // 手指放开事件
+                    mode = NONE;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    // 手指滑动事件
+                    if (mode == DRAG) {
+                        // 是一个手指拖动
+                        matrix.set(savedMatrix);
+                        matrix.postTranslate(event.getX() - startPoint.x, event.getY()
+                                - startPoint.y);
+                    } else if (mode == ZOOM) {
+                        // 两个手指滑动
+                        float newDist = distance(event);
+                        if (newDist > 10f) {
                             matrix.set(savedMatrix);
-                            matrix.postTranslate(event.getX() - startPoint.x, event.getY()
-                                    - startPoint.y);
-                        } else if (mode == ZOOM) {
-                            // 两个手指滑动
-                            float newDist = distance(event);
-                            if (newDist > 10f) {
-                                matrix.set(savedMatrix);
-                                float scale = newDist / oriDis;
-                                matrix.postScale(scale, scale, midPoint.x, midPoint.y);
-                            }
+                            float scale = newDist / oriDis;
+                            matrix.postScale(scale, scale, midPoint.x, midPoint.y);
                         }
-                        break;
-                }
-
-                // 设置ImageView的Matrix
-                view.setImageMatrix(matrix);
-                return true;
+                    }
+                    break;
             }
+            // 设置ImageView的Matrix
+            view.setImageMatrix(matrix);
+            return true;
         });
     }
 
@@ -208,7 +206,7 @@ public class Upload_Picture_promote_Activity extends rootActivity {
             startActivity(intent);
         });
         binding.upload.setOnClickListener(v->{
-            //com.example.whuinfoplatform.Entity.Picture picture=new Picture();
+            BToast.showToast(Upload_Picture_promote_Activity.this,"上传中，请稍候...", Toast.LENGTH_LONG,2);
             LocalPicture localPicture=new LocalPicture();
             binding.picture.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
@@ -218,19 +216,13 @@ public class Upload_Picture_promote_Activity extends rootActivity {
             byte[] in=os.toByteArray();
             String FileBuf = Base64.getEncoder().encodeToString(in);
             localPicture.setPicture(FileBuf);
-            /*picture.setPicture(os.toByteArray());
-            picture.save();
-            int picture_id=picture.getId();
-            //Toast.makeText(Upload_Picture_promote_Activity.this,"图片上传成功!",Toast.LENGTH_SHORT).show();
-            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
-            intent.putExtra("picture_id",picture_id);
-            startActivity(intent);*/
+
             PictureConnection pictureConnection=new PictureConnection();
             pictureConnection.initUploadConnection(FileBuf, new okhttp3.Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Looper.prepare();
-                    Toast.makeText(Upload_Picture_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Upload_Picture_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
 
@@ -240,11 +232,13 @@ public class Upload_Picture_promote_Activity extends rootActivity {
                     WebResponse webResponse=new WebResponse();
                     pictureConnection.parseJSONForPictureResponse(webResponse,result);
                     Looper.prepare();
-                    Toast.makeText(Upload_Picture_promote_Activity.this,webResponse.getResponse(),Toast.LENGTH_SHORT).show();
                     if(webResponse.getCode()==101){
+                        BToast.showText(Upload_Picture_promote_Activity.this,webResponse.getResponse(),true);
                         Intent intent = new Intent(Upload_Picture_promote_Activity.this, Publish_Info_promote_Activity.class);
                         intent.putExtra("picture_id",webResponse.getId());
                         startActivity(intent);
+                    }else{
+                        BToast.showText(Upload_Picture_promote_Activity.this,webResponse.getResponse(),false);
                     }
                     localPicture.setCode(webResponse.getId());
                     localPicture.save();
@@ -253,7 +247,7 @@ public class Upload_Picture_promote_Activity extends rootActivity {
             });
         });
         binding.chatUpload.setOnClickListener(v -> {
-            //com.example.whuinfoplatform.Entity.Picture picture=new Picture();
+            BToast.showToast(Upload_Picture_promote_Activity.this,"上传中，请稍候...", Toast.LENGTH_LONG,2);
             binding.picture.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
             binding.picture.setDrawingCacheEnabled(false);
@@ -261,19 +255,13 @@ public class Upload_Picture_promote_Activity extends rootActivity {
             bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
             byte[] in=os.toByteArray();
             String FileBuf = Base64.getEncoder().encodeToString(in);
-            /*picture.setPicture(os.toByteArray());
-            picture.save();
-            int picture_id=picture.getId();
-            //Toast.makeText(Upload_Picture_promote_Activity.this,"图片上传成功!",Toast.LENGTH_SHORT).show();
-            Intent intent=new Intent(Upload_Picture_promote_Activity.this,Publish_Info_promote_Activity.class);
-            intent.putExtra("picture_id",picture_id);
-            startActivity(intent);*/
+
             PictureConnection pictureConnection=new PictureConnection();
             pictureConnection.initUploadConnection(FileBuf, new okhttp3.Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Looper.prepare();
-                    Toast.makeText(Upload_Picture_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Upload_Picture_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
 
@@ -283,12 +271,17 @@ public class Upload_Picture_promote_Activity extends rootActivity {
                     WebResponse webResponse=new WebResponse();
                     pictureConnection.parseJSONForPictureResponse(webResponse,result);
                     Looper.prepare();
-                    Toast.makeText(Upload_Picture_promote_Activity.this,webResponse.getResponse(),Toast.LENGTH_SHORT).show();
                     if(webResponse.getCode()==101){
+                        BToast.showText(Upload_Picture_promote_Activity.this,webResponse.getResponse(),true);
                         Intent intent = new Intent(Upload_Picture_promote_Activity.this, Chat_Window_Activity.class);
                         intent.putExtra("picture_id",webResponse.getId());
                         startActivity(intent);
                     }
+                    else{
+                        BToast.showText(Upload_Picture_promote_Activity.this,webResponse.getResponse(),false);
+                    }
+                    LocalPicture localPicture=new LocalPicture();
+                    localPicture.chatPictureAddToLocal(webResponse.getId(),FileBuf);
                     Looper.loop();
                 }
             });
@@ -305,7 +298,7 @@ public class Upload_Picture_promote_Activity extends rootActivity {
     private float distance(MotionEvent event) {
         float x = event.getX(0) - event.getX(1);
         float y = event.getY(0) - event.getY(1);
-        return /*FloatMath.sqrt(x * x + y * y);*/(float) Math.sqrt(x*x+y*y);
+        return (float) Math.sqrt(x*x+y*y);
     }
 
     // 计算两个触摸点的中点
@@ -344,15 +337,14 @@ public class Upload_Picture_promote_Activity extends rootActivity {
                                 height=width/ratio;
                                 params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
                                 bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
-                                picture.setImageBitmap(bitmap_p);
                             }
                             else{
                                 width=ratio*height;
                                 params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
                                 bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
-                                picture.setImageBitmap(bitmap_p);
                             }
-                            picture.setLayoutParams(params);
+                        picture.setImageBitmap(bitmap_p);
+                        picture.setLayoutParams(params);
                     }catch(FileNotFoundException e){
                         e.printStackTrace();
                     }
@@ -393,17 +385,13 @@ public class Upload_Picture_promote_Activity extends rootActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,String[] permissions,int[] grantResults){
-        switch (requestCode){
-            case 1:
-                if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    openAlbum();
-                }
-                else{
-                    Toast.makeText(this,"没有权限访问相册！",Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openAlbum();
+            } else {
+                BToast.showText(Upload_Picture_promote_Activity.this, "没有权限访问相册！", false);
+            }
         }
     }
 
@@ -420,7 +408,7 @@ public class Upload_Picture_promote_Activity extends rootActivity {
                 imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
             }
             else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())){
-                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),Long.valueOf(docId));
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),Long.parseLong(docId));
                 imagePath = getImagePath(contentUri,null);
             }
         }
@@ -469,18 +457,17 @@ public class Upload_Picture_promote_Activity extends rootActivity {
                 height=width/ratio;
                 params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
                 bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
-                picture.setImageBitmap(bitmap_p);
             }
             else{
                 width=ratio*height;
                 params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
                 bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
-                picture.setImageBitmap(bitmap_p);
             }
+            picture.setImageBitmap(bitmap_p);
             picture.setLayoutParams(params);
         }
         else {
-            Toast.makeText(this,"获取图片失败！",Toast.LENGTH_SHORT).show();
+            BToast.showText(Upload_Picture_promote_Activity.this,"获取图片失败！",false);
         }
     }
 }

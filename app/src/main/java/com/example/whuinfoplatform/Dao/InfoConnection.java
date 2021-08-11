@@ -2,13 +2,11 @@ package com.example.whuinfoplatform.Dao;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Looper;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.whuinfoplatform.Entity.LocalPicture;
-import com.example.whuinfoplatform.Entity.MyInformation;
+import com.example.whuinfoplatform.Entity.Info;
+import com.example.whuinfoplatform.Entity.UpdateLocalPicture;
 import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.Entity.srch_info;
@@ -16,7 +14,6 @@ import com.example.whuinfoplatform.Entity.srch_info;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.litepal.crud.DataSupport;
 
 import java.util.List;
 
@@ -28,8 +25,7 @@ import okhttp3.RequestBody;
 public class InfoConnection {
     private RequestBody formBody;
     int i,self=0;
-    String owner=new String();
-    String owner_picture=new String();
+    String owner;
     public static String URL = "http://122.9.144.219:8080/myServlet/";
 
     public void initRegisterConnection(String owner_id,String send_date,String answered,String form,String fd_form,String help_form,String price,String date,
@@ -317,54 +313,19 @@ public class InfoConnection {
                 String detail=" 内容："+jsonArray.getJSONObject(i).getString("detail");
                 int owner_id=jsonArray.getJSONObject(i).getInt("owner_id");
                 owner=jsonArray.getJSONObject(i).getString("owner_nickname");
-                if(code==103){
-                    List<LocalPicture> localPictures=DataSupport.where("user_code=?",String.valueOf(owner_id)).find(LocalPicture.class);
-                    if(localPictures.size()!=0){
-                        owner_picture=localPictures.get(0).getPicture();
-                        if(owner_id==id) {
-                            self=1;
-                        }
-                        else {
-                            self=0;
-                        }
-                        int infoid=jsonArray.getJSONObject(i).getInt("id");
-                        srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self,owner_picture);
-                        srch_info_list.add(srchinfo);
-                    }
-                    else{
-                        Looper.prepare();
-                        Toast.makeText(context,"本地数据获取失败！",Toast.LENGTH_SHORT).show();
-                        Looper.loop();
-                    }
+                if(owner_id==id) {
+                    self=1;
                 }
-                /*List<LocalPicture> localPictures= DataSupport.where("user_code=?",String.valueOf(owner_id)).find(LocalPicture.class);
-                if(localPictures.size()!=0){
-                    owner_picture=localPictures.get(0).getPicture();
-                    if(owner_id==id) {
-                        self=1;
-                    }
-                    else {
-                        self=0;
-                    }
-                    int infoid=jsonArray.getJSONObject(i).getInt("id");
-                    srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self,owner_picture);
-                    srch_info_list.add(srchinfo);
-                }*/
-                else{
-                    owner_picture=jsonArray.getJSONObject(i).getString("owner_picture");
-                    if(owner_id==id) {
-                        self=1;
-                    }
-                    else {
-                        self=0;
-                    }
-                    int infoid=jsonArray.getJSONObject(i).getInt("id");
-                    srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self,owner_picture);
-                    srch_info_list.add(srchinfo);
-                    LocalPicture localPicture=new LocalPicture();
-                    localPicture.userPictureAddToLocal(context,owner_id,owner_picture);
+                else {
+                    self=0;
                 }
+                int infoid=jsonArray.getJSONObject(i).getInt("id");
+                srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self);
+                srch_info_list.add(srchinfo);
             }
+            //更新信息所有者头像
+            UpdateLocalPicture updateLocalPicture=new UpdateLocalPicture();
+            updateLocalPicture.getInfoOwnerIdList(context,srch_info_list);
             return jsonArray.length();
         }catch (Exception e){
             e.printStackTrace();
@@ -372,7 +333,7 @@ public class InfoConnection {
         return -1;
     }
 
-    public void parseJSONForMyInfoDetailResponse(MyInformation myInformation,String json) throws JSONException {
+    public void parseJSONForMyInfoDetailResponse(Info myInformation,String json) throws JSONException {
         JSONObject jsonObject=new JSONObject(json);
         myInformation.setAnswered(jsonObject.getInt("answered"));
         myInformation.setCode(jsonObject.getInt("code"));

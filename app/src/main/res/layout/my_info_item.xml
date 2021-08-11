@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:padding="10dp"
 
-    android:background="#77EEEEEE">
+    android:background="@drawable/adapter_select">
 
     <LinearLayout
         android:layout_width="match_parent"

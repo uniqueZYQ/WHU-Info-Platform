@@ -4,19 +4,14 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
-    <TextView
-        android:id="@+id/text0"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:textSize="15sp"
-        android:gravity="center"
-        android:text="\n\n"/>
+    android:background="#ffffff"
+    android:id="@+id/main_activity_layout">
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/login"
+        android:layout_marginTop="130dp"
         />
     <TextView
         android:id="@+id/text1"
@@ -33,114 +28,107 @@
         android:textSize="10dp"
         />
 
-
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="70dp">
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/user"
-            />
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="10dp"
-            android:background="#eeeeee">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="#eeeeee">
-
-                <EditText
-                    android:id="@+id/edit_stdid"
-                    android:layout_width="0dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:hint=" 学号:"
-                    android:inputType="number"
-                    android:maxLength="13"
-                    android:singleLine="true"
-                    android:textSize="20dp"
-                    android:layout_marginLeft="3dp"
-                    android:background="#eeeeee"/>
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-    </LinearLayout>
-
-
-    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="7dp"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="70dp">
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/key"
-            />
-        <com.google.android.material.card.MaterialCardView
+        android:orientation="vertical"
+        android:id="@+id/edit">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="10dp"
-            android:background="#eeeeee">
-            <LinearLayout
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="70dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/user"
+                />
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                app:cardCornerRadius="10dp"
                 android:background="#eeeeee">
-
-                <EditText
-                    android:id="@+id/edit_pwd"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="99dp"
-                    android:layout_gravity="center_vertical"
-                    android:hint=" 密码:"
-                    android:inputType="textPassword"
-                    android:maxLength="15"
-                    android:singleLine="true"
-                    android:textSize="20dp"
-                    android:layout_marginLeft="3dp"
-                    android:background="#eeeeee"/>
-            </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="#eeeeee">
 
-        </com.google.android.material.card.MaterialCardView>
+                    <EditText
+                        android:id="@+id/edit_stdid"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:hint=" 学号:"
+                        android:inputType="number"
+                        android:maxLength="13"
+                        android:singleLine="true"
+                        android:textSize="20dp"
+                        android:layout_marginLeft="3dp"
+                        android:background="#eeeeee"/>
+                </LinearLayout>
 
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="70dp">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/key"
+                />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="10dp"
+                android:background="#eeeeee">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="#eeeeee">
+
+                    <EditText
+                        android:id="@+id/edit_pwd"
+                        android:layout_width="match_parent"
+                        android:layout_height="99dp"
+                        android:layout_gravity="center_vertical"
+                        android:hint=" 密码:"
+                        android:inputType="textPassword"
+                        android:maxLength="15"
+                        android:singleLine="true"
+                        android:textSize="20dp"
+                        android:layout_marginLeft="3dp"
+                        android:background="#eeeeee"/>
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
     </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="17dp"
-        android:background="#ffffff"
-        />
 
     <Button
         android:id="@+id/log_in"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_gravity="center"
-        android:background="@drawable/enter"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="190dp"
-        android:background="#ffffff"
-        />
+        android:layout_marginTop="20dp"
+        android:background="@drawable/login_button_select"/>
 
     <Button
         android:id="@+id/create_user"
@@ -148,6 +136,7 @@
         android:layout_height="wrap_content"
         android:background="#ffffff"
         android:text="-创建新账号-"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom|center"
+        android:layout_marginTop="225dp"
         style="?android:attr/borderlessButtonStyle"/>
 </LinearLayout>

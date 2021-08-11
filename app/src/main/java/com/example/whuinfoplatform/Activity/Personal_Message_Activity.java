@@ -5,7 +5,6 @@ import androidx.appcompat.app.ActionBar;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,9 +17,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
 import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.User;
@@ -68,7 +67,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Looper.prepare();
-                    Toast.makeText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
 
@@ -96,7 +95,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Looper.prepare();
-                    Toast.makeText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
 
@@ -115,7 +114,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
                         bit = BitmapFactory.decodeByteArray(in, 0, in.length);
                         showResult(stdid,nkn,rnm,bit);
                         LocalPicture localPicture=new LocalPicture();
-                        localPicture.userPictureAddToLocal(Personal_Message_Activity.this,id,Base64.getEncoder().encodeToString(in));
+                        localPicture.userPictureAddToLocal(id,Base64.getEncoder().encodeToString(in));
                     }
                     Looper.loop();
                 }
@@ -143,14 +142,11 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     }
 
     private void showResult(String stdid,String nkn,String rnm,Bitmap bit){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                binding.picture.setImageBitmap(bit);
-                binding.textNickname.setText("昵称:"+nkn);
-                binding.textRealname.setText("真实姓名:"+rnm);
-                binding.textStdid.setText("学号:"+stdid);
-            }
+        runOnUiThread(() -> {
+            binding.picture.setImageBitmap(bit);
+            binding.textNickname.setText("昵称:"+nkn);
+            binding.textRealname.setText("真实姓名:"+rnm);
+            binding.textStdid.setText("学号:"+stdid);
         });
     }
 
@@ -167,7 +163,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
         WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
         lp.x = 0; // 新位置X坐标
         lp.y = 0; // 新位置Y坐标
-        lp.width = (int) getResources().getDisplayMetrics().widthPixels; // 宽度
+        lp.width = getResources().getDisplayMetrics().widthPixels; // 宽度
         root.measure(0, 0);
         lp.height = root.getMeasuredHeight();
         lp.alpha = 9f; // 透明度

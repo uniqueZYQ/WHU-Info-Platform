@@ -22,8 +22,8 @@ public class PictureConnection {
         String Url=URL+"UploadPictureServlet";
 
         formBody = new FormBody.Builder()
-                .add("picture",picture)
                 .add("download","0")
+                .add("picture",picture)
                 .build();
 
         OkHttpClient client=new OkHttpClient();
@@ -34,6 +34,8 @@ public class PictureConnection {
     }
 
     public void initDownloadConnection(String id,okhttp3.Callback callback) {
+
+
         String Url=URL+"UploadPictureServlet";
 
         formBody = new FormBody.Builder()

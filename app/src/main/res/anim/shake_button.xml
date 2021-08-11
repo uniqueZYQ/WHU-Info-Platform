@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    translate：移动标签
+    fromXDelta,toXDelta：表示x轴移动的像素点
+    fromYDelta,toYDelta：表示Y轴移动的像素点
+    duration：持续时间（ms）
+    interpolator：插值器（可以引用自定义）（引用系统的：https://www.jianshu.com/p/1f2501840db8）
+-->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="0"
+    android:toXDelta="60"
+    android:duration="300"
+    android:interpolator="@anim/cycles"/>

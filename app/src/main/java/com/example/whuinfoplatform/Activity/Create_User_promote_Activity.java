@@ -12,9 +12,9 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
@@ -104,11 +104,11 @@ public class Create_User_promote_Activity extends rootActivity {
             String rnm = binding.editRealname.getText().toString();
             String id = binding.editStdid.getText().toString();
             if(nnm.equals("")||pw.equals("")||rnm.equals("")||id.equals("")){
-                Toast.makeText(Create_User_promote_Activity.this,"请完善信息！",Toast.LENGTH_SHORT).show();
+                BToast.showText(Create_User_promote_Activity.this,"请完善信息！",false);
             }
             else {
                 if(!senseCheck.SenseCheckAllBlankOrNull(nnm)){
-                    Toast.makeText(Create_User_promote_Activity.this,"昵称不能为无实义内容！",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Create_User_promote_Activity.this,"昵称不能为无实义内容！",false);
                     binding.editNickname.setText("");
                 }
                 else if(id.length()==13) {
@@ -124,7 +124,7 @@ public class Create_User_promote_Activity extends rootActivity {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             Looper.prepare();
-                            Toast.makeText(Create_User_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Create_User_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                             Looper.loop();
                         }
 
@@ -135,17 +135,19 @@ public class Create_User_promote_Activity extends rootActivity {
                             User user=new User();
                             userConnection.parseJSON(user,result);
                             Looper.prepare();
-                            Toast.makeText(Create_User_promote_Activity.this,user.getResponse(),Toast.LENGTH_SHORT).show();
                             if(user.getCode()==101){
+                                BToast.showText(Create_User_promote_Activity.this,user.getResponse(),true);
                                 Intent intent = new Intent(Create_User_promote_Activity.this, MainActivity.class);
                                 startActivity(intent);
+                            }else{
+                                BToast.showText(Create_User_promote_Activity.this,user.getResponse(),false);
                             }
                             Looper.loop();
                         }
                     });
                 }
                 else
-                    Toast.makeText(Create_User_promote_Activity.this, "学号必须为13位数字！", Toast.LENGTH_SHORT).show();
+                    BToast.showText(Create_User_promote_Activity.this,"学号必须为13位数字！",false);
             }
         });
     }

@@ -1,8 +1,6 @@
 package com.example.whuinfoplatform.Entity;
 
-import org.litepal.crud.DataSupport;
-
-public class Last extends DataSupport {
+public class Last {
     private int id;
     private int user_id;
     private int oppo_id;
@@ -32,7 +30,6 @@ public class Last extends DataSupport {
     public void setLast_id(int last_id) {
         this.last_id = last_id;
     }
-
 }
 
 

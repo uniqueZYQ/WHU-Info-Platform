@@ -8,8 +8,8 @@ public class srch_info {
     private int owner_id;
     private int id;
     private int self;
-    private String picture;
-    public srch_info(int id,String time,String form,String detail,String owner,int owner_id,int self,String picture){
+
+    public srch_info(int id,String time,String form,String detail,String owner,int owner_id,int self){
         this.time = time;
         this.form = form;
         this.detail = detail;
@@ -17,7 +17,6 @@ public class srch_info {
         this.owner=owner;
         this.self=self;
         this.owner_id=owner_id;
-        this.picture=picture;
     }
     public String getTime(){
         return time;
@@ -39,8 +38,5 @@ public class srch_info {
     }
     public int getSelf(){
         return self;
-    }
-    public String getPicture(){
-        return picture;
     }
 }

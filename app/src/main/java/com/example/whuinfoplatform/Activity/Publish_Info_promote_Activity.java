@@ -1,6 +1,5 @@
 package com.example.whuinfoplatform.Activity;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 
@@ -13,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -21,10 +19,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
@@ -49,6 +44,7 @@ import com.baidu.mapapi.search.poi.PoiIndoorResult;
 import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
 import com.example.whuinfoplatform.Dao.InfoConnection;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.BaiDuMap;
 import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.WebResponse;
@@ -82,9 +78,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
     BaiDuMap baidumap=new BaiDuMap();
     PoiSearch mPoiSearch = PoiSearch.newInstance();
     private double latitude,longitude;
-    private String name=new String();
-    private String address=new String();
-    private String placeId=new String();
+    private String name,address,placeId;
     private int first=1;
 
 
@@ -126,7 +120,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
         UiSettings mUiSettings=mBaiduMap.getUiSettings();
         mUiSettings.setRotateGesturesEnabled(false);
         if(first==1)
-            Toast.makeText(Publish_Info_promote_Activity.this,"正在获取实时位置，请稍候...",Toast.LENGTH_LONG).show();
+            BToast.showText(Publish_Info_promote_Activity.this,"正在获取实时位置，请稍候...");
     }
 
     public class MyLocationListener extends BDAbstractLocationListener {
@@ -152,7 +146,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                 MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
                 mBaiduMap.setMapStatus(u);
                 mBaiduMap.animateMapStatus(u);
-                Toast.makeText(Publish_Info_promote_Activity.this,"实时位置获取成功!",Toast.LENGTH_SHORT).show();
+                BToast.showText(Publish_Info_promote_Activity.this,"实时位置获取成功!",true);
                 first=0;
                 //设置地图单击事件监听
                 mBaiduMap.setOnMapClickListener(listener);
@@ -207,7 +201,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         .poiUids(poi0.uid)); // uid的集合，最多可以传入10个uid，多个uid之间用英文逗号分隔。
             }
             else{
-                Toast.makeText(Publish_Info_promote_Activity.this,"暂无该地点\n试试其他搜索关键词!",Toast.LENGTH_SHORT).show();
+                BToast.showText(Publish_Info_promote_Activity.this,"暂无该地点\n试试其他搜索关键词!",false);
                 mBaiduMap.clear();
             }
         }
@@ -252,7 +246,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         i++;
                     }
                     else
-                        Toast.makeText(Publish_Info_promote_Activity.this,"没有更多结果了\n试试搜索其他关键词？",Toast.LENGTH_SHORT).show();
+                        BToast.showText(Publish_Info_promote_Activity.this,"没有更多结果了\n试试搜索其他关键词？",false);
                 });
             }
         }
@@ -401,7 +395,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         form=6;
                         break;
                     }
-                    default:
+                    default:{
                         binding.calendar.setVisibility(View.GONE);
                         binding.persInfoType.setVisibility(View.GONE);
                         binding.persInfoFdType.setVisibility(View.GONE);
@@ -412,7 +406,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         binding.editPlace.setVisibility(View.GONE);
                         binding.editScore.setVisibility(View.GONE);
                         binding.editCommobj.setVisibility(View.GONE);
-
+                    }
                 }
             }
 
@@ -429,7 +423,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
         binding.persInfoFdType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                pos_fd=(int)position;
+                pos_fd=position;
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -437,7 +431,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
         binding.persInfoHelpType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                pos_help=(int)position;
+                pos_help=position;
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -445,7 +439,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
         binding.editScore.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                pos_score=(int)position;
+                pos_score=position;
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -460,9 +454,9 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
                             binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
                         if(pos_fd==0||detail.equals("")||reward==-2)
-                            Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"请完善信息!",false);
                         else if(reward==-1)
-                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                         else {//格式判断
                             String text=String.valueOf(reward);
                             int length=text.length();
@@ -476,7 +470,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 }
                             }
                             if(res>2||count&&res==0)
-                                Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                                BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                             else{
                                 Publish("1",String.valueOf(pos_fd),"-1","-1","","","","-1",detail,String.valueOf(reward),"0");
                             }
@@ -490,9 +484,9 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
                                 binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
                         if(pos_help==0||detail.equals("")||reward==-2)
-                            Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"请完善信息!",false);
                         else if(reward==-1)
-                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                         else {//格式判断
                             String text = String.valueOf(reward);
                             int length = text.length();
@@ -506,7 +500,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 }
                             }
                             if (res > 2 || count && res == 0)
-                                Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
+                                BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                             else {
                                 Publish("2","-1",String.valueOf(pos_help),"-1","","","","-1",detail,String.valueOf(reward),"0");
                             }
@@ -520,9 +514,9 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
                                 binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
                         if(price==-2||detail.equals(""))
-                            Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"请完善信息!",false);
                         else if(price==-1)
-                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                         else {//格式判断
                             String text = String.valueOf(price);
                             int length = text.length();
@@ -536,7 +530,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 }
                             }
                             if (res > 2 || count && res == 0)
-                                Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
+                                BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                             else {
                                 Publish("3","-1","-1",String.valueOf(price),"","","","-1",detail,"-1","0");
                             }
@@ -550,9 +544,9 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
                                 binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
                         if(price==-2||detail.equals(""))
-                            Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"请完善信息!",false);
                         else if(price==-1)
-                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                         else {//格式判断
                             String text = String.valueOf(price);
                             int length = text.length();
@@ -566,7 +560,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 }
                             }
                             if (res > 2 || count && res == 0)
-                                Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
+                                BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                             else {
                                 Publish("4","-1","-1",String.valueOf(price),"","","","-1",detail,"-1","0");
                             }
@@ -582,9 +576,9 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
                                 binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
                         if(detail.equals("")||place.equals("")||date.equals("")||reward==-2)
-                            Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"请完善信息!",false);
                         else if(reward==-1)
-                            Toast.makeText(Publish_Info_promote_Activity.this,"金额格式错误!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                         else {//格式判断
                             String text = String.valueOf(reward);
                             int length = text.length();
@@ -598,7 +592,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                 }
                             }
                             if (res > 2 || count && res == 0)
-                                Toast.makeText(Publish_Info_promote_Activity.this, "金额格式错误!", Toast.LENGTH_SHORT).show();
+                                BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                             else {
                                 Publish("5","-1","-1","-1",date,place,"","-1",detail,String.valueOf(reward),String.valueOf(placeId));
                             }
@@ -609,7 +603,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         String detail=binding.detail.getText().toString();
                         String lesson=binding.editCommobj.getText().toString();
                         if(detail.equals("")||lesson.equals("")||pos_score==0)
-                            Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息!",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"请完善信息!",false);
                         else {
                             Publish("6","-1","-1","-1","","",lesson,String.valueOf(pos_score),detail,"-1","0");
                         }
@@ -619,7 +613,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                 }
             }
             else
-                Toast.makeText(Publish_Info_promote_Activity.this,"请完善信息！",Toast.LENGTH_SHORT).show();
+                BToast.showText(Publish_Info_promote_Activity.this,"请完善信息!",false);
         });
         binding.editDate.setOnClickListener(v -> {
             binding.calendar.setVisibility(View.VISIBLE);
@@ -636,27 +630,24 @@ public class Publish_Info_promote_Activity extends rootActivity {
                 }
             }
         });
-        binding.calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                if(month<9){
-                    if(dayOfMonth<10){
-                        binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
-                    }
-                    else{
-                        binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-"+String.valueOf(dayOfMonth));
-                    }
+        binding.calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            if(month<9){
+                if(dayOfMonth<10){
+                    binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
                 }
                 else{
-                    if(dayOfMonth<10){
-                        binding.editDate.setText(String.valueOf(year)+"-"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
-                    }
-                    else{
-                        binding.editDate.setText(String.valueOf(year)+"-"+String.valueOf(month+1)+"-"+String.valueOf(dayOfMonth));
-                    }
+                    binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-"+String.valueOf(dayOfMonth));
                 }
-                binding.calendar.setVisibility(View.GONE);
             }
+            else{
+                if(dayOfMonth<10){
+                    binding.editDate.setText(String.valueOf(year)+"-"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
+                }
+                else{
+                    binding.editDate.setText(String.valueOf(year)+"-"+String.valueOf(month+1)+"-"+String.valueOf(dayOfMonth));
+                }
+            }
+            binding.calendar.setVisibility(View.GONE);
         });
         //开始定义日历隐藏事件
         binding.editPlace.setOnClickListener(v -> {
@@ -669,83 +660,62 @@ public class Publish_Info_promote_Activity extends rootActivity {
         binding.editReward.setOnClickListener(v -> {
             binding.calendar.setVisibility(View.GONE);
         });
-        binding.editPlace.setOnFocusChangeListener(new android.view.View.
-                OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    binding.calendar.setVisibility(View.GONE);
-                } else {
-
-                }
+        binding.editPlace.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                binding.calendar.setVisibility(View.GONE);
             }
         });
-        binding.detail.setOnFocusChangeListener(new android.view.View.
-                OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    binding.calendar.setVisibility(View.GONE);
-                } else {
-
-                }
+        binding.detail.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                binding.calendar.setVisibility(View.GONE);
             }
         });
-        binding.editReward.setOnFocusChangeListener(new android.view.View.
-                OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    binding.calendar.setVisibility(View.GONE);
-                } else {
-
-                }
+        binding.editReward.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                binding.calendar.setVisibility(View.GONE);
             }
         });
         //结束日历隐藏事件
         binding.upload.setOnClickListener(v -> {
             if(picture_count>=4){//最多上传四张图片
-                Toast.makeText(Publish_Info_promote_Activity.this,"最多只能上传四张图片!",Toast.LENGTH_SHORT).show();
+                BToast.showText(Publish_Info_promote_Activity.this,"最多只能上传四张图片!",false);
             }
             else{
                 upload=true;
                 setDialog();
             }
         });
-        binding.input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event){
-                if(actionId== EditorInfo.IME_ACTION_SEARCH){
-                    i=1;//重置索引值
-                    String kwd = binding.input.getText().toString();
-                    boolean valid = false;
-                    for (int i = 0; i < kwd.length(); i++) {
-                        if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
-                            continue;
-                        else
-                            valid = true;
-                    }
-                    if(valid){
-                        /**
-                         *  PoiCiySearchOption 设置检索属性
-                         *  city 检索城市
-                         *  keyword 检索内容关键字
-                         *  pageNum 分页页码
-                         */
-                        mPoiSearch.searchInCity(new PoiCitySearchOption()
-                        .city("武汉") //必填
-                        .keyword(kwd) //必填
-                        .pageNum(0));
-                    }
-                    else{
-                        binding.input.setText("");
-                        Toast.makeText(Publish_Info_promote_Activity.this,"无法搜索无意义的内容！",Toast.LENGTH_SHORT).show();
-                    }
-                    return true;
+        binding.input.setOnEditorActionListener((v, actionId, event) -> {
+            if(actionId== EditorInfo.IME_ACTION_SEARCH){
+                i=1;//重置索引值
+                String kwd = binding.input.getText().toString();
+                boolean valid = false;
+                for (int i = 0; i < kwd.length(); i++) {
+                    if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
+                        continue;
+                    else
+                        valid = true;
                 }
-                else
-                    return false;
+                if(valid){
+                    /**
+                     *  PoiCiySearchOption 设置检索属性
+                     *  city 检索城市
+                     *  keyword 检索内容关键字
+                     *  pageNum 分页页码
+                     */
+                    mPoiSearch.searchInCity(new PoiCitySearchOption()
+                    .city("武汉") //必填
+                    .keyword(kwd) //必填
+                    .pageNum(0));
+                }
+                else{
+                    binding.input.setText("");
+                    BToast.showText(Publish_Info_promote_Activity.this,"无法搜索无实义的内容！",false);
+                }
+                return true;
             }
+            else
+                return false;
         });
         binding.search.setOnClickListener(v->{
             i=1;//重置索引值
@@ -771,7 +741,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
             }
             else{
                 binding.input.setText("");
-                Toast.makeText(Publish_Info_promote_Activity.this,"无法搜索无意义的内容！",Toast.LENGTH_SHORT).show();
+                BToast.showText(Publish_Info_promote_Activity.this,"无法搜索无实义的内容！",false);
             }
         });
     }
@@ -799,7 +769,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Looper.prepare();
-                        Toast.makeText(Publish_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                        BToast.showText(Publish_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                         Looper.loop();
                     }
 
@@ -811,12 +781,12 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         infoConnection.parseJSONForInfoResponse(webResponse,result);
                         Looper.prepare();
                         if(webResponse.getCode()==101){
-                            Toast.makeText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",true);
                             Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
                             startActivity(intent);
                         }
                         else
-                            Toast.makeText(Publish_Info_promote_Activity.this,webResponse.getResponse(),Toast.LENGTH_SHORT).show();
+                            BToast.showText(Publish_Info_promote_Activity.this,webResponse.getResponse(),false);
                         Looper.loop();
                     }
                 });

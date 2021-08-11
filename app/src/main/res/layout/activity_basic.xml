@@ -1,123 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@drawable/basic"
     android:fitsSystemWindows="true">
-<include layout="@layout/toolbar"/>
-    <TextView
+    <include layout="@layout/toolbar"/>
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:textSize="18sp"
-        android:visibility="invisible"
-        android:layout_weight="1"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:layout_weight="1.2">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            android:layout_weight="0.1"/>
+        android:layout_height="match_parent">
         <Button
             android:id="@+id/start_message_center_activity"
             android:layout_height="150dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@drawable/a2"
+            android:layout_width="180dp"
+            android:background="@drawable/a2_button_select"
+            android:layout_gravity="top|left"
+            android:layout_marginTop="175dp"
+            android:layout_marginLeft="15dp"
             android:shadowRadius="20"
             />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            android:layout_weight="0.1"/>
+
         <Button
             android:id="@+id/start_info_hall_activity"
             android:layout_height="150dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@drawable/a3"
+            android:layout_width="180dp"
+            android:background="@drawable/a3_button_select"
+            android:layout_gravity="top|right"
+            android:layout_marginTop="175dp"
+            android:layout_marginRight="15dp"
             android:shadowRadius="20"
             />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            android:layout_weight="0.1"/>
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:layout_weight="1.2">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            android:layout_weight="0.1"/>
-        <Button
-            android:id="@+id/start_personal_center_activity"
-            android:layout_height="150dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@drawable/a4"
-            android:shadowRadius="20"
-            />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            android:layout_weight="0.1"/>
         <Button
             android:id="@+id/start_personal_message_activity"
             android:layout_height="150dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@drawable/a1"
+            android:layout_width="180dp"
+            android:background="@drawable/a1_button_select"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="265dp"
+            android:layout_marginRight="15dp"
             android:shadowRadius="20"
             />
-        <TextView
-            android:layout_width="0dp"
+
+        <Button
+            android:id="@+id/start_personal_center_activity"
+            android:layout_height="150dp"
+            android:layout_width="180dp"
+            android:background="@drawable/a4_button_select"
+            android:layout_gravity="bottom|left"
+            android:layout_marginBottom="265dp"
+            android:layout_marginLeft="15dp"
+            android:shadowRadius="20"
+            />
+
+        <Button
+            android:id="@+id/change_user"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            android:layout_weight="0.1"/>
-    </LinearLayout>
+            android:layout_width="wrap_content"
+            android:text="-切换用户-"
+            android:textSize="17sp"
+            android:textColor="#ffffff"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="40dp"
+            style="?android:attr/borderlessButtonStyle"
+            />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:textSize="18sp"
-        android:visibility="invisible"
-        android:layout_weight="0.9"/>
-
-    <Button
-        android:id="@+id/change_user"
-        android:layout_weight="0.7"
-        android:layout_height="0dp"
-        android:layout_width="wrap_content"
-        android:text="-切换用户-"
-        android:textSize="17sp"
-        android:layout_gravity="center"
-        android:textColor="#ffffff"
-        style="?android:attr/borderlessButtonStyle"
-        />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:textSize="18sp"
-        android:visibility="invisible"
-        android:layout_weight="0.1"/>
-
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:id="@+id/last_signal"
+            android:layout_gravity="top|left"
+            android:layout_marginTop="195dp"
+            android:layout_marginLeft="145dp"
+            app:backgroundTint="#FFFF0000"
+            android:visibility="gone"
+            />
+    </FrameLayout>
 
 </LinearLayout>

@@ -10,12 +10,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.whuinfoplatform.Adapter.srch_info_Adapter;
 import com.example.whuinfoplatform.Dao.InfoConnection;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.srch_info;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivitySearchInfoPromoteBinding;
@@ -28,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Response;
 
 public class Search_Info_promote_Activity extends rootActivity {
@@ -63,7 +63,7 @@ public class Search_Info_promote_Activity extends rootActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 Looper.prepare();
-                Toast.makeText(Search_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                BToast.showText(Search_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                 Looper.loop();
             }
 
@@ -81,7 +81,7 @@ public class Search_Info_promote_Activity extends rootActivity {
                 }
                 else if(n==-1){
                     Looper.prepare();
-                    Toast.makeText(Search_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Search_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
             }
@@ -90,99 +90,73 @@ public class Search_Info_promote_Activity extends rootActivity {
 
 
     private void showNoneInfo(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                binding.none.setVisibility(View.VISIBLE);
-            }
-        });
+        runOnUiThread(() -> binding.none.setVisibility(View.VISIBLE));
     }
 
     private void OtherOptions(int locid){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ListView listView=(ListView)findViewById(R.id.list_view);
-                listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        runOnUiThread(() -> {
+            ListView listView=(ListView)findViewById(R.id.list_view);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener((parent, view, position, id) -> {
+                srch_info srchinfo = srch_info_list.get(position);
+                int infoid=srchinfo.getId();
+                InfoConnection infoConnection=new InfoConnection();
+                infoConnection.queryInfoByIdConnection(String.valueOf(infoid), new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Looper.prepare();
+                        BToast.showText(Search_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
+                        Looper.loop();
+                    }
 
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        srch_info srchinfo = srch_info_list.get(position);
-                        int infoid=srchinfo.getId();
-                        InfoConnection infoConnection=new InfoConnection();
-                        infoConnection.queryInfoByIdConnection(String.valueOf(infoid), new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                Looper.prepare();
-                                Toast.makeText(Search_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String result=response.body().string();
-                                JSONObject jsonObject= null;
-                                try {
-                                    jsonObject = new JSONObject(result);
-                                    int ownerid=jsonObject.getInt("owner_id");
-                                    int cuself=srchinfo.getSelf();
-                                    String cuowner=srchinfo.getOwner();
-                                    Intent intent = new Intent(Search_Info_promote_Activity.this,Srch_Info_details_Activity.class);
-                                    intent.putExtra("id",infoid);
-                                    intent.putExtra("locid",locid);
-                                    intent.putExtra("owner",cuowner);
-                                    intent.putExtra("self",cuself);
-                                    intent.putExtra("ownerid",ownerid);
-                                    startActivity(intent);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    Looper.prepare();
-                                    Toast.makeText(Search_Info_promote_Activity.this,"数据解析失败！",Toast.LENGTH_SHORT).show();
-                                    Looper.loop();
-                                }
-                            }
-                        });
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String result=response.body().string();
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(result);
+                            int ownerid=jsonObject.getInt("owner_id");
+                            int cuself=srchinfo.getSelf();
+                            String cuowner=srchinfo.getOwner();
+                            Intent intent = new Intent(Search_Info_promote_Activity.this,Srch_Info_details_Activity.class);
+                            intent.putExtra("id",infoid);
+                            intent.putExtra("locid",locid);
+                            intent.putExtra("owner",cuowner);
+                            intent.putExtra("self",cuself);
+                            intent.putExtra("ownerid",ownerid);
+                            startActivity(intent);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Looper.prepare();
+                            BToast.showText(Search_Info_promote_Activity.this,"数据解析失败！",false);
+                            Looper.loop();
+                        }
                     }
                 });
+            });
 
-                swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
-                swipeRefresh.setColorSchemeResources(
-                        android.R.color.holo_blue_light,
-                        android.R.color.holo_purple);
-                swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-
-                    @Override
-                    public void onRefresh() {
-                        refresh_info(2000);
-                    }
-                });
-            }
+            swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
+            swipeRefresh.setColorSchemeResources(
+                    android.R.color.holo_blue_light,
+                    android.R.color.holo_purple);
+            swipeRefresh.setOnRefreshListener(() -> refresh_info(2000));
         });
     }
 
     private void refresh_info(int s){
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try{
-                    Thread.sleep(s);
-                }
-                catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-                runOnUiThread((new Runnable(){
-
-                    @Override
-                    public void run() {
-                        adapter.clear();
-                        init();
-                        adapter.notifyDataSetChanged();
-                        swipeRefresh.setRefreshing(false);
-                    }
-                }));
+        new Thread(() -> {
+            try{
+                Thread.sleep(s);
             }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+            runOnUiThread((() -> {
+                adapter.clear();
+                init();
+                adapter.notifyDataSetChanged();
+                swipeRefresh.setRefreshing(false);
+            }));
         }).start();
     }
 

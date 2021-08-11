@@ -10,12 +10,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.whuinfoplatform.Adapter.my_info_Adapter;
 import com.example.whuinfoplatform.Dao.InfoConnection;
+import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPersonalCenterBinding;
@@ -51,25 +50,13 @@ public class Personal_Center_Activity extends rootActivity {
     private void init(){
         Intent intent=getIntent();
         id=intent.getIntExtra("id",0);
-        /*List<Info> info = DataSupport.where("owner_id=?",String.valueOf(id)).order("send_date desc").find(Info.class);
-        for(int i=0;i<info.size();i++){
-            String date=info.get(i).getSend_date();
-            String form=info.get(i).getForm()==1?"私人性-学术咨询信息":info.get(i).getForm()==2?"私人性-日常求助信息":info.get(i).getForm()==3?"私人性-物品出售信息":info.get(i).getForm()==4?"私人性-物品求购信息":info.get(i).getForm()==5?"组织性信息":"课程点评信息";
-            String detail=info.get(i).getDetail();
-            String answered=info.get(i).getAnswered()==0?"暂无响应":"已被响应";
-            int infoid=info.get(i).getId();
-            my_info myinfo=new my_info(infoid,date,form,detail,answered);
-            my_info_list.add(myinfo);
-        }
-        if(my_info_list.size()==0){
-            binding.none.setVisibility(View.VISIBLE);
-        }*/
+
         InfoConnection connection=new InfoConnection();
         connection.queryMyInfoConnection(String.valueOf(id), new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Looper.prepare();
-                Toast.makeText(Personal_Center_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                BToast.showText(Personal_Center_Activity.this,"服务器连接失败，请检查网络设置",false);
                 Looper.loop();
             }
 
@@ -80,7 +67,6 @@ public class Personal_Center_Activity extends rootActivity {
                 int n=connection.parseJSONForMyInfoResponse(result,my_info_list);
                 if(n>0){
                     OtherOptions();
-                    //已在parseJSONForMyInfoResponse完成my_info_list的添加
                 }
                 else if(n==0){
                     showNoneInfo();
@@ -88,7 +74,7 @@ public class Personal_Center_Activity extends rootActivity {
                 }
                 else{
                     Looper.prepare();
-                    Toast.makeText(Personal_Center_Activity.this,"服务器连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                    BToast.showText(Personal_Center_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
             }
@@ -96,71 +82,45 @@ public class Personal_Center_Activity extends rootActivity {
     }
 
     private void showNoneInfo(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                binding.none.setVisibility(View.VISIBLE);
-            }
-        });
+        runOnUiThread(() -> binding.none.setVisibility(View.VISIBLE));
     }
 
     private void OtherOptions(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ListView listView=(ListView)findViewById(R.id.list_view);
-                listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        my_info myinfo = my_info_list.get(position);
-                        int infoid=myinfo.getId();
-                        Intent intent2 = getIntent();
-                        int owner_id=intent2.getIntExtra("id",0);
-                        Intent intent = new Intent(Personal_Center_Activity.this,My_Info_details_Activity.class);
-                        intent.putExtra("id",infoid);
-                        intent.putExtra("owner_id",owner_id);
-                        startActivity(intent);
-                    }
-                });
-                swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
-                swipeRefresh.setColorSchemeResources(
-                        android.R.color.holo_blue_light,
-                        android.R.color.holo_purple);
-                swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-
-                    @Override
-                    public void onRefresh() {
-                        refresh_my_info(2000);
-                    }
-                });
-            }
+        runOnUiThread(() -> {
+            ListView listView=(ListView)findViewById(R.id.list_view);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener((parent, view, position, id) -> {
+                my_info myinfo = my_info_list.get(position);
+                int infoid=myinfo.getId();
+                Intent intent2 = getIntent();
+                int owner_id=intent2.getIntExtra("id",0);
+                Intent intent = new Intent(Personal_Center_Activity.this,My_Info_details_Activity.class);
+                intent.putExtra("id",infoid);
+                intent.putExtra("owner_id",owner_id);
+                startActivity(intent);
+            });
+            swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
+            swipeRefresh.setColorSchemeResources(
+                    android.R.color.holo_blue_light,
+                    android.R.color.holo_purple);
+            swipeRefresh.setOnRefreshListener(() -> refresh_my_info(2000));
         });
     }
 
     private void refresh_my_info(int s){
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try{
-                    Thread.sleep(s);
-                }
-                catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-                runOnUiThread((new Runnable(){
-
-                    @Override
-                    public void run() {
-                        adapter.clear();
-                        init();
-                        adapter.notifyDataSetChanged();
-                        swipeRefresh.setRefreshing(false);
-                    }
-                }));
+        new Thread(() -> {
+            try{
+                Thread.sleep(s);
             }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+            runOnUiThread((() -> {
+                adapter.clear();
+                init();
+                adapter.notifyDataSetChanged();
+                swipeRefresh.setRefreshing(false);
+            }));
         }).start();
     }
 
