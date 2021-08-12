@@ -263,19 +263,13 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                                 height = width / ratio;
                                 params = new LinearLayout.LayoutParams((int) width, (int) (height) - 1);
                                 bitmap_p = Bitmap.createScaledBitmap(bit, (int) width, (int) (height) - 1, true);
-                                holder.left_upload.setImageBitmap(bitmap_p);
-                                holder.left_upload.setOnClickListener(v -> {
-                                    initEnlargePicture(bitmap_p);
-                                });
                             } else {
                                 width = ratio * height;
                                 params = new LinearLayout.LayoutParams((int) (width) - 1, (int) height);
                                 bitmap_p = Bitmap.createScaledBitmap(bit, (int) width - 1, (int) (height), true);
-                                holder.left_upload.setImageBitmap(bitmap_p);
-                                holder.left_upload.setOnClickListener(v -> {
-                                    initEnlargePicture(bitmap_p);
-                                });
                             }
+                            holder.left_upload.setImageBitmap(bitmap_p);
+                            holder.left_upload.setOnClickListener(v -> initEnlargePicture(bitmap_p));
                             holder.left_upload.setLayoutParams(params);
                         } else {
                             downloadAndInsertLocal(holder.left_upload, picture_id);
@@ -332,19 +326,13 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                                 height = width / ratio;
                                 params = new LinearLayout.LayoutParams((int) width, (int) (height) - 1);
                                 bitmap_p = Bitmap.createScaledBitmap(bit, (int) width, (int) (height) - 1, true);
-                                holder.right_upload.setImageBitmap(bitmap_p);
-                                holder.right_upload.setOnClickListener(v -> {
-                                    initEnlargePicture(bitmap_p);
-                                });
                             } else {
                                 width = ratio * height;
                                 params = new LinearLayout.LayoutParams((int) (width) - 1, (int) height);
                                 bitmap_p = Bitmap.createScaledBitmap(bit, (int) width - 1, (int) (height), true);
-                                holder.right_upload.setImageBitmap(bitmap_p);
-                                holder.right_upload.setOnClickListener(v -> {
-                                    initEnlargePicture(bitmap_p);
-                                });
                             }
+                            holder.right_upload.setImageBitmap(bitmap_p);
+                            holder.right_upload.setOnClickListener(v -> initEnlargePicture(bitmap_p));
                             holder.right_upload.setLayoutParams(params);
                         } else {
                             downloadAndInsertLocal(holder.right_upload, picture_id);
@@ -438,20 +426,16 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                                     height=width/ratio;
                                     params = new LinearLayout.LayoutParams((int)width,(int)(height)-1);
                                     bitmap_p = Bitmap.createScaledBitmap(bit,(int)width,(int)(height)-1,true);
-                                    imageView.setImageBitmap(bitmap_p);
-                                    imageView.setOnClickListener(v -> {
-                                        initEnlargePicture(bitmap_p);
-                                    });
                                 }
                                 else{
                                     width=ratio*height;
                                     params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
                                     bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
-                                    imageView.setImageBitmap(bitmap_p);
-                                    imageView.setOnClickListener(v -> {
-                                        initEnlargePicture(bitmap_p);
-                                    });
                                 }
+                                imageView.setImageBitmap(bitmap_p);
+                                imageView.setOnClickListener(v -> {
+                                    initEnlargePicture(bitmap_p);
+                                });
                                 imageView.setLayoutParams(params);
                                 LocalPicture localPicture=new LocalPicture();
                                 localPicture.chatPictureAddToLocal(picture_id,jsonObject.getString("picture"));

@@ -82,7 +82,7 @@ public class Srch_Info_details_Activity extends rootActivity {
     }
 
     private void initMap(String Uid){
-        runOnUiThread((Runnable) () -> {
+        runOnUiThread(() -> {
             mMapView = (MapView) findViewById(R.id.mapView);
             binding.frame.setVisibility(View.VISIBLE);
             mMapView.setVisibility(View.VISIBLE);
@@ -203,8 +203,7 @@ public class Srch_Info_details_Activity extends rootActivity {
         @Override
         public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
             //搜索结果信息获取
-            int size=poiDetailSearchResult.getPoiDetailInfoList().size();
-            if(size>0){
+            if(!(poiDetailSearchResult.getPoiDetailInfoList()==null)){
                 Button button1 = new Button(getApplicationContext());
                 Button button2 = new Button(getApplicationContext());
                 //定位初始化为活动地点
@@ -342,8 +341,11 @@ public class Srch_Info_details_Activity extends rootActivity {
                     try {
                         JSONObject jsonObject=new JSONObject(result);
                         String Uid=jsonObject.getString("placeId");
-                        if(Uid.equals("0"))
+                        if(Uid.equals("0")){
+                            Looper.prepare();
                             BToast.showText(Srch_Info_details_Activity.this,"服务器连接失败，请检查网络设置",false);
+                            Looper.loop();
+                        }
                         else
                             initMap(Uid);
                     } catch (JSONException e) {
@@ -408,7 +410,8 @@ public class Srch_Info_details_Activity extends rootActivity {
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
     }
 
-    private void showInfoDetails(Info myInformation,String owner){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void showInfoDetails(Info myInformation, String owner){
         runOnUiThread(() -> {
             form=myInformation.getForm();
             binding.sendDate.setText("发布于"+(myInformation.getSend_date()));
@@ -701,6 +704,7 @@ public class Srch_Info_details_Activity extends rootActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void showUserPicture(String picture){
         runOnUiThread(() -> {
             byte[] in = Base64.getDecoder().decode(picture);

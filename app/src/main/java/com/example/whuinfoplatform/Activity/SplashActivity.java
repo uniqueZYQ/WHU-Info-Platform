@@ -8,16 +8,28 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.BToast;
+import com.example.whuinfoplatform.Entity.LocalLogin;
 import com.example.whuinfoplatform.R;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class SplashActivity extends AppCompatActivity {
     private ImageView splash;
@@ -57,7 +69,7 @@ public class SplashActivity extends AppCompatActivity {
     //放大图片
     public void animateImage() {
 
-
+        LocalLogin localLogin=new LocalLogin();
         AnimatorSet set = new AnimatorSet();
         //设置缩放动画
         ObjectAnimator animatorX = ObjectAnimator.ofFloat(splash, "scaleX", 1f,
@@ -80,12 +92,60 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-
-                //动画完成后跳转首页
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                activityJumper(localLogin.judgeLogin());
             }
+        });
+    }
+
+    private void activityJumper(int user_id){
+        if(user_id!=0&&user_id!=-1){
+            UserConnection userConnection=new UserConnection();
+            userConnection.queryUserInfoWithoutPicture(String.valueOf(user_id), new okhttp3.Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Looper.prepare();
+                    BToast.showText(SplashActivity.this,"服务器连接失败，请检查网络设置",false);
+                    Looper.loop();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String result=response.body().string();
+                    try {
+                        LocalLogin localLogin=new LocalLogin();
+                        localLogin.updateOrInsert(user_id);
+                        JSONObject jsonObject=new JSONObject(result);
+                        String nkn=jsonObject.getString("nickname");
+                        gotoBasic(user_id, nkn);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Looper.prepare();
+                        BToast.showText(SplashActivity.this,"数据解析失败！",false);
+                        Looper.loop();
+                    }
+                }
+            });
+        }
+        else{
+            if(user_id==0){
+                BToast.showText(SplashActivity.this,"连接超时，请重新登录");
+            }
+            //动画完成后跳转首页
+            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+            finish();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        }
+    }
+
+    private void gotoBasic(int id,String nkn){
+        runOnUiThread(() -> {
+            //动画完成后跳转首页
+            Intent intent=new Intent(SplashActivity.this,Basic_Activity.class);
+            intent.putExtra("tmpnkn",nkn);
+            intent.putExtra("tmpid",id);
+            startActivity(intent);
+            finish();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
     }
 }

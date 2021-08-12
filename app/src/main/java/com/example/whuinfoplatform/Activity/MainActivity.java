@@ -21,12 +21,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.BToast;
+import com.example.whuinfoplatform.Entity.LocalLogin;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
+import com.google.android.material.card.MaterialCardView;
 
 import java.io.IOException;
 
@@ -34,10 +37,13 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private EditText id;
-    private EditText pw;
-    private LinearLayout layout,edit;
-    Button startLogin;
+    private EditText id,pw;
+    private MaterialCardView e_pw,e_stdid;
+    private LinearLayout layout,edit,wrong_promote;
+    private Button startLogin,startCreateUser;
+    private int wrong_time=0;
+    private TextView second;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,9 +66,13 @@ public class MainActivity extends AppCompatActivity {
         id = (EditText) findViewById(R.id.edit_stdid);
         pw = (EditText) findViewById(R.id.edit_pwd);
         layout = (LinearLayout) findViewById(R.id.main_activity_layout);
+        wrong_promote = (LinearLayout)findViewById(R.id.wrong_promote);
         edit = (LinearLayout) findViewById(R.id.edit);
+        second = (TextView) findViewById(R.id.second);
         startLogin = (Button) findViewById(R.id.log_in);
-        Button startCreateUser = (Button) findViewById(R.id.create_user);
+        startCreateUser = (Button) findViewById(R.id.create_user);
+        e_pw = (MaterialCardView) findViewById(R.id.pw);
+        e_stdid = (MaterialCardView) findViewById(R.id.stdid);
 
         pw.addTextChangedListener(new TextWatcher() {
             @Override
@@ -114,19 +124,21 @@ public class MainActivity extends AppCompatActivity {
                         User user=new User();
                         userConnection.parseJSON(user,result);
                         if(user.getCode()==101){
+                            LocalLogin localLogin=new LocalLogin();
+                            localLogin.updateOrInsert(user.getId());
                             Intent intent = new Intent(MainActivity.this, Basic_Activity.class);
                             intent.putExtra("tmpnkn",user.getNickname());
                             intent.putExtra("tmpid",user.getId());
+                            intent.putExtra("ref_nkn",1);
                             startActivity(intent);
                             Looper.prepare();
                             BToast.showText(MainActivity.this, user.getRealname()+"登录成功！", true);
-                            Looper.loop();
                         }
                         else{
                             Looper.prepare();
                             shakeAndSetPwdBlank();
-                            Looper.loop();
                         }
+                        Looper.loop();
                     }
                 });
             }
@@ -145,9 +157,30 @@ public class MainActivity extends AppCompatActivity {
             Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake_button);//给组件播放动画效果
             //findViewById(R.id.bt).startAnimation(shake);  //写法一
             edit.startAnimation(shake);  //写法二
-            pw.setBackgroundColor(getResources().getColor(R.color.light_red));
-            id.setBackgroundColor(getResources().getColor(R.color.light_red));
+            e_pw.setBackgroundColor(getResources().getColor(R.color.light_red));
+            e_stdid.setBackgroundColor(getResources().getColor(R.color.light_red));
         });
+        if(++wrong_time==5){
+            runOnUiThread(() -> {
+                wrong_promote.setVisibility(View.VISIBLE);
+                startLogin.setVisibility(View.GONE);
+                second.setText("60");
+            });
+            for(int i=60;i>=0;i--){
+                try{
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                int finalI = i;
+                runOnUiThread(() -> second.setText(String.valueOf(finalI)));
+            }
+            runOnUiThread(() -> {
+                wrong_promote.setVisibility(View.GONE);
+                startLogin.setVisibility(View.VISIBLE);
+            });
+            wrong_time=0;
+        }
         try{
             Thread.sleep(2500);
         }catch (InterruptedException e){
@@ -197,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         id.setText("");
         pw.setText("");
+        wrong_time=0;
     }
 }
 

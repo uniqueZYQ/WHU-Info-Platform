@@ -139,7 +139,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
             mBaiduMap.setMyLocationData(locData);
             latitude = location.getLatitude();    //获取纬度信息
             longitude = location.getLongitude();    //获取经度信息
-            if((latitude>=1||longitude>=1)&&first==1){
+            if(/*(latitude>=1||longitude>=1)&&*/first==1){
                 LatLng ll = new LatLng(latitude, longitude);
                 //初始化中心点为实时位置,设初始缩放程度为17
                 float zoom=17;
@@ -789,7 +789,8 @@ public class Publish_Info_promote_Activity extends rootActivity {
                             BToast.showText(Publish_Info_promote_Activity.this,webResponse.getResponse(),false);
                         Looper.loop();
                     }
-                });
+                }
+        );
     }
 
     private void setDialog() {

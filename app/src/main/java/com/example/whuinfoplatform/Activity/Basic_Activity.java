@@ -15,8 +15,11 @@ import com.example.whuinfoplatform.Dao.MsgConnection;
 import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.Last;
+import com.example.whuinfoplatform.Entity.LocalLogin;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.databinding.ActivityBasicBinding;
+
+import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,16 +78,25 @@ public class Basic_Activity extends rootActivity{
             startActivity(intent);
         });
         binding.changeUser.setOnClickListener(v -> {
+            DataSupport.deleteAll(LocalLogin.class);
             Intent intent = new Intent(Basic_Activity.this, MainActivity.class);
             startActivity(intent);
+            this.finish();
         });
     }
 
     @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget() {
-        ActionBar actionBar =getSupportActionBar();
+        ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle(tmpnkn);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // must store the new intent unless getIntent() will return the old one
+        setIntent(intent);
     }
 
     @Override
@@ -168,6 +180,7 @@ public class Basic_Activity extends rootActivity{
                 exitTime = System.currentTimeMillis();
             } else {
                 ActivityCollector.finishAll();
+                ActivityCollector.removeActivity(this);
             }
             return true;
         }
@@ -177,7 +190,6 @@ public class Basic_Activity extends rootActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ActivityCollector.removeActivity(this);
+        //ActivityCollector.removeActivity(this);
     }
-
 }
