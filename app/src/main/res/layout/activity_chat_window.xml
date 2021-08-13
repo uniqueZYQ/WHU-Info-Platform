@@ -64,10 +64,11 @@
             android:textColor="#ffffff"/>
         <Button
             android:id="@+id/send_picture"
-            android:layout_width="58dp"
+            android:layout_width="53dp"
             android:shadowRadius="20"
             android:layout_gravity="center"
-            android:layout_height="match_parent"
+            android:layout_height="53dp"
+            android:layout_margin="7dp"
             android:background="@drawable/send_picture"
             android:textColor="#ffffff"/>
 

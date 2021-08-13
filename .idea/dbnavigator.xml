@@ -43,10 +43,7 @@
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="12e10c97-e0e6-48c5-9f4f-a5712dd5e33a" object-ref="schemas/main/tables/locallogin" />
-      <object connection-id="12e10c97-e0e6-48c5-9f4f-a5712dd5e33a" object-ref="schemas/main/tables/localpicture" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="db24dfdc-b2cc-414f-a0fb-1f0841476f08" />

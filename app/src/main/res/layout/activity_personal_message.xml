@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:text="修改个人资料"
         android:textSize="19sp"
-        android:background="@drawable/add_info"
+        android:background="@drawable/common_button_select"
         android:layout_gravity="center"
         android:layout_margin="4dp"
         />
@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:text="重新上传头像"
         android:textSize="19sp"
-        android:background="@drawable/add_info"
+        android:background="@drawable/common_button_select"
         android:layout_gravity="center"
         android:layout_margin="4dp"
         />

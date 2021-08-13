@@ -192,7 +192,7 @@
             android:layout_height="wrap_content"
             android:text="完成"
             android:textColor="#000000"
-            android:background="@drawable/add_info"
+            android:background="@drawable/common_button_select"
             android:textSize="18sp"
             android:layout_gravity="center"
             android:layout_marginTop="7dp"

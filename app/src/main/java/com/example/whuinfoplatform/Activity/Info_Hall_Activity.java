@@ -20,7 +20,7 @@ public class Info_Hall_Activity extends rootActivity {
 
     @Override
     public void bindView() {
-        binding= ActivityInfoHallBinding.inflate(getLayoutInflater());
+        binding=ActivityInfoHallBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
     }
 
@@ -48,16 +48,11 @@ public class Info_Hall_Activity extends rootActivity {
             else
                 return false;
         });
+        binding.delete.setOnClickListener(v-> binding.startEditText.setText(""));
         binding.startFindInfoActivity.setOnClickListener(v->{
             String kwd = binding.startEditText.getText().toString();
-            boolean valid = false;
-            for (int i = 0; i < kwd.length(); i++) {
-                if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
-                    continue;
-                else
-                    valid = true;
-            }
-            if(valid){
+            SenseCheck senseCheck=new SenseCheck();
+            if(senseCheck.SenseCheckAllBlankOrNull(kwd)){
                 Intent intent = new Intent(Info_Hall_Activity.this, Search_Info_promote_Activity.class);
                 intent.putExtra("kwd",kwd);
                 Intent intent1=getIntent();
