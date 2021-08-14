@@ -376,7 +376,6 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                 }
             }
         }
-
     }
 
     private void initEnlargePicture(Bitmap bit){

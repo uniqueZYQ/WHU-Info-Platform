@@ -57,16 +57,15 @@ import okhttp3.Response;
 public class Renew_Info_promote_Activity extends rootActivity {
     private com.example.whuinfoplatform.databinding.ActivityRenewInfoPromoteBinding binding;
     int id=0,form=0,fd_form=0,help_form=0,score=0,init=1,i=1;
-    private ArrayList<Integer> pictureList=new ArrayList<Integer>();
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
     BaiDuMap baidumap=new BaiDuMap();
     PoiSearch mPoiSearch = PoiSearch.newInstance();
     private double latitude,longitude;
-    private String name=new String();
-    private String address=new String();
-    private String placeId=new String();
+    private String name;
+    private String address;
+    private String placeId;
     private int first=1;
 
     @Override
@@ -564,6 +563,7 @@ public class Renew_Info_promote_Activity extends rootActivity {
                     break;
                 }
                 case 5:{
+                    placeId=myInformation.getPlaceId();
                     binding.form.setText("组织性活动信息");
                     binding.editReward.setVisibility(View.VISIBLE);
                     binding.editDate.setVisibility(View.VISIBLE);

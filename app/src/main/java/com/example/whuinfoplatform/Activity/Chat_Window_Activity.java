@@ -50,7 +50,7 @@ public class Chat_Window_Activity extends rootActivity {
     private RecyclerView msgRecyclerView;
     private MsgAdapter adapter;
     private ActivityChatWindowBinding binding;
-    String owner=new String();
+    String owner;
     int sub_id=0,obj_id=0;
     private boolean upload=false;
     private Dialog mCameraDialog;

@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -81,6 +82,10 @@ public class Srch_Info_details_Activity extends rootActivity {
         setContentView(binding.getRoot());
     }
 
+    private void BaiDuAPPNotExist(){
+        BToast.showText(Srch_Info_details_Activity.this,"若要使用导航功能，请先下载百度地图客户端",false);
+    }
+
     private void initMap(String Uid){
         runOnUiThread(() -> {
             mMapView = (MapView) findViewById(R.id.mapView);
@@ -145,20 +150,26 @@ public class Srch_Info_details_Activity extends rootActivity {
         }
     }
 
-    private void startWalkNavigation(){
-        Intent i1 = new Intent();
+    private void startWalkNavigation() throws ActivityNotFoundException {
+        try {
+            Intent i1 = new Intent();
 
-        // 步行路线规划
+            // 步行路线规划
 
-        i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
-                +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
-                +"&coord_type=bd09ll&mode=walking&src=andr.baidu.openAPIdemo"));
+            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:" + String.valueOf(latitude) + "," + String.valueOf(longitude)
+                    + "&destination=name:" + name + "|latlng:" + String.valueOf(endPt.latitude) + "," + String.valueOf(endPt.longitude)
+                    + "&coord_type=bd09ll&mode=walking&src=andr.baidu.openAPIdemo"));
 
-        startActivity(i1);
-       }
+            startActivity(i1);
+        }catch (Exception e){
+            e.printStackTrace();
+            BaiDuAPPNotExist();
+        }
+    }
 
-    private void startBikeNavigation(){
-        Intent i1 = new Intent();
+    private void startBikeNavigation() throws ActivityNotFoundException{
+        try{
+            Intent i1 = new Intent();
 
         // 骑行路线规划
 
@@ -167,31 +178,45 @@ public class Srch_Info_details_Activity extends rootActivity {
                 +"&coord_type=bd09ll&mode=riding&src=andr.baidu.openAPIdemo"));
 
         startActivity(i1);
+        }catch (Exception e){
+            e.printStackTrace();
+            BaiDuAPPNotExist();
+        }
     }
 
-    private void startBusNavigation(){
-        Intent i1 = new Intent();
+    private void startBusNavigation() throws ActivityNotFoundException{
+        try {
+            Intent i1 = new Intent();
 
-        // 公交路线规划
+            // 公交路线规划
 
-        i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)+
-                "&destination="+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)+
-                "&coord_type=bd09ll&mode=transit&target=1&src=andr.baidu.openAPIdemo"));
+            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:" + String.valueOf(latitude) + "," + String.valueOf(longitude) +
+                    "&destination=" + name + "|latlng:" + String.valueOf(endPt.latitude) + "," + String.valueOf(endPt.longitude) +
+                    "&coord_type=bd09ll&mode=transit&target=1&src=andr.baidu.openAPIdemo"));
 
 
-        startActivity(i1);
+            startActivity(i1);
+        }catch (Exception e){
+            e.printStackTrace();
+            BaiDuAPPNotExist();
+        }
     }
 
-    private void startNavigation(){
-        Intent i1 = new Intent();
+    private void startNavigation() throws ActivityNotFoundException{
+        try {
+            Intent i1 = new Intent();
 
-        // 驾车路线规划
+            // 驾车路线规划
 
-        i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
-                +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
-                +"&coord_type=bd09ll&mode=driving&src=andr.baidu.openAPIdemo"));
+            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:" + String.valueOf(latitude) + "," + String.valueOf(longitude)
+                    + "&destination=name:" + name + "|latlng:" + String.valueOf(endPt.latitude) + "," + String.valueOf(endPt.longitude)
+                    + "&coord_type=bd09ll&mode=driving&src=andr.baidu.openAPIdemo"));
 
-        startActivity(i1);
+            startActivity(i1);
+        }catch (Exception e){
+            e.printStackTrace();
+            BaiDuAPPNotExist();
+        }
     }
 
     OnGetPoiSearchResultListener listener1 = new OnGetPoiSearchResultListener() {
@@ -341,7 +366,7 @@ public class Srch_Info_details_Activity extends rootActivity {
                     try {
                         JSONObject jsonObject=new JSONObject(result);
                         String Uid=jsonObject.getString("placeId");
-                        if(Uid.equals("0")){
+                        if(jsonObject.getInt("code")!=101){
                             Looper.prepare();
                             BToast.showText(Srch_Info_details_Activity.this,"服务器连接失败，请检查网络设置",false);
                             Looper.loop();

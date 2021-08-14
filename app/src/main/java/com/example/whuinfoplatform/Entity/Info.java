@@ -23,6 +23,15 @@ public class Info{
     private int picture3;
     private int picture4;
     private String placeId;
+    private int views;
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
 
     public int getCode() {
         return code;

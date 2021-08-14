@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -54,11 +55,17 @@ public class UpdateLocalPicture {
         }
     }
 
-    public void getInfoOwnerIdList(Context context,List<srch_info> infoList){
+    public void getInfoOwnerIdList(Context context,List<srch_info> old_infoList){
+        List<Integer> infoList=new ArrayList<Integer>();
+        for(int i=0;i<old_infoList.size();i++){
+            if(!infoList.contains(old_infoList.get(i).getOwner_id())){
+                infoList.add(old_infoList.get(i).getOwner_id());
+            }
+        }
         for(int i=0;i<infoList.size();i++){
             UserConnection userConnection=new UserConnection();
             int finalI = i;
-            userConnection.queryUserInfo(String.valueOf(infoList.get(i).getOwner_id()), new okhttp3.Callback() {
+            userConnection.queryUserInfo(String.valueOf(infoList.get(i)), new okhttp3.Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Looper.prepare();
@@ -79,7 +86,7 @@ public class UpdateLocalPicture {
                         else{
                             LocalPicture localPicture=new LocalPicture();
                             localPicture.setPicture(jsonObject.getString("picture"));
-                            localPicture.updateAll("user_code=?",String.valueOf(infoList.get(finalI).getOwner_id()));
+                            localPicture.updateAll("user_code=?",String.valueOf(infoList.get(finalI)));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

@@ -3,38 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:padding="10dp"
-
+    android:id="@+id/srch_info_item"
+    android:layout_margin="5dp"
     android:background="@drawable/adapter_select">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="5sp">
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_picture"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            app:cardCornerRadius="10dp"
-            android:layout_gravity="left"
-            android:layout_marginRight="8dp">
-            <ImageView
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:id="@+id/picture"
-                android:layout_gravity="center"
-            />
-        </com.google.android.material.card.MaterialCardView>
-        <TextView
-            android:id="@+id/owner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="17sp"
-            android:textColor="#000000"
-            />
+        android:orientation="horizontal">
+
         <TextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
@@ -42,26 +20,91 @@
             android:textSize="10sp"
             android:textColor="#000000"
             android:typeface="monospace"
+            android:layout_marginBottom="5dp"
             />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/views"
+            android:layout_marginLeft="4dp"
+            />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/views"
+            android:textColor="#000000"
+            android:layout_marginLeft="2dp"
+            android:text="10"
+            android:textSize="10sp"
+            />
+
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/form"
-        android:layout_width="match_parent"
+    <ImageView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
-        android:textColor="#000000"
+        android:id="@+id/first_picture"
+        android:scaleType="fitStart"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         />
+
     <TextView
         android:id="@+id/detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
+        android:textSize="10sp"
         android:maxLines="3"
         android:textColor="#000000"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_picture"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:cardCornerRadius="15dp"
+            android:layout_gravity="left"
+            android:layout_marginRight="8dp">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/picture"
+                android:layout_gravity="center"
+            />
+        </com.google.android.material.card.MaterialCardView>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="left"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/form"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textSize="10sp"
+                android:textColor="#000000"
+                />
+            <TextView
+                android:id="@+id/owner"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textSize="10sp"
+                android:textColor="#000000"
+                />
+        </LinearLayout>
 
+    </LinearLayout>
 
 </LinearLayout>

@@ -2,6 +2,8 @@ package com.example.whuinfoplatform.Activity;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
@@ -12,6 +14,7 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.ListView;
 
+import com.example.whuinfoplatform.Adapter.MsgAdapter;
 import com.example.whuinfoplatform.Adapter.srch_info_Adapter;
 import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Entity.BToast;
@@ -45,7 +48,7 @@ public class Search_Info_promote_Activity extends rootActivity {
     @Override
     public void bindView() {
         binding=ActivitySearchInfoPromoteBinding.inflate(getLayoutInflater());
-        adapter = new srch_info_Adapter(Search_Info_promote_Activity.this,R.layout.srch_info_item,srch_info_list);
+        adapter = new srch_info_Adapter(srch_info_list,locid);
         setContentView(binding.getRoot());
         Intent intent1 = getIntent();
         locid=intent1.getIntExtra("id",0);
@@ -95,9 +98,13 @@ public class Search_Info_promote_Activity extends rootActivity {
 
     private void OtherOptions(int locid){
         runOnUiThread(() -> {
-            ListView listView=(ListView)findViewById(R.id.list_view);
-            listView.setAdapter(adapter);
-            listView.setOnItemClickListener((parent, view, position, id) -> {
+            //ListView listView=(ListView)findViewById(R.id.list_view);
+            StaggeredGridLayoutManager layoutManager=new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+            RecyclerView recyclerView=(RecyclerView)findViewById(R.id.recycler_view) ;
+            //listView.setAdapter(adapter);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(adapter);
+            /*listView.setOnItemClickListener((parent, view, position, id) -> {
                 srch_info srchinfo = srch_info_list.get(position);
                 int infoid=srchinfo.getId();
                 InfoConnection infoConnection=new InfoConnection();
@@ -133,7 +140,7 @@ public class Search_Info_promote_Activity extends rootActivity {
                         }
                     }
                 });
-            });
+            });*/
 
             swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
             swipeRefresh.setColorSchemeResources(
@@ -185,11 +192,5 @@ public class Search_Info_promote_Activity extends rootActivity {
             actionBar.setTitle("\""+kwd+"\"的搜索结果");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
-    }
-
-    @Override
-    protected void onRestart(){
-        super.onRestart();
-        refresh_info(1);
     }
 }

@@ -34,7 +34,7 @@ public class EnlargePicture {
     // 初始的两个手指按下的触摸点的距离
     private float oriDis = 1f;
 
-    public void EnlargePicture(Context context, Bitmap bit,boolean pan_supported) {
+    public void EnlargePicture(Context context,Bitmap bit,boolean pan_supported) {
         LinearLayout root = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.enlarge_picture, null);
         //初始化视图
         mCameraDialog = new Dialog(context, R.style.BottomDialog);
@@ -42,9 +42,7 @@ public class EnlargePicture {
         Window dialogWindow = mCameraDialog.getWindow();
         dialogWindow.setGravity(Gravity.CENTER);
 
-        Connector.getDatabase();
         ImageView image=(ImageView)root.findViewById(R.id.picture);
-        image.setImageBitmap(bit);
         Bitmap bitmap_p;
         double p_width=bit.getWidth();
         double p_height=bit.getHeight();
@@ -68,6 +66,21 @@ public class EnlargePicture {
             initTouch(root);
         }
         mCameraDialog.show();
+    }
+
+    public void adjustPictureInSearchInfo(Bitmap bit,ImageView image){
+        Bitmap bitmap_p;
+        double p_width=bit.getWidth();
+        double p_height=bit.getHeight();
+        double width=500;//标准宽
+        LinearLayout.LayoutParams params;
+        double height=width/(p_width/p_height);
+
+        params = new LinearLayout.LayoutParams((int)(width)-1,(int)height);
+        bitmap_p = Bitmap.createScaledBitmap(bit,(int)width-1,(int)(height),true);
+
+        image.setImageBitmap(bitmap_p);
+        image.setLayoutParams(params);
     }
 
     @SuppressLint("ClickableViewAccessibility")

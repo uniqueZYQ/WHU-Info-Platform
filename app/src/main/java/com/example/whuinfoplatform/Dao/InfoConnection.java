@@ -247,6 +247,21 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
+    public void queryInfoByIdAndAddViewsConnection(String id,okhttp3.Callback callback) {
+        String Url=URL+"QueryMyInfoServlet";
+
+        formBody = new FormBody.Builder()
+                .add("id",id)
+                .add("type","5")
+                .build();
+
+        OkHttpClient client=new OkHttpClient();
+
+        Request request=new Request.Builder().url(Url).post(formBody).build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseJSONForInfoResponse(WebResponse Response, String json){
         try{
@@ -278,7 +293,12 @@ public class InfoConnection {
                         jsonArray.getJSONObject(i).getInt("form")==1?"私人性-学术咨询信息":jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
                                 jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
                                         jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息";
-                String detail=jsonArray.getJSONObject(i).getString("detail");
+
+                String detail;
+                if(jsonArray.getJSONObject(i).getInt("form")!=6)
+                    detail=jsonArray.getJSONObject(i).getString("detail");
+                else
+                    detail=jsonArray.getJSONObject(i).getString("lesson")+":"+jsonArray.getJSONObject(i).getString("detail");
                 String answered=jsonArray.getJSONObject(i).getInt("answered")==0?"暂无响应":"已被响应";
                 int infoid=jsonArray.getJSONObject(i).getInt("id");
                 my_info myinfo=new my_info(infoid,date,form,detail,answered);
@@ -304,13 +324,18 @@ public class InfoConnection {
                     return -1;
                 }
                 String date=jsonArray.getJSONObject(i).getString("send_date");
-                String form=" 信息类别："+(
+                String form=(
                         jsonArray.getJSONObject(i).getInt("form")==1?"私人性-学术咨询信息":
                                 jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
                                         jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":
                                                 jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
                                                         jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息");
-                String detail=" 内容："+jsonArray.getJSONObject(i).getString("detail");
+                String detail;
+                int views=jsonArray.getJSONObject(i).getInt("views");
+                if(jsonArray.getJSONObject(i).getInt("form")!=6)
+                    detail=jsonArray.getJSONObject(i).getString("detail");
+                else
+                    detail=jsonArray.getJSONObject(i).getString("lesson")+":"+jsonArray.getJSONObject(i).getString("detail");
                 int owner_id=jsonArray.getJSONObject(i).getInt("owner_id");
                 owner=jsonArray.getJSONObject(i).getString("owner_nickname");
                 if(owner_id==id) {
@@ -319,8 +344,9 @@ public class InfoConnection {
                 else {
                     self=0;
                 }
+                int first_picture=jsonArray.getJSONObject(i).getInt("picture1");
                 int infoid=jsonArray.getJSONObject(i).getInt("id");
-                srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self);
+                srch_info srchinfo=new srch_info(infoid,date,form,detail,owner,owner_id,self,first_picture,views);
                 srch_info_list.add(srchinfo);
             }
             //更新信息所有者头像

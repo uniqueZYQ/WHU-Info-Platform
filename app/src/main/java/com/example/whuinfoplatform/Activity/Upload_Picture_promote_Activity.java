@@ -144,7 +144,6 @@ public class Upload_Picture_promote_Activity extends rootActivity {
             binding.upload.setVisibility(View.VISIBLE);
         else{
             binding.chatUpload.setVisibility(View.VISIBLE);
-            binding.cancel.setBackgroundResource(R.drawable.cancel);
             binding.cancel.setTextColor(0xFFFFFFFF);
         }
         if(intent1.getIntExtra("type",0)>1){
