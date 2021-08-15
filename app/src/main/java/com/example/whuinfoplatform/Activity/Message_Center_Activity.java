@@ -32,38 +32,38 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class Message_Center_Activity extends rootActivity {
+public class Message_Center_Activity extends rootActivity{
     private ActivityMessageCenterBinding binding;
-    private List<my_msg> my_msg_list = new ArrayList<>();
+    private List<my_msg> my_msg_list=new ArrayList<>();
     private SwipeRefreshLayout swipeRefresh;
     private my_msg_Adapter adapter;
     int myid=0,oppo_id=0;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public void bindView() {
-        binding= ActivityMessageCenterBinding.inflate(getLayoutInflater());
+    public void bindView(){
+        binding=ActivityMessageCenterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         init();
-        adapter = new my_msg_Adapter(Message_Center_Activity.this,R.layout.my_msg_item,my_msg_list);
+        adapter=new my_msg_Adapter(Message_Center_Activity.this,R.layout.my_msg_item,my_msg_list);
     }
 
     private void initLast(String user_id,String oppo_id,String last_id,String oppo_name){
         LastConnection lastConnection=new LastConnection();
-        lastConnection.updateLastByUser(user_id,oppo_id,last_id,new okhttp3.Callback() {
+        lastConnection.updateLastByUser(user_id,oppo_id,last_id,new okhttp3.Callback(){
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call,IOException e){
                 Looper.prepare();
                 BToast.showText(Message_Center_Activity.this,"服务器连接失败，请检查网络设置",false);
                 Looper.loop();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call,Response response) throws IOException{
                 String result=response.body().string();
                 try {
                     JSONObject jsonObject=new JSONObject(result);
@@ -78,7 +78,7 @@ public class Message_Center_Activity extends rootActivity {
                         intent.putExtra("nickname",oppo_name);
                         startActivity(intent);
                     }
-                } catch (JSONException e) {
+                }catch(JSONException e){
                     e.printStackTrace();
                     Looper.prepare();
                     BToast.showText(Message_Center_Activity.this,"数据解析失败！",false);
@@ -89,7 +89,7 @@ public class Message_Center_Activity extends rootActivity {
     }
 
     private void showNoMsg(){
-        runOnUiThread(() -> binding.none.setVisibility(View.VISIBLE));
+        runOnUiThread(()->binding.none.setVisibility(View.VISIBLE));
     }
 
     private void init(){
@@ -98,17 +98,17 @@ public class Message_Center_Activity extends rootActivity {
         myid=intent.getIntExtra("id",0);
         //List<Msg> msg = DataSupport.where("sub_id=? or obj_id=?",String.valueOf(myid),String.valueOf(myid)).order("id desc").find(Msg.class);
         MsgConnection msgConnection=new MsgConnection();
-        msgConnection.queryMsgAboutUserForOneUser(String.valueOf(myid), new okhttp3.Callback() {
+        msgConnection.queryMsgAboutUserForOneUser(String.valueOf(myid),new okhttp3.Callback(){
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call,IOException e){
                 Looper.prepare();
                 BToast.showText(Message_Center_Activity.this,"服务器连接失败，请检查网络设置",false);
                 Looper.loop();
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.O)
+            @RequiresApi(api=Build.VERSION_CODES.O)
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call,Response response) throws IOException{
                 String result=response.body().string();
                 int n=msgConnection.parseJSONMyMsgResponse(Message_Center_Activity.this,result,my_msg_list);
                 if(n==-1){
@@ -127,26 +127,26 @@ public class Message_Center_Activity extends rootActivity {
     }
 
     private void OtherOptions(){
-        runOnUiThread(() -> {
-            ListView listView=(ListView)findViewById(R.id.list_view);
+        runOnUiThread(()->{
+            ListView listView=findViewById(R.id.list_view);
             listView.setAdapter(adapter);
-            listView.setOnItemClickListener((parent, view, position, id) -> {
-                my_msg mymsg = my_msg_list.get(position);
+            listView.setOnItemClickListener((parent,view,position,id)->{
+                my_msg mymsg=my_msg_list.get(position);
 
                 int msgid=mymsg.getId();
                 String oppo_name=mymsg.getOppoName();
 
                 MsgConnection msgConnection=new MsgConnection();
-                msgConnection.queryMsgById(String.valueOf(msgid), new Callback() {
+                msgConnection.queryMsgById(String.valueOf(msgid),new Callback(){
                     @Override
-                    public void onFailure(Call call, IOException e) {
+                    public void onFailure(Call call,IOException e){
                         Looper.prepare();
                         BToast.showText(Message_Center_Activity.this,"服务器连接失败，请检查网络设置",false);
                         Looper.loop();
                     }
 
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
+                    public void onResponse(Call call,Response response) throws IOException{
                         String result=response.body().string();
                         try {
                             JSONObject jsonObject=new JSONObject(result);
@@ -158,16 +158,16 @@ public class Message_Center_Activity extends rootActivity {
                                     oppo_id=jsonObject.getInt("sub_id");
                                 }
                                 MsgConnection msgConnection1=new MsgConnection();
-                                msgConnection1.queryMsgAboutUserByOneWay(String.valueOf(oppo_id),String.valueOf(myid), new Callback() {
+                                msgConnection1.queryMsgAboutUserByOneWay(String.valueOf(oppo_id),String.valueOf(myid),new Callback(){
                                     @Override
-                                    public void onFailure(Call call, IOException e) {
+                                    public void onFailure(Call call,IOException e){
                                         Looper.prepare();
                                         BToast.showText(Message_Center_Activity.this,"服务器连接失败，请检查网络设置",false);
                                         Looper.loop();
                                     }
 
                                     @Override
-                                    public void onResponse(Call call, Response response) throws IOException {
+                                    public void onResponse(Call call,Response response) throws IOException{
                                         String result=response.body().string();
                                         try {
                                             JSONArray jsonArray=new JSONArray(result);
@@ -180,7 +180,7 @@ public class Message_Center_Activity extends rootActivity {
                                                 BToast.showText(Message_Center_Activity.this,jsonArray.getJSONObject(0).getString("response"),false);
                                                 Looper.loop();
                                             }
-                                        } catch (JSONException e) {
+                                        }catch(JSONException e){
                                             e.printStackTrace();
                                             Looper.prepare();
                                             BToast.showText(Message_Center_Activity.this,"数据解析失败！",false);
@@ -194,7 +194,7 @@ public class Message_Center_Activity extends rootActivity {
                                 BToast.showText(Message_Center_Activity.this,jsonObject.getString("response"),false);
                                 Looper.loop();
                             }
-                        } catch (JSONException e) {
+                        }catch(JSONException e){
                             e.printStackTrace();
                             Looper.prepare();
                             BToast.showText(Message_Center_Activity.this,"数据解析失败！",false);
@@ -204,23 +204,22 @@ public class Message_Center_Activity extends rootActivity {
                 });
             });
 
-            swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
+            swipeRefresh=findViewById(R.id.swiperrfresh);
             swipeRefresh.setColorSchemeResources(
                     android.R.color.holo_blue_light,
                     android.R.color.holo_purple);
-            swipeRefresh.setOnRefreshListener(() -> refresh_my_msg(2000));
+            swipeRefresh.setOnRefreshListener(()->refresh_my_msg(2000));
         });
     }
 
     private void refresh_my_msg(int s){
-        new Thread(() -> {
+        new Thread(()->{
             try{
                 Thread.sleep(s);
-            }
-            catch (InterruptedException e){
+            }catch(InterruptedException e){
                 e.printStackTrace();
             }
-            runOnUiThread((() -> {
+            runOnUiThread((()->{
                 adapter.clear();
                 init();
                 adapter.notifyDataSetChanged();
@@ -241,7 +240,7 @@ public class Message_Center_Activity extends rootActivity {
 
     @SuppressLint("RestrictedApi")
     @Override
-    protected void initWidget() {
+    protected void initWidget(){
         super.initWidget();
         ActionBar actionBar =getSupportActionBar();
         actionBar.setTitle("消息中心");
@@ -250,7 +249,7 @@ public class Message_Center_Activity extends rootActivity {
     }
 
     @Override
-    protected void onRestart() {
+    protected void onRestart(){
         super.onRestart();
         refresh_my_msg(1);
     }

@@ -15,14 +15,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class LastConnection {
+public class LastConnection{
     private RequestBody formBody;
-    public static String URL = "http://122.9.144.219:8080/myServlet/";
+    public static String URL="http://122.9.144.219:8080/myServlet/";
 
-    public void updateLastByUser(String user_id,String oppo_id,String last_id,okhttp3.Callback callback) {
+    public void updateLastByUser(String user_id,String oppo_id,String last_id,okhttp3.Callback callback){
         String Url=URL+"LastServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("user_id",user_id)
                 .add("oppo_id", oppo_id)
                 .add("last_id", last_id)
@@ -36,10 +36,10 @@ public class LastConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryLastByUser(String user_id,String oppo_id,okhttp3.Callback callback) {
+    public void queryLastByUser(String user_id,String oppo_id,okhttp3.Callback callback){
         String Url=URL+"LastServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("user_id",user_id)
                 .add("oppo_id", oppo_id)
                 .add("type","2")
@@ -52,10 +52,10 @@ public class LastConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void insertLastByUser(String user_id,String oppo_id,String last_id,okhttp3.Callback callback) {
+    public void insertLastByUser(String user_id,String oppo_id,String last_id,okhttp3.Callback callback){
         String Url=URL+"LastServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("user_id",user_id)
                 .add("oppo_id", oppo_id)
                 .add("last_id", last_id)
@@ -69,10 +69,10 @@ public class LastConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryLastByUserId(String user_id,okhttp3.Callback callback) {
+    public void queryLastByUserId(String user_id,okhttp3.Callback callback){
         String Url=URL+"LastServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("user_id",user_id)
                 .add("type","4")
                 .build();
@@ -84,7 +84,7 @@ public class LastConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     public int parseJSONLastResponse(String json, List<Last> last){
         try{
             JSONArray jsonArray=new JSONArray(json);
@@ -105,7 +105,7 @@ public class LastConnection {
                 last.add(culast);
             }
             return jsonArray.length();
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
         return -1;

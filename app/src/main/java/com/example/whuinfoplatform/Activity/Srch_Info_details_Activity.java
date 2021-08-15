@@ -57,19 +57,17 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class Srch_Info_details_Activity extends rootActivity {
+public class Srch_Info_details_Activity extends rootActivity{
     private com.example.whuinfoplatform.databinding.ActivitySrchInfoDetailsBinding binding;
-    int form=0;
-    String owner=new String();
+    private int form=0,first=1;
+    private String owner,name,address;
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
-    BaiDuMap baidumap=new BaiDuMap();
-    PoiSearch mPoiSearch = PoiSearch.newInstance();
-    LatLng endPt;
+    private BaiDuMap baidumap=new BaiDuMap();
+    private PoiSearch mPoiSearch = PoiSearch.newInstance();
+    private LatLng endPt;
     private double latitude,longitude;
-    private String name,address;
-    private int first=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +75,8 @@ public class Srch_Info_details_Activity extends rootActivity {
     }
 
     @Override
-    public void bindView() {
-        binding= com.example.whuinfoplatform.databinding.ActivitySrchInfoDetailsBinding.inflate(getLayoutInflater());
+    public void bindView(){
+        binding=com.example.whuinfoplatform.databinding.ActivitySrchInfoDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
     }
 
@@ -87,27 +85,27 @@ public class Srch_Info_details_Activity extends rootActivity {
     }
 
     private void initMap(String Uid){
-        runOnUiThread(() -> {
-            mMapView = (MapView) findViewById(R.id.mapView);
+        runOnUiThread(()->{
+            mMapView=findViewById(R.id.mapView);
             binding.frame.setVisibility(View.VISIBLE);
             mMapView.setVisibility(View.VISIBLE);
             mBaiduMap=mMapView.getMap();
             //定位初始化为武汉大学行政楼
-            LatLng ll = new LatLng(30.543803317144, 114.37292090919);
+            LatLng ll=new LatLng(30.543803317144,114.37292090919);
             float zoom=16;
-            MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+            MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
             mBaiduMap.setMapStatus(u);
             mBaiduMap.animateMapStatus(u);
             mPoiSearch.setOnGetPoiSearchResultListener(listener1);
             mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
                     .poiUids(Uid));
-            MyLocationListener myLocationListener = new MyLocationListener();
+            MyLocationListener myLocationListener=new MyLocationListener();
             //定位监听初始化
-            mLocationClient = new LocationClient(Srch_Info_details_Activity.this);
+            mLocationClient=new LocationClient(Srch_Info_details_Activity.this);
             //获取实时定位
             baidumap.getLocation3(mBaiduMap,mLocationClient,myLocationListener);
             //配置地图
-            baidumap.configMap(mBaiduMap, MyLocationConfiguration.LocationMode.NORMAL,true, BitmapDescriptorFactory.fromResource(R.drawable.location),0x55FFFFFF,0x55FFFFFF);
+            baidumap.configMap(mBaiduMap, MyLocationConfiguration.LocationMode.NORMAL,true,BitmapDescriptorFactory.fromResource(R.drawable.location),0x55FFFFFF,0x55FFFFFF);
             //禁止旋转手势
             UiSettings mUiSettings=mBaiduMap.getUiSettings();
             mUiSettings.setRotateGesturesEnabled(false);
@@ -117,27 +115,27 @@ public class Srch_Info_details_Activity extends rootActivity {
     }
 
 
-    public class MyLocationListener extends BDAbstractLocationListener {
+    public class MyLocationListener extends BDAbstractLocationListener{
 
         @Override
-        public void onReceiveLocation(BDLocation location) {
+        public void onReceiveLocation(BDLocation location){
             //mapView 销毁后不再处理新接收的位置
-            if (location == null || mMapView == null){
+            if (location==null||mMapView==null){
                 return;
             }
-            MyLocationData locData = new MyLocationData.Builder()
+            MyLocationData locData=new MyLocationData.Builder()
                     .accuracy(location.getRadius())
                     // 此处设置开发者获取到的方向信息，顺时针0-360
                     .direction(location.getDirection()).latitude(location.getLatitude())
                     .longitude(location.getLongitude()).build();
             mBaiduMap.setMyLocationData(locData);
-            latitude = location.getLatitude();    //获取纬度信息
-            longitude = location.getLongitude();    //获取经度信息
+            latitude=location.getLatitude();    //获取纬度信息
+            longitude=location.getLongitude();    //获取经度信息
             if((latitude>=1||longitude>=1)&&first==1){
-                LatLng ll = new LatLng(latitude, longitude);
+                LatLng ll=new LatLng(latitude, longitude);
                 //初始化中心点为实时位置,设初始缩放程度为17
                 float zoom=17;
-                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
                 mBaiduMap.setMapStatus(u);
                 mBaiduMap.animateMapStatus(u);
                 BToast.showText(Srch_Info_details_Activity.this,"实时位置获取成功!",true);
@@ -150,18 +148,15 @@ public class Srch_Info_details_Activity extends rootActivity {
         }
     }
 
-    private void startWalkNavigation() throws ActivityNotFoundException {
-        try {
-            Intent i1 = new Intent();
-
+    private void startWalkNavigation() throws ActivityNotFoundException{
+        try{
+            Intent i1=new Intent();
             // 步行路线规划
-
-            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:" + String.valueOf(latitude) + "," + String.valueOf(longitude)
-                    + "&destination=name:" + name + "|latlng:" + String.valueOf(endPt.latitude) + "," + String.valueOf(endPt.longitude)
-                    + "&coord_type=bd09ll&mode=walking&src=andr.baidu.openAPIdemo"));
-
+            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
+                    +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
+                    +"&coord_type=bd09ll&mode=walking&src=andr.baidu.openAPIdemo"));
             startActivity(i1);
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
             BaiDuAPPNotExist();
         }
@@ -170,71 +165,59 @@ public class Srch_Info_details_Activity extends rootActivity {
     private void startBikeNavigation() throws ActivityNotFoundException{
         try{
             Intent i1 = new Intent();
-
-        // 骑行路线规划
-
-        i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
+            // 骑行路线规划
+            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
                 +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
                 +"&coord_type=bd09ll&mode=riding&src=andr.baidu.openAPIdemo"));
-
-        startActivity(i1);
-        }catch (Exception e){
+                startActivity(i1);
+        }catch(Exception e){
             e.printStackTrace();
             BaiDuAPPNotExist();
         }
     }
 
     private void startBusNavigation() throws ActivityNotFoundException{
-        try {
+        try{
             Intent i1 = new Intent();
-
             // 公交路线规划
-
-            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:" + String.valueOf(latitude) + "," + String.valueOf(longitude) +
-                    "&destination=" + name + "|latlng:" + String.valueOf(endPt.latitude) + "," + String.valueOf(endPt.longitude) +
+            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)+
+                    "&destination="+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)+
                     "&coord_type=bd09ll&mode=transit&target=1&src=andr.baidu.openAPIdemo"));
-
-
             startActivity(i1);
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
             BaiDuAPPNotExist();
         }
     }
 
     private void startNavigation() throws ActivityNotFoundException{
-        try {
+        try{
             Intent i1 = new Intent();
-
             // 驾车路线规划
-
-            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:" + String.valueOf(latitude) + "," + String.valueOf(longitude)
-                    + "&destination=name:" + name + "|latlng:" + String.valueOf(endPt.latitude) + "," + String.valueOf(endPt.longitude)
-                    + "&coord_type=bd09ll&mode=driving&src=andr.baidu.openAPIdemo"));
-
+            i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
+                    +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
+                    +"&coord_type=bd09ll&mode=driving&src=andr.baidu.openAPIdemo"));
             startActivity(i1);
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
             BaiDuAPPNotExist();
         }
     }
 
-    OnGetPoiSearchResultListener listener1 = new OnGetPoiSearchResultListener() {
+    OnGetPoiSearchResultListener listener1=new OnGetPoiSearchResultListener(){
         @Override
-        public void onGetPoiResult(PoiResult poiResult) {
-
-        }
+        public void onGetPoiResult(PoiResult poiResult){}
 
         @Override
-        public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
+        public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult){
             //搜索结果信息获取
             if(!(poiDetailSearchResult.getPoiDetailInfoList()==null)){
-                Button button1 = new Button(getApplicationContext());
-                Button button2 = new Button(getApplicationContext());
+                Button button1=new Button(getApplicationContext());
+                Button button2=new Button(getApplicationContext());
                 //定位初始化为活动地点
-                LatLng ll = poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation();
+                LatLng ll=poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation();
                 float zoom=16;
-                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
                 mBaiduMap.setMapStatus(u);
                 mBaiduMap.animateMapStatus(u);
                 baidumap.setMark(ll,mBaiduMap);
@@ -247,18 +230,14 @@ public class Srch_Info_details_Activity extends rootActivity {
                 BToast.showText(Srch_Info_details_Activity.this,"地址解析失败!",false);
         }
         @Override
-        public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
-
-        }
+        public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult){}
         //废弃
         @Override
-        public void onGetPoiDetailResult(PoiDetailResult poiDetailResult) {
-
-        }
+        public void onGetPoiDetailResult(PoiDetailResult poiDetailResult){}
     };
 
     @Override
-    protected void initData() {
+    protected void initData(){
         super.initData();
         Intent intent=getIntent();
         owner=intent.getStringExtra("owner");
@@ -272,22 +251,22 @@ public class Srch_Info_details_Activity extends rootActivity {
         }
 
         InfoConnection infoConnection=new InfoConnection();
-        infoConnection.queryInfoByIdConnection(String.valueOf(id), new okhttp3.Callback() {
+        infoConnection.queryInfoByIdConnection(String.valueOf(id),new okhttp3.Callback(){
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call,IOException e){
                 Looper.prepare();
                 BToast.showText(Srch_Info_details_Activity.this,"服务器连接失败，请检查网络设置",false);
                 Looper.loop();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call,Response response) throws IOException{
                 String result=response.body().string();
                 Info myInformation=new Info();
                 try {
                     infoConnection.parseJSONForMyInfoDetailResponse(myInformation,result);
                     showInfoDetails(myInformation,owner);
-                } catch (JSONException e) {
+                }catch(JSONException e){
                     e.printStackTrace();
                     Looper.prepare();
                     BToast.showText(Srch_Info_details_Activity.this,"数据解析失败！",false);
@@ -298,7 +277,7 @@ public class Srch_Info_details_Activity extends rootActivity {
     }
 
     @Override
-    protected void initClick() {
+    protected void initClick(){
         super.initClick();
         Intent intent=getIntent();
         int id=intent.getIntExtra("id",0);
@@ -306,28 +285,28 @@ public class Srch_Info_details_Activity extends rootActivity {
         int obj_id=intent.getIntExtra("ownerid",0);
         binding.answer.setOnClickListener(v->{
 
-            AlertDialog.Builder dialog = new AlertDialog.Builder(Srch_Info_details_Activity.this);
+            AlertDialog.Builder dialog=new AlertDialog.Builder(Srch_Info_details_Activity.this);
             dialog.setTitle("响应本信息");
             dialog.setMessage("信息发布者将会收到您的信息。\n确定响应？");
             dialog.setCancelable(false);
-            dialog.setNegativeButton("不，我再想想", (dialog12, which) -> {});
-            dialog.setPositiveButton("是", (dialog1, which) -> {
+            dialog.setNegativeButton("不，我再想想",(dialog12,which)->{});
+            dialog.setPositiveButton("是",(dialog1,which)->{
                 InfoConnection infoConnection=new InfoConnection();
-                infoConnection.answerInfoConnection(String.valueOf(id), new okhttp3.Callback() {
+                infoConnection.answerInfoConnection(String.valueOf(id),new okhttp3.Callback(){
                     @Override
-                    public void onFailure(Call call, IOException e) {
+                    public void onFailure(Call call,IOException e){
                         Looper.prepare();
                         BToast.showText(Srch_Info_details_Activity.this,"服务器连接失败，请检查网络设置",false);
                         Looper.loop();
                     }
 
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
+                    public void onResponse(Call call,Response response) throws IOException{
                         String result=response.body().string();
-                        try {
+                        try{
                             JSONObject jsonObject=new JSONObject(result);
                             if(jsonObject.getInt("code")==101){
-                                Intent intent1 = new Intent(Srch_Info_details_Activity.this,Chat_Window_Activity.class);
+                                Intent intent1=new Intent(Srch_Info_details_Activity.this,Chat_Window_Activity.class);
                                 intent1.putExtra("sub_id",sub_id);
                                 intent1.putExtra("obj_id",obj_id);
                                 intent1.putExtra("nickname",owner);
@@ -338,7 +317,7 @@ public class Srch_Info_details_Activity extends rootActivity {
                                 BToast.showText(Srch_Info_details_Activity.this,jsonObject.getString("response"),false);
                                 Looper.loop();
                             }
-                        } catch (JSONException e) {
+                        }catch(JSONException e){
                             e.printStackTrace();
                             Looper.prepare();
                             BToast.showText(Srch_Info_details_Activity.this,"数据解析失败！",false);
@@ -349,21 +328,21 @@ public class Srch_Info_details_Activity extends rootActivity {
             });
             dialog.show();
         });
-        binding.placeDetail.setOnClickListener(v -> {
+        binding.placeDetail.setOnClickListener(v->{
             //List<Info> info = DataSupport.where("id=?",String.valueOf(id)).find(Info.class);
             InfoConnection infoConnection=new InfoConnection();
-            infoConnection.queryInfoByIdConnection(String.valueOf(id), new okhttp3.Callback() {
+            infoConnection.queryInfoByIdConnection(String.valueOf(id),new okhttp3.Callback(){
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(Call call,IOException e){
                     Looper.prepare();
                     BToast.showText(Srch_Info_details_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
 
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(Call call,Response response) throws IOException{
                     String result=response.body().string();
-                    try {
+                    try{
                         JSONObject jsonObject=new JSONObject(result);
                         String Uid=jsonObject.getString("placeId");
                         if(jsonObject.getInt("code")!=101){
@@ -373,7 +352,7 @@ public class Srch_Info_details_Activity extends rootActivity {
                         }
                         else
                             initMap(Uid);
-                    } catch (JSONException e) {
+                    }catch(JSONException e){
                         e.printStackTrace();
                         Looper.prepare();
                         BToast.showText(Srch_Info_details_Activity.this,"数据解析失败！",false);
@@ -382,22 +361,14 @@ public class Srch_Info_details_Activity extends rootActivity {
                 }
             });
         });
-        binding.walkGuide.setOnClickListener(v -> {
-            startWalkNavigation();
-        });
-        binding.bikeGuide.setOnClickListener(v -> {
-            startBikeNavigation();
-        });
-        binding.Guide.setOnClickListener(v -> {
-            startNavigation();
-        });
-        binding.busGuide.setOnClickListener(v -> {
-            startBusNavigation();
-        });
+        binding.walkGuide.setOnClickListener(v->startWalkNavigation());
+        binding.bikeGuide.setOnClickListener(v->startBikeNavigation());
+        binding.Guide.setOnClickListener(v->startNavigation());
+        binding.busGuide.setOnClickListener(v->startBusNavigation());
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume(){
         super.onResume();
         initData();
         if(form==5&&first==0){
@@ -406,7 +377,7 @@ public class Srch_Info_details_Activity extends rootActivity {
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause(){
         super.onPause();
         if(form==5&&first==0){
             mMapView.onPause();
@@ -414,14 +385,14 @@ public class Srch_Info_details_Activity extends rootActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy(){
         super.onDestroy();
         if(form==5&&first==0){
             mLocationClient.stop();
             mBaiduMap.setMyLocationEnabled(false);
             mMapView.onDestroy();
             mPoiSearch.destroy();
-            mMapView = null;
+            mMapView=null;
         }
     }
 
@@ -646,7 +617,7 @@ public class Srch_Info_details_Activity extends rootActivity {
                             JSONObject jsonObject=new JSONObject(result);
                             String picture=jsonObject.getString("picture");
                             LocalPicture localPicture=new LocalPicture();
-                            localPicture.userPictureAddToLocal(owner_id,picture);
+                            localPicture.userPictureAddToLocal(owner_id,picture,jsonObject.getInt("picture_version"));
                             showUserPicture(picture);
                         } catch (JSONException e) {
                             e.printStackTrace();

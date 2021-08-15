@@ -4,40 +4,33 @@ import org.litepal.crud.DataSupport;
 
 import java.util.List;
 
-public class LocalLogin extends DataSupport {
+public class LocalLogin extends DataSupport{
     private int id;
     private int user_id;
     private long time;
-
     private static final long LOGIN_TIME=1000*60*60*8;//8h
 
     public void setId(int id) {
-        this.id = id;
+        this.id=id;
     }
-
     public int getId() {
         return id;
     }
-
     public int getUser_id() {
         return user_id;
     }
-
     public long getTime() {
         return time;
     }
-
     public void setTime(long time) {
-        this.time = time;
+        this.time=time;
     }
-
     public void setUser_id(int user_id) {
-        this.user_id = user_id;
+        this.user_id=user_id;
     }
 
     public int judgeLogin(){
         List<LocalLogin> localLoginList=DataSupport.order("time desc").find(LocalLogin.class);
-        LocalLogin localLogin=new LocalLogin();
         if(localLoginList.size()==0){//无历史登录数据
             return -1;
         }
@@ -46,7 +39,6 @@ public class LocalLogin extends DataSupport {
                 return localLoginList.get(0).getUser_id();
             }
             else{
-                long n=System.currentTimeMillis();
                 return 0;
             }
         }

@@ -22,18 +22,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class InfoConnection {
+public class InfoConnection{
     private RequestBody formBody;
-    int i,self=0;
-    String owner;
-    public static String URL = "http://122.9.144.219:8080/myServlet/";
+    private int i,self=0;
+    private String owner;
+    public static String URL="http://122.9.144.219:8080/myServlet/";
 
     public void initRegisterConnection(String owner_id,String send_date,String answered,String form,String fd_form,String help_form,String price,String date,
                                        String place,String lesson,String score,String detail,String reward,String picture1,String picture2,
-                                       String picture3,String picture4,String placeId,okhttp3.Callback callback) {
+                                       String picture3,String picture4,String placeId,okhttp3.Callback callback){
         String Url=URL+"PublishInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("owner_id",owner_id)
                 .add("send_date", send_date)
                 .add("answered", answered)
@@ -61,10 +61,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void updateMyInfoConnection1(String id,String fd_form,String reward,String detail,String send_date,okhttp3.Callback callback) {
+    public void updateMyInfoConnection1(String id,String fd_form,String reward,String detail,String send_date,okhttp3.Callback callback){
         String Url=URL+"updateMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("fd_form",fd_form)
                 .add("detail",detail)
@@ -80,10 +80,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void updateMyInfoConnection2(String id,String help_form,String reward,String detail,String send_date,okhttp3.Callback callback) {
+    public void updateMyInfoConnection2(String id,String help_form,String reward,String detail,String send_date,okhttp3.Callback callback){
         String Url=URL+"updateMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("help_form",help_form)
                 .add("detail",detail)
@@ -99,10 +99,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void updateMyInfoConnection3(String id,String price,String detail,String send_date,okhttp3.Callback callback) {
+    public void updateMyInfoConnection3(String id,String price,String detail,String send_date,okhttp3.Callback callback){
         String Url=URL+"updateMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("price",price)
                 .add("detail",detail)
@@ -117,10 +117,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void updateMyInfoConnection4(String id,String reward,String place,String date,String detail,String placeId,String send_date,okhttp3.Callback callback) {
+    public void updateMyInfoConnection4(String id,String reward,String place,String date,String detail,String placeId,String send_date,okhttp3.Callback callback){
         String Url=URL+"updateMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("reward",reward)
                 .add("place",place)
@@ -138,10 +138,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void updateMyInfoConnection5(String id,String score,String lesson,String detail,String send_date,okhttp3.Callback callback) {
+    public void updateMyInfoConnection5(String id,String score,String lesson,String detail,String send_date,okhttp3.Callback callback){
         String Url=URL+"updateMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("score",score)
                 .add("lesson",lesson)
@@ -157,10 +157,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryMyInfoConnection(String id,okhttp3.Callback callback) {
+    public void queryMyInfoConnection(String id,okhttp3.Callback callback){
         String Url=URL+"QueryMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("type","0")
                 .build();
@@ -172,10 +172,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryMyInfoDetailConnection(String id,okhttp3.Callback callback) {
+    public void queryMyInfoDetailConnection(String id,okhttp3.Callback callback){
         String Url=URL+"QueryMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("type","1")
                 .build();
@@ -187,10 +187,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void deleteMyInfoConnection(String id,okhttp3.Callback callback) {
+    public void deleteMyInfoConnection(String id,okhttp3.Callback callback){
         String Url=URL+"QueryMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("type","2")
                 .build();
@@ -202,10 +202,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryInfoByKwdConnection(String kwd,okhttp3.Callback callback) {
+    public void queryInfoByKwdConnection(String kwd,okhttp3.Callback callback){
         String Url=URL+"QueryMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("kwd",kwd)
                 .add("type","3")
                 .build();
@@ -217,10 +217,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryInfoByIdConnection(String id,okhttp3.Callback callback) {
+    public void queryInfoByIdConnection(String id,okhttp3.Callback callback){
         String Url=URL+"QueryMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("type","1")
                 .build();
@@ -232,10 +232,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void answerInfoConnection(String id,okhttp3.Callback callback) {
+    public void answerInfoConnection(String id,okhttp3.Callback callback){
         String Url=URL+"QueryMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("type","4")
                 .build();
@@ -247,10 +247,10 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryInfoByIdAndAddViewsConnection(String id,okhttp3.Callback callback) {
+    public void queryInfoByIdAndAddViewsConnection(String id,okhttp3.Callback callback){
         String Url=URL+"QueryMyInfoServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("type","5")
                 .build();
@@ -262,21 +262,20 @@ public class InfoConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     public void parseJSONForInfoResponse(WebResponse Response, String json){
         try{
             JSONObject jsonObject=new JSONObject(json);
             int code=jsonObject.getInt("code");
             String response=jsonObject.getString("response");
-
             showResponseForInfoResponse(Response,code,response);
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public int parseJSONForMyInfoResponse(String json, List<my_info> my_info_list){
+    @RequiresApi(api=Build.VERSION_CODES.O)
+    public int parseJSONForMyInfoResponse(String json,List<my_info> my_info_list){
         try{
             JSONArray jsonArray=new JSONArray(json);
             for(int i=0;i<jsonArray.length();i++){
@@ -289,11 +288,11 @@ public class InfoConnection {
                     return -1;
                 }
                 String date=jsonArray.getJSONObject(i).getString("send_date");
-                String form=
-                        jsonArray.getJSONObject(i).getInt("form")==1?"私人性-学术咨询信息":jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
-                                jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
-                                        jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息";
-
+                String form=jsonArray.getJSONObject(i).getInt("form")==1?"私人性-学术咨询信息":
+                            jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
+                            jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":
+                            jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
+                            jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息";
                 String detail;
                 if(jsonArray.getJSONObject(i).getInt("form")!=6)
                     detail=jsonArray.getJSONObject(i).getString("detail");
@@ -305,14 +304,14 @@ public class InfoConnection {
                 my_info_list.add(myinfo);
             }
             return jsonArray.length();
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
         return -1;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public int parseJSONForInfoResponse(Context context, String json, int id, List<srch_info> srch_info_list){
+    @RequiresApi(api=Build.VERSION_CODES.O)
+    public int parseJSONForInfoResponse(Context context,String json,int id,List<srch_info> srch_info_list){
         try{
             JSONArray jsonArray=new JSONArray(json);
             for(i=0;i<jsonArray.length();i++){
@@ -324,12 +323,11 @@ public class InfoConnection {
                     return -1;
                 }
                 String date=jsonArray.getJSONObject(i).getString("send_date");
-                String form=(
-                        jsonArray.getJSONObject(i).getInt("form")==1?"私人性-学术咨询信息":
-                                jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
-                                        jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":
-                                                jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
-                                                        jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息");
+                String form=jsonArray.getJSONObject(i).getInt("form")==1?"私人性-学术咨询信息":
+                            jsonArray.getJSONObject(i).getInt("form")==2?"私人性-日常求助信息":
+                            jsonArray.getJSONObject(i).getInt("form")==3?"私人性-物品出售信息":
+                            jsonArray.getJSONObject(i).getInt("form")==4?"私人性-物品求购信息":
+                            jsonArray.getJSONObject(i).getInt("form")==5?"组织性信息":"课程点评信息";
                 String detail;
                 int views=jsonArray.getJSONObject(i).getInt("views");
                 if(jsonArray.getJSONObject(i).getInt("form")!=6)
@@ -338,10 +336,10 @@ public class InfoConnection {
                     detail=jsonArray.getJSONObject(i).getString("lesson")+":"+jsonArray.getJSONObject(i).getString("detail");
                 int owner_id=jsonArray.getJSONObject(i).getInt("owner_id");
                 owner=jsonArray.getJSONObject(i).getString("owner_nickname");
-                if(owner_id==id) {
+                if(owner_id==id){
                     self=1;
                 }
-                else {
+                else{
                     self=0;
                 }
                 int first_picture=jsonArray.getJSONObject(i).getInt("picture1");
@@ -351,7 +349,7 @@ public class InfoConnection {
             }
             //更新信息所有者头像
             UpdateLocalPicture updateLocalPicture=new UpdateLocalPicture();
-            updateLocalPicture.getInfoOwnerIdList(context,srch_info_list);
+            updateLocalPicture.updateInfoOwnerPicture(context,srch_info_list);
             return jsonArray.length();
         }catch (Exception e){
             e.printStackTrace();
@@ -359,7 +357,7 @@ public class InfoConnection {
         return -1;
     }
 
-    public void parseJSONForMyInfoDetailResponse(Info myInformation,String json) throws JSONException {
+    public void parseJSONForMyInfoDetailResponse(Info myInformation,String json) throws JSONException{
         JSONObject jsonObject=new JSONObject(json);
         myInformation.setAnswered(jsonObject.getInt("answered"));
         myInformation.setCode(jsonObject.getInt("code"));

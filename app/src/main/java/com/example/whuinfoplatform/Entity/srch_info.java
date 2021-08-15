@@ -1,6 +1,6 @@
 package com.example.whuinfoplatform.Entity;
 
-public class srch_info {
+public class srch_info{
     private String time;
     private String form;
     private String detail;
@@ -12,16 +12,17 @@ public class srch_info {
     private int views;
 
     public srch_info(int id,String time,String form,String detail,String owner,int owner_id,int self,int first_picture,int views){
-        this.time = time;
-        this.form = form;
-        this.detail = detail;
-        this.id = id;
+        this.time=time;
+        this.form=form;
+        this.detail=detail;
+        this.id=id;
         this.owner=owner;
         this.self=self;
         this.owner_id=owner_id;
         this.views=views;
         this.first_picture=first_picture;
     }
+
     public int getViews(){
         return views;
     }

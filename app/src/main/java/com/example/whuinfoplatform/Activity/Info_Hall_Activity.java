@@ -13,26 +13,27 @@ import com.example.whuinfoplatform.databinding.ActivityInfoHallBinding;
 
 public class Info_Hall_Activity extends rootActivity {
     private ActivityInfoHallBinding binding;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public void bindView() {
+    public void bindView(){
         binding=ActivityInfoHallBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
     }
 
     @Override
-    protected void initClick() {
+    protected void initClick(){
         super.initClick();
-        binding.startEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if(actionId== EditorInfo.IME_ACTION_SEARCH){
-                String kwd = binding.startEditText.getText().toString();
+        binding.startEditText.setOnEditorActionListener((v,actionId,event)->{
+            if(actionId==EditorInfo.IME_ACTION_SEARCH){
+                String kwd=binding.startEditText.getText().toString();
                 SenseCheck senseCheck=new SenseCheck();
                 if(senseCheck.SenseCheckAllBlankOrNull(kwd)){
-                    Intent intent = new Intent(Info_Hall_Activity.this, Search_Info_promote_Activity.class);
+                    Intent intent=new Intent(Info_Hall_Activity.this,Search_Info_promote_Activity.class);
                     intent.putExtra("kwd",kwd);
                     Intent intent1=getIntent();
                     int id=intent1.getIntExtra("id",0);
@@ -48,12 +49,12 @@ public class Info_Hall_Activity extends rootActivity {
             else
                 return false;
         });
-        binding.delete.setOnClickListener(v-> binding.startEditText.setText(""));
+        binding.delete.setOnClickListener(v->binding.startEditText.setText(""));
         binding.startFindInfoActivity.setOnClickListener(v->{
-            String kwd = binding.startEditText.getText().toString();
+            String kwd=binding.startEditText.getText().toString();
             SenseCheck senseCheck=new SenseCheck();
             if(senseCheck.SenseCheckAllBlankOrNull(kwd)){
-                Intent intent = new Intent(Info_Hall_Activity.this, Search_Info_promote_Activity.class);
+                Intent intent=new Intent(Info_Hall_Activity.this,Search_Info_promote_Activity.class);
                 intent.putExtra("kwd",kwd);
                 Intent intent1=getIntent();
                 int id=intent1.getIntExtra("id",0);
@@ -68,20 +69,20 @@ public class Info_Hall_Activity extends rootActivity {
         binding.startPublishInfoActivity.setOnClickListener(v->{
             Intent intent1=getIntent();
             int id=intent1.getIntExtra("id",0);
-            Intent intent2 = new Intent(Info_Hall_Activity.this, Publish_Info_promote_Activity.class);
+            Intent intent2=new Intent(Info_Hall_Activity.this,Publish_Info_promote_Activity.class);
             intent2.putExtra("id",id);
             startActivity(intent2);
         });
     }
 
     @Override
-    protected void initData() {
+    protected void initData(){
         super.initData();
     }
 
     @SuppressLint("RestrictedApi")
     @Override
-    protected void initWidget() {
+    protected void initWidget(){
         ActionBar actionBar =getSupportActionBar();
         actionBar.setTitle("信息大厅");
         actionBar.setDisplayHomeAsUpEnabled(true);

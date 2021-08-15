@@ -47,6 +47,7 @@ import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.BaiDuMap;
 import com.example.whuinfoplatform.Entity.LocalPicture;
+import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPublishInfoPromoteBinding;
@@ -65,21 +66,19 @@ import java.util.Locale;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class Publish_Info_promote_Activity extends rootActivity {
+public class Publish_Info_promote_Activity extends rootActivity{
     private ActivityPublishInfoPromoteBinding binding;
-    private int id=0,id1=0,id2=0,pos_fd=0,pos_help=0,pos_score=0,form=-1,picture_count=0,i=1;
-    private double reward=0,price=0;
+    private int id=0,id1=0,id2=0,pos_fd=0,pos_help=0,pos_score=0,form=-1,picture_count=0,i=1,first=1;
+    private double latitude,longitude,reward=0,price=0;
     private Dialog mCameraDialog;
     private boolean upload=false;
-    private ArrayList<Integer> pictureList=new ArrayList<Integer>();
-    private MapView mMapView = null;
+    private ArrayList<Integer> pictureList=new ArrayList<>();
+    private MapView mMapView=null;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
-    BaiDuMap baidumap=new BaiDuMap();
-    PoiSearch mPoiSearch = PoiSearch.newInstance();
-    private double latitude,longitude;
+    private BaiDuMap baidumap=new BaiDuMap();
+    private PoiSearch mPoiSearch=PoiSearch.newInstance();
     private String name,address,placeId;
-    private int first=1;
 
 
     @Override
@@ -88,14 +87,14 @@ public class Publish_Info_promote_Activity extends rootActivity {
     }
 
     @Override
-    public void bindView() {
+    public void bindView(){
         binding=ActivityPublishInfoPromoteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.calendar.setVisibility(View.GONE);
     }
 
     private void initMap(){
-        mMapView = (MapView) findViewById(R.id.mapView);
+        mMapView=findViewById(R.id.mapView);
         binding.frame.setVisibility(View.VISIBLE);
         mMapView.setVisibility(View.VISIBLE);
         mBaiduMap=mMapView.getMap();
@@ -104,14 +103,14 @@ public class Publish_Info_promote_Activity extends rootActivity {
             mPoiSearch.setOnGetPoiSearchResultListener(listener1);
         }
         //定位初始化为武汉大学行政楼
-        LatLng ll = new LatLng(30.543803317144, 114.37292090919);
+        LatLng ll=new LatLng(30.543803317144,114.37292090919);
         float zoom=16;
-        MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+        MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
         mBaiduMap.setMapStatus(u);
         mBaiduMap.animateMapStatus(u);
-        Publish_Info_promote_Activity.MyLocationListener myLocationListener = new Publish_Info_promote_Activity.MyLocationListener();
+        Publish_Info_promote_Activity.MyLocationListener myLocationListener=new Publish_Info_promote_Activity.MyLocationListener();
         //定位监听初始化
-        mLocationClient = new LocationClient(this);
+        mLocationClient=new LocationClient(this);
         //获取实时定位
         baidumap.getLocation(mBaiduMap,mLocationClient,myLocationListener);
         //配置地图
@@ -123,15 +122,15 @@ public class Publish_Info_promote_Activity extends rootActivity {
             BToast.showText(Publish_Info_promote_Activity.this,"正在获取实时位置，请稍候...");
     }
 
-    public class MyLocationListener extends BDAbstractLocationListener {
+    public class MyLocationListener extends BDAbstractLocationListener{
 
         @Override
-        public void onReceiveLocation(BDLocation location) {
+        public void onReceiveLocation(BDLocation location){
             //mapView 销毁后不再处理新接收的位置
-            if (location == null || mMapView == null){
+            if(location==null||mMapView==null){
                 return;
             }
-            MyLocationData locData = new MyLocationData.Builder()
+            MyLocationData locData=new MyLocationData.Builder()
                     .accuracy(location.getRadius())
                     // 此处设置开发者获取到的方向信息，顺时针0-360
                     .direction(location.getDirection()).latitude(location.getLatitude())
@@ -139,11 +138,11 @@ public class Publish_Info_promote_Activity extends rootActivity {
             mBaiduMap.setMyLocationData(locData);
             latitude = location.getLatitude();    //获取纬度信息
             longitude = location.getLongitude();    //获取经度信息
-            if(/*(latitude>=1||longitude>=1)&&*/first==1){
-                LatLng ll = new LatLng(latitude, longitude);
+            if((latitude>=1||longitude>=1)&&first==1){
+                LatLng ll=new LatLng(latitude,longitude);
                 //初始化中心点为实时位置,设初始缩放程度为17
                 float zoom=17;
-                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
                 mBaiduMap.setMapStatus(u);
                 mBaiduMap.animateMapStatus(u);
                 BToast.showText(Publish_Info_promote_Activity.this,"实时位置获取成功!",true);
@@ -156,9 +155,9 @@ public class Publish_Info_promote_Activity extends rootActivity {
         }
     }
 
-    OnGetPoiSearchResultListener listener1 = new OnGetPoiSearchResultListener() {
+    OnGetPoiSearchResultListener listener1=new OnGetPoiSearchResultListener(){
         @Override
-        public void onGetPoiResult(PoiResult poiResult) {
+        public void onGetPoiResult(PoiResult poiResult){
             //PoiInfo 检索到的第一条信息
             if(poiResult.getTotalPoiNum()>=5){
                 PoiInfo poi0=poiResult.getAllPoi().get(0);
@@ -207,30 +206,30 @@ public class Publish_Info_promote_Activity extends rootActivity {
         }
 
         @Override
-        public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
+        public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult){
             //搜索结果信息获取
             int size=poiDetailSearchResult.getPoiDetailInfoList().size();
             if(size>0){
-                Button button1 = new Button(getApplicationContext());
-                Button button2 = new Button(getApplicationContext());
+                Button button1=new Button(getApplicationContext());
+                Button button2=new Button(getApplicationContext());
                 name=poiDetailSearchResult.getPoiDetailInfoList().get(0).getName();
                 address=poiDetailSearchResult.getPoiDetailInfoList().get(0).getAddress();
                 placeId=poiDetailSearchResult.getPoiDetailInfoList().get(0).getUid();
                 LatLng ll=new LatLng(poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation().latitude,
                         poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation().longitude);
                 float zoom=18;
-                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
                 mBaiduMap.setMapStatus(u);
                 mBaiduMap.animateMapStatus(u);
                 baidumap.setMark(ll,mBaiduMap);
                 baidumap.setInfoWindow(mBaiduMap,button1,button2,ll,name,address,true);
-                button1.setOnClickListener(v -> {
+                button1.setOnClickListener(v->{
                     mMapView.setVisibility(View.GONE);
                     binding.frame.setVisibility(View.GONE);
                     binding.card.setVisibility(View.GONE);
                     binding.editPlace.setText(name+" ["+address+"]");
                 });
-                button2.setOnClickListener(v -> {
+                button2.setOnClickListener(v->{
                     if(i<size){
                         name=poiDetailSearchResult.getPoiDetailInfoList().get(i).getName();
                         address=poiDetailSearchResult.getPoiDetailInfoList().get(i).getAddress();
@@ -238,7 +237,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         LatLng ll_ex=new LatLng(poiDetailSearchResult.getPoiDetailInfoList().get(i).getLocation().latitude,
                                 poiDetailSearchResult.getPoiDetailInfoList().get(i).getLocation().longitude);
                         float zoom_ex=18;
-                        MapStatusUpdate u_ex = MapStatusUpdateFactory.newLatLngZoom(ll_ex,zoom_ex);
+                        MapStatusUpdate u_ex=MapStatusUpdateFactory.newLatLngZoom(ll_ex,zoom_ex);
                         mBaiduMap.setMapStatus(u_ex);
                         mBaiduMap.animateMapStatus(u_ex);
                         baidumap.setMark(ll_ex,mBaiduMap);
@@ -251,37 +250,31 @@ public class Publish_Info_promote_Activity extends rootActivity {
             }
         }
         @Override
-        public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
-
-        }
+        public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult){}
         //废弃
         @Override
-        public void onGetPoiDetailResult(PoiDetailResult poiDetailResult) {
-
-        }
+        public void onGetPoiDetailResult(PoiDetailResult poiDetailResult){}
     };
 
-    BaiduMap.OnMapClickListener listener = new BaiduMap.OnMapClickListener() {
+    BaiduMap.OnMapClickListener listener=new BaiduMap.OnMapClickListener(){
         @Override
-        public void onMapClick(LatLng point) {
-
-        }
+        public void onMapClick(LatLng point){}
 
         @Override
-        public void onMapPoiClick(MapPoi mapPoi) {
-            Button button1 = new Button(getApplicationContext());
-            Button button2 = new Button(getApplicationContext());
-            LatLng ll = new LatLng(mapPoi.getPosition().latitude, mapPoi.getPosition().longitude);
+        public void onMapPoiClick(MapPoi mapPoi){
+            Button button1=new Button(getApplicationContext());
+            Button button2=new Button(getApplicationContext());
+            LatLng ll=new LatLng(mapPoi.getPosition().latitude,mapPoi.getPosition().longitude);
             //初始化中心点为点击处,设初始缩放程度为17
             float zoom=18;
-            MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+            MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
             mBaiduMap.setMapStatus(u);
             mBaiduMap.animateMapStatus(u);
             name=mapPoi.getName();
             placeId=mapPoi.getUid();
             baidumap.setMark(ll,mBaiduMap);
             baidumap.setInfoWindow(mBaiduMap,button1,button2,ll,name,"",false);
-            button1.setOnClickListener(v -> {
+            button1.setOnClickListener(v->{
                 mMapView.setVisibility(View.GONE);
                 binding.frame.setVisibility(View.GONE);
                 binding.card.setVisibility(View.GONE);
@@ -291,15 +284,15 @@ public class Publish_Info_promote_Activity extends rootActivity {
     };
 
     @Override
-    protected void initData() {
+    protected void initData(){
         super.initData();
-        Intent intent = getIntent();
+        Intent intent=getIntent();
         id=intent.getIntExtra("id",0);
-        binding.infoType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.infoType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
 
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch ((int)id){
+            public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
+                switch((int)id){
                     case 1:{//私人性信息
                         id1=1;
                         binding.calendar.setVisibility(View.GONE);
@@ -311,7 +304,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         binding.persInfoType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
 
                             @Override
-                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
                                 switch ((int)id){
                                     case 1:{//学术咨询
                                         id2=1;
@@ -331,7 +324,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                         form=2;
                                         break;
                                     }
-                                    case 3:{/*物品求购*/
+                                    case 3:{//物品求购
                                         id2=3;
                                         binding.persInfoFdType.setVisibility(View.GONE);
                                         binding.persInfoHelpType.setVisibility(View.GONE);
@@ -355,12 +348,11 @@ public class Publish_Info_promote_Activity extends rootActivity {
                                         binding.editPrice.setVisibility(View.GONE);
                                         binding.editReward.setVisibility(View.GONE);
                                     }
-
                                 }
                             }
 
                             @Override
-                            public void onNothingSelected(AdapterView<?> parent) { }
+                            public void onNothingSelected(AdapterView<?> parent){}
                         });
                         break;
                     }
@@ -411,38 +403,36 @@ public class Publish_Info_promote_Activity extends rootActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent){}
         });
     }
 
     @Override
-    protected void initClick() {
+    protected void initClick(){
         super.initClick();
-        binding.persInfoFdType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.persInfoFdType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
                 pos_fd=position;
             }
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent){}
         });
-        binding.persInfoHelpType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.persInfoHelpType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
                 pos_help=position;
             }
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent){}
         });
-        binding.editScore.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.editScore.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
                 pos_score=position;
             }
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent){}
         });
         binding.send.setOnClickListener(v->{
             if(id1!=0&&id2!=0){
@@ -488,18 +478,18 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         else if(reward==-1)
                             BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                         else {//格式判断
-                            String text = String.valueOf(reward);
-                            int length = text.length();
-                            int res = 0;
-                            boolean count = false;
-                            for (int i = 0; i < length; i++) {
+                            String text=String.valueOf(reward);
+                            int length=text.length();
+                            int res=0;
+                            boolean count=false;
+                            for (int i=0;i<length;i++){
                                 if (count)
                                     res++;
-                                if (text.charAt(i) == '.') {
-                                    count = true;
+                                if (text.charAt(i)=='.'){
+                                    count=true;
                                 }
                             }
-                            if (res > 2 || count && res == 0)
+                            if (res>2||count&&res==0)
                                 BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                             else {
                                 Publish("2","-1",String.valueOf(pos_help),"-1","","","","-1",detail,String.valueOf(reward),"0");
@@ -518,18 +508,18 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         else if(price==-1)
                             BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                         else {//格式判断
-                            String text = String.valueOf(price);
-                            int length = text.length();
-                            int res = 0;
-                            boolean count = false;
-                            for (int i = 0; i < length; i++) {
+                            String text=String.valueOf(price);
+                            int length=text.length();
+                            int res=0;
+                            boolean count=false;
+                            for (int i=0;i<length;i++){
                                 if (count)
                                     res++;
-                                if (text.charAt(i) == '.') {
-                                    count = true;
+                                if (text.charAt(i)=='.'){
+                                    count=true;
                                 }
                             }
-                            if (res > 2 || count && res == 0)
+                            if (res>2||count&&res==0)
                                 BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                             else {
                                 Publish("3","-1","-1",String.valueOf(price),"","","","-1",detail,"-1","0");
@@ -548,18 +538,18 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         else if(price==-1)
                             BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                         else {//格式判断
-                            String text = String.valueOf(price);
-                            int length = text.length();
-                            int res = 0;
-                            boolean count = false;
-                            for (int i = 0; i < length; i++) {
+                            String text=String.valueOf(price);
+                            int length=text.length();
+                            int res=0;
+                            boolean count=false;
+                            for (int i=0;i<length;i++){
                                 if (count)
                                     res++;
-                                if (text.charAt(i) == '.') {
-                                    count = true;
+                                if (text.charAt(i)=='.'){
+                                    count=true;
                                 }
                             }
-                            if (res > 2 || count && res == 0)
+                            if (res>2||count&&res==0)
                                 BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                             else {
                                 Publish("4","-1","-1",String.valueOf(price),"","","","-1",detail,"-1","0");
@@ -580,18 +570,18 @@ public class Publish_Info_promote_Activity extends rootActivity {
                         else if(reward==-1)
                             BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                         else {//格式判断
-                            String text = String.valueOf(reward);
-                            int length = text.length();
-                            int res = 0;
-                            boolean count = false;
-                            for (int i = 0; i < length; i++) {
+                            String text=String.valueOf(reward);
+                            int length=text.length();
+                            int res=0;
+                            boolean count=false;
+                            for (int i=0;i<length;i++){
                                 if (count)
                                     res++;
-                                if (text.charAt(i) == '.') {
+                                if (text.charAt(i)=='.'){
                                     count = true;
                                 }
                             }
-                            if (res > 2 || count && res == 0)
+                            if (res>2||count&&res==0)
                                 BToast.showText(Publish_Info_promote_Activity.this,"金额格式错误!",false);
                             else {
                                 Publish("5","-1","-1","-1",date,place,"","-1",detail,String.valueOf(reward),String.valueOf(placeId));
@@ -615,9 +605,9 @@ public class Publish_Info_promote_Activity extends rootActivity {
             else
                 BToast.showText(Publish_Info_promote_Activity.this,"请完善信息!",false);
         });
-        binding.editDate.setOnClickListener(v -> {
+        binding.editDate.setOnClickListener(v->{
             binding.calendar.setVisibility(View.VISIBLE);
-            long timecurrentTimeMillis = System.currentTimeMillis();
+            long timecurrentTimeMillis=System.currentTimeMillis();
             binding.calendar.setMinDate(timecurrentTimeMillis);
             if(!binding.editDate.getText().toString().equals("")){
                 SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
@@ -625,12 +615,12 @@ public class Publish_Info_promote_Activity extends rootActivity {
                     Date current=simpleDateFormat.parse(binding.editDate.getText().toString());
                     long time=current.getTime();
                     binding.calendar.setDate(time);
-                } catch (ParseException e) {
+                }catch(ParseException e){
                     e.printStackTrace();
                 }
             }
         });
-        binding.calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+        binding.calendar.setOnDateChangeListener((view,year,month,dayOfMonth)->{
             if(month<9){
                 if(dayOfMonth<10){
                     binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
@@ -650,33 +640,29 @@ public class Publish_Info_promote_Activity extends rootActivity {
             binding.calendar.setVisibility(View.GONE);
         });
         //开始定义日历隐藏事件
-        binding.editPlace.setOnClickListener(v -> {
+        binding.editPlace.setOnClickListener(v->{
             binding.calendar.setVisibility(View.GONE);
             initMap();
         });
-        binding.detail.setOnClickListener(v -> {
-            binding.calendar.setVisibility(View.GONE);
-        });
-        binding.editReward.setOnClickListener(v -> {
-            binding.calendar.setVisibility(View.GONE);
-        });
-        binding.editPlace.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
+        binding.detail.setOnClickListener(v->binding.calendar.setVisibility(View.GONE));
+        binding.editReward.setOnClickListener(v->binding.calendar.setVisibility(View.GONE));
+        binding.editPlace.setOnFocusChangeListener((v, hasFocus)->{
+            if(hasFocus){
                 binding.calendar.setVisibility(View.GONE);
             }
         });
-        binding.detail.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
+        binding.detail.setOnFocusChangeListener((v,hasFocus)->{
+            if(hasFocus){
                 binding.calendar.setVisibility(View.GONE);
             }
         });
-        binding.editReward.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
+        binding.editReward.setOnFocusChangeListener((v,hasFocus)->{
+            if(hasFocus){
                 binding.calendar.setVisibility(View.GONE);
             }
         });
         //结束日历隐藏事件
-        binding.upload.setOnClickListener(v -> {
+        binding.upload.setOnClickListener(v->{
             if(picture_count>=4){//最多上传四张图片
                 BToast.showText(Publish_Info_promote_Activity.this,"最多只能上传四张图片!",false);
             }
@@ -685,18 +671,12 @@ public class Publish_Info_promote_Activity extends rootActivity {
                 setDialog();
             }
         });
-        binding.input.setOnEditorActionListener((v, actionId, event) -> {
-            if(actionId== EditorInfo.IME_ACTION_SEARCH){
+        binding.input.setOnEditorActionListener((v,actionId,event)->{
+            if(actionId==EditorInfo.IME_ACTION_SEARCH){
                 i=1;//重置索引值
-                String kwd = binding.input.getText().toString();
-                boolean valid = false;
-                for (int i = 0; i < kwd.length(); i++) {
-                    if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
-                        continue;
-                    else
-                        valid = true;
-                }
-                if(valid){
+                String kwd=binding.input.getText().toString();
+                SenseCheck senseCheck=new SenseCheck();
+                if(senseCheck.SenseCheckAllBlankOrNull(kwd)){
                     /**
                      *  PoiCiySearchOption 设置检索属性
                      *  city 检索城市
@@ -720,14 +700,8 @@ public class Publish_Info_promote_Activity extends rootActivity {
         binding.search.setOnClickListener(v->{
             i=1;//重置索引值
             String kwd = binding.input.getText().toString();
-            boolean valid = false;
-            for (int i = 0; i < kwd.length(); i++) {
-                if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
-                    continue;
-                else
-                    valid = true;
-            }
-            if(valid){
+            SenseCheck senseCheck=new SenseCheck();
+            if(senseCheck.SenseCheckAllBlankOrNull(kwd)){
                 /**
                  *  PoiCiySearchOption 设置检索属性
                  *  city 检索城市
@@ -748,7 +722,7 @@ public class Publish_Info_promote_Activity extends rootActivity {
 
     @SuppressLint("RestrictedApi")
     @Override
-    protected void initWidget() {
+    protected void initWidget(){
         super.initWidget();
         ActionBar actionBar =getSupportActionBar();
         actionBar.setTitle("信息大厅-编辑新信息");
@@ -757,32 +731,32 @@ public class Publish_Info_promote_Activity extends rootActivity {
     }
 
     private void Publish(String form,String fd_form,String help_form,String price,String date,String place,String lesson,String score,String detail,String reward,String placeId){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
+        long timecurrentTimeMillis=System.currentTimeMillis();
+        SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+        String time=sdfTwo.format(timecurrentTimeMillis);
         InfoConnection infoConnection=new InfoConnection();
         infoConnection.initRegisterConnection(String.valueOf(id),time,
                 "0",form,fd_form,help_form,
                 price,date,place,lesson,score,detail,reward,
                 String.valueOf(ret_list_1()),String.valueOf(ret_list_2()),String.valueOf(ret_list_3())
-                ,String.valueOf(ret_list_4()),placeId, new okhttp3.Callback() {
+                ,String.valueOf(ret_list_4()),placeId, new okhttp3.Callback(){
                     @Override
-                    public void onFailure(Call call, IOException e) {
+                    public void onFailure(Call call,IOException e){
                         Looper.prepare();
                         BToast.showText(Publish_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                         Looper.loop();
                     }
 
-                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @RequiresApi(api=Build.VERSION_CODES.O)
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
+                    public void onResponse(Call call,Response response) throws IOException{
                         String result=response.body().string();
                         WebResponse webResponse=new WebResponse();
                         infoConnection.parseJSONForInfoResponse(webResponse,result);
                         Looper.prepare();
                         if(webResponse.getCode()==101){
                             BToast.showText(Publish_Info_promote_Activity.this,"发布成功!\n可前往[我发布的]查看详情",true);
-                            Intent intent = new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
+                            Intent intent=new Intent(Publish_Info_promote_Activity.this,Info_Hall_Activity.class);
                             startActivity(intent);
                         }
                         else
@@ -793,17 +767,17 @@ public class Publish_Info_promote_Activity extends rootActivity {
         );
     }
 
-    private void setDialog() {
-        LinearLayout root = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.bottom_dialog, null);
+    private void setDialog(){
+        LinearLayout root=(LinearLayout)LayoutInflater.from(this).inflate(R.layout.bottom_dialog,null);
         //初始化视图
-        root.findViewById(R.id.btn_choose_img).setOnClickListener(v -> {
-            Intent intent = new Intent(Publish_Info_promote_Activity.this,Upload_Picture_promote_Activity.class);
+        root.findViewById(R.id.btn_choose_img).setOnClickListener(v->{
+            Intent intent=new Intent(Publish_Info_promote_Activity.this,Upload_Picture_promote_Activity.class);
             intent.putExtra("id",id);
             intent.putExtra("type",2);
             startActivity(intent);
         });
-        root.findViewById(R.id.btn_open_camera).setOnClickListener(v -> {
-            Intent intent = new Intent(Publish_Info_promote_Activity.this,Upload_Picture_promote_Activity.class);
+        root.findViewById(R.id.btn_open_camera).setOnClickListener(v->{
+            Intent intent=new Intent(Publish_Info_promote_Activity.this,Upload_Picture_promote_Activity.class);
             intent.putExtra("id",id);
             intent.putExtra("type",3);
             startActivity(intent);
@@ -812,24 +786,24 @@ public class Publish_Info_promote_Activity extends rootActivity {
         Button btn_open_camera=root.findViewById(R.id.btn_open_camera);
         btn_choose_img.setText("从相册中选择图片");
         btn_open_camera.setText("拍摄图片");
-        mCameraDialog = new Dialog(this, R.style.BottomDialog);
+        mCameraDialog=new Dialog(this, R.style.BottomDialog);
         mCameraDialog.setContentView(root);
-        Window dialogWindow = mCameraDialog.getWindow();
+        Window dialogWindow=mCameraDialog.getWindow();
         dialogWindow.setGravity(Gravity.BOTTOM);
         //dialogWindow.setWindowAnimations(R.style.dialogstyle); // 添加动画
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
-        lp.x = 0; // 新位置X坐标
-        lp.y = 0; // 新位置Y坐标
-        lp.width = (int) getResources().getDisplayMetrics().widthPixels; // 宽度
-        root.measure(0, 0);
-        lp.height = root.getMeasuredHeight();
-        lp.alpha = 9f; // 透明度
+        WindowManager.LayoutParams lp=dialogWindow.getAttributes(); // 获取对话框当前的参数值
+        lp.x=0; // 新位置X坐标
+        lp.y=0; // 新位置Y坐标
+        lp.width=getResources().getDisplayMetrics().widthPixels; // 宽度
+        root.measure(0,0);
+        lp.height=root.getMeasuredHeight();
+        lp.alpha=9f; // 透明度
         dialogWindow.setAttributes(lp);
         mCameraDialog.show();
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause(){
         super.onPause();
         if(form==5&&first==0){
             mMapView.onPause();
@@ -844,12 +818,12 @@ public class Publish_Info_promote_Activity extends rootActivity {
      * @param intent intent
      */
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(Intent intent){
         super.onNewIntent(intent);
         setIntent(intent);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     @Override
     protected void onResume(){
         super.onResume();
@@ -860,18 +834,18 @@ public class Publish_Info_promote_Activity extends rootActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy(){
         super.onDestroy();
         if(form==5&&first==0){
             mLocationClient.stop();
             mBaiduMap.setMyLocationEnabled(false);
             mMapView.onDestroy();
             mPoiSearch.destroy();
-            mMapView = null;
+            mMapView=null;
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     private void initPictureList(){
         Intent intent=getIntent();
         int picture_id=intent.getIntExtra("picture_id",0);
@@ -882,35 +856,35 @@ public class Publish_Info_promote_Activity extends rootActivity {
         switch(pictureList.size()){
             case 4:
                 int picture4=pictureList.get(3);
-                List<LocalPicture> picture_4 = DataSupport.where("code=?",String.valueOf(picture4)).find(LocalPicture.class);
+                List<LocalPicture> picture_4=DataSupport.where("code=?",String.valueOf(picture4)).find(LocalPicture.class);
                 String str4=picture_4.get(0).getPicture();
                 byte[] in_4=Base64.getDecoder().decode(str4);
                 binding.picture4.setVisibility(View.VISIBLE);
-                Bitmap bit_4 = BitmapFactory.decodeByteArray(in_4, 0, in_4.length);
+                Bitmap bit_4=BitmapFactory.decodeByteArray(in_4,0,in_4.length);
                 binding.picture4.setImageBitmap(bit_4);
             case 3:
                 int picture3=pictureList.get(2);
-                List<LocalPicture> picture_3 = DataSupport.where("code=?",String.valueOf(picture3)).find(LocalPicture.class);
+                List<LocalPicture> picture_3=DataSupport.where("code=?",String.valueOf(picture3)).find(LocalPicture.class);
                 String str3=picture_3.get(0).getPicture();
                 byte[] in_3=Base64.getDecoder().decode(str3);
                 binding.picture3.setVisibility(View.VISIBLE);
-                Bitmap bit_3 = BitmapFactory.decodeByteArray(in_3, 0, in_3.length);
+                Bitmap bit_3=BitmapFactory.decodeByteArray(in_3,0,in_3.length);
                 binding.picture3.setImageBitmap(bit_3);
             case 2:
                 int picture2=pictureList.get(1);
-                List<LocalPicture> picture_2 = DataSupport.where("code=?",String.valueOf(picture2)).find(LocalPicture.class);
+                List<LocalPicture> picture_2=DataSupport.where("code=?",String.valueOf(picture2)).find(LocalPicture.class);
                 String str2=picture_2.get(0).getPicture();
                 byte[] in_2=Base64.getDecoder().decode(str2);
                 binding.picture2.setVisibility(View.VISIBLE);
-                Bitmap bit_2 = BitmapFactory.decodeByteArray(in_2, 0, in_2.length);
+                Bitmap bit_2=BitmapFactory.decodeByteArray(in_2,0,in_2.length);
                 binding.picture2.setImageBitmap(bit_2);
             case 1:
                 int picture1=pictureList.get(0);
-                List<LocalPicture> picture_1 = DataSupport.where("code=?",String.valueOf(picture1)).find(LocalPicture.class);
+                List<LocalPicture> picture_1=DataSupport.where("code=?",String.valueOf(picture1)).find(LocalPicture.class);
                 String str1=picture_1.get(0).getPicture();
                 byte[] in_1=Base64.getDecoder().decode(str1);
                 binding.picture1.setVisibility(View.VISIBLE);
-                Bitmap bit_1 = BitmapFactory.decodeByteArray(in_1, 0, in_1.length);
+                Bitmap bit_1=BitmapFactory.decodeByteArray(in_1,0,in_1.length);
                 binding.picture1.setImageBitmap(bit_1);
                 binding.upload.setText("继续上传图片");
                 break;

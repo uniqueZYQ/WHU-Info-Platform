@@ -39,6 +39,7 @@ import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.BaiDuMap;
 import com.example.whuinfoplatform.Entity.Info;
+import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.Entity.WebResponse;
 import com.example.whuinfoplatform.R;
 
@@ -47,26 +48,22 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class Renew_Info_promote_Activity extends rootActivity {
+public class Renew_Info_promote_Activity extends rootActivity{
     private com.example.whuinfoplatform.databinding.ActivityRenewInfoPromoteBinding binding;
-    int id=0,form=0,fd_form=0,help_form=0,score=0,init=1,i=1;
-    private MapView mMapView = null;
+    private int id=0,form=0,fd_form=0,help_form=0,score=0,init=1,i=1,first=1;
+    private MapView mMapView=null;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
-    BaiDuMap baidumap=new BaiDuMap();
-    PoiSearch mPoiSearch = PoiSearch.newInstance();
+    private BaiDuMap baidumap=new BaiDuMap();
+    private PoiSearch mPoiSearch=PoiSearch.newInstance();
     private double latitude,longitude;
-    private String name;
-    private String address;
-    private String placeId;
-    private int first=1;
+    private String name,address,placeId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +71,14 @@ public class Renew_Info_promote_Activity extends rootActivity {
     }
 
     @Override
-    public void bindView() {
-        binding= com.example.whuinfoplatform.databinding.ActivityRenewInfoPromoteBinding.inflate(getLayoutInflater());
+    public void bindView(){
+        binding=com.example.whuinfoplatform.databinding.ActivityRenewInfoPromoteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.calendar.setVisibility(View.GONE);
     }
 
     private void initMap(){
-        mMapView = (MapView) findViewById(R.id.mapView);
+        mMapView=findViewById(R.id.mapView);
         binding.frame.setVisibility(View.VISIBLE);
         mMapView.setVisibility(View.VISIBLE);
         mBaiduMap=mMapView.getMap();
@@ -90,18 +87,18 @@ public class Renew_Info_promote_Activity extends rootActivity {
             mPoiSearch.setOnGetPoiSearchResultListener(listener1);
         }
         //定位初始化为武汉大学行政楼
-        LatLng ll = new LatLng(30.543803317144, 114.37292090919);
+        LatLng ll=new LatLng(30.543803317144,114.37292090919);
         float zoom=16;
-        MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+        MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
         mBaiduMap.setMapStatus(u);
         mBaiduMap.animateMapStatus(u);
-        Renew_Info_promote_Activity.MyLocationListener myLocationListener = new Renew_Info_promote_Activity.MyLocationListener();
+        Renew_Info_promote_Activity.MyLocationListener myLocationListener=new Renew_Info_promote_Activity.MyLocationListener();
         //定位监听初始化
-        mLocationClient = new LocationClient(this);
+        mLocationClient=new LocationClient(this);
         //获取实时定位
         baidumap.getLocation2(mBaiduMap,mLocationClient,myLocationListener);
         //配置地图
-        baidumap.configMap(mBaiduMap, MyLocationConfiguration.LocationMode.NORMAL,true, BitmapDescriptorFactory.fromResource(R.drawable.location),0x55FFFFFF,0x55FFFFFF);
+        baidumap.configMap(mBaiduMap,MyLocationConfiguration.LocationMode.NORMAL,true,BitmapDescriptorFactory.fromResource(R.drawable.location),0x55FFFFFF,0x55FFFFFF);
         //禁止旋转手势
         UiSettings mUiSettings=mBaiduMap.getUiSettings();
         mUiSettings.setRotateGesturesEnabled(false);
@@ -109,27 +106,27 @@ public class Renew_Info_promote_Activity extends rootActivity {
             BToast.showText(Renew_Info_promote_Activity.this,"正在获取实时位置，请稍候...");
     }
 
-    public class MyLocationListener extends BDAbstractLocationListener {
+    public class MyLocationListener extends BDAbstractLocationListener{
 
         @Override
-        public void onReceiveLocation(BDLocation location) {
+        public void onReceiveLocation(BDLocation location){
             //mapView 销毁后不再处理新接收的位置
-            if (location == null || mMapView == null){
+            if (location==null||mMapView==null){
                 return;
             }
-            MyLocationData locData = new MyLocationData.Builder()
+            MyLocationData locData=new MyLocationData.Builder()
                     .accuracy(location.getRadius())
                     // 此处设置开发者获取到的方向信息，顺时针0-360
                     .direction(location.getDirection()).latitude(location.getLatitude())
                     .longitude(location.getLongitude()).build();
             mBaiduMap.setMyLocationData(locData);
-            latitude = location.getLatitude();    //获取纬度信息
-            longitude = location.getLongitude();    //获取经度信息
+            latitude=location.getLatitude();    //获取纬度信息
+            longitude=location.getLongitude();    //获取经度信息
             if((latitude>=1||longitude>=1)&&first==1){
-                LatLng ll = new LatLng(latitude, longitude);
+                LatLng ll=new LatLng(latitude,longitude);
                 //初始化中心点为实时位置,设初始缩放程度为17
                 float zoom=17;
-                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
                 mBaiduMap.setMapStatus(u);
                 mBaiduMap.animateMapStatus(u);
                 BToast.showText(Renew_Info_promote_Activity.this,"实时位置获取成功!",true);
@@ -142,9 +139,9 @@ public class Renew_Info_promote_Activity extends rootActivity {
         }
     }
 
-    OnGetPoiSearchResultListener listener1 = new OnGetPoiSearchResultListener() {
+    OnGetPoiSearchResultListener listener1=new OnGetPoiSearchResultListener(){
         @Override
-        public void onGetPoiResult(PoiResult poiResult) {
+        public void onGetPoiResult(PoiResult poiResult){
             if(poiResult.getTotalPoiNum()>=5){
                 PoiInfo poi0=poiResult.getAllPoi().get(0);
                 PoiInfo poi1=poiResult.getAllPoi().get(1);
@@ -192,30 +189,30 @@ public class Renew_Info_promote_Activity extends rootActivity {
             }
         }
         @Override
-        public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
+        public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult){
             //搜索结果信息获取
             int size=poiDetailSearchResult.getPoiDetailInfoList().size();
             if(size>0){
-                Button button1 = new Button(getApplicationContext());
-                Button button2 = new Button(getApplicationContext());
+                Button button1=new Button(getApplicationContext());
+                Button button2=new Button(getApplicationContext());
                 name=poiDetailSearchResult.getPoiDetailInfoList().get(0).getName();
                 address=poiDetailSearchResult.getPoiDetailInfoList().get(0).getAddress();
                 placeId=poiDetailSearchResult.getPoiDetailInfoList().get(0).getUid();
                 LatLng ll=new LatLng(poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation().latitude,
                         poiDetailSearchResult.getPoiDetailInfoList().get(0).getLocation().longitude);
                 float zoom=18;
-                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+                MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
                 mBaiduMap.setMapStatus(u);
                 mBaiduMap.animateMapStatus(u);
                 baidumap.setMark(ll,mBaiduMap);
                 baidumap.setInfoWindow(mBaiduMap,button1,button2,ll,name,address,true);
-                button1.setOnClickListener(v -> {
+                button1.setOnClickListener(v->{
                     mMapView.setVisibility(View.GONE);
                     binding.frame.setVisibility(View.GONE);
                     binding.card.setVisibility(View.GONE);
                     binding.editPlace.setText(name+" ["+address+"]");
                 });
-                button2.setOnClickListener(v -> {
+                button2.setOnClickListener(v->{
                     if(i<size){
                         name=poiDetailSearchResult.getPoiDetailInfoList().get(i).getName();
                         address=poiDetailSearchResult.getPoiDetailInfoList().get(i).getAddress();
@@ -223,7 +220,7 @@ public class Renew_Info_promote_Activity extends rootActivity {
                         LatLng ll_ex=new LatLng(poiDetailSearchResult.getPoiDetailInfoList().get(i).getLocation().latitude,
                                 poiDetailSearchResult.getPoiDetailInfoList().get(i).getLocation().longitude);
                         float zoom_ex=18;
-                        MapStatusUpdate u_ex = MapStatusUpdateFactory.newLatLngZoom(ll_ex,zoom_ex);
+                        MapStatusUpdate u_ex=MapStatusUpdateFactory.newLatLngZoom(ll_ex,zoom_ex);
                         mBaiduMap.setMapStatus(u_ex);
                         mBaiduMap.animateMapStatus(u_ex);
                         baidumap.setMark(ll_ex,mBaiduMap);
@@ -236,37 +233,31 @@ public class Renew_Info_promote_Activity extends rootActivity {
             }
         }
         @Override
-        public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
-
-        }
+        public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult){}
         //废弃
         @Override
-        public void onGetPoiDetailResult(PoiDetailResult poiDetailResult) {
-
-        }
+        public void onGetPoiDetailResult(PoiDetailResult poiDetailResult){}
     };
 
-    BaiduMap.OnMapClickListener listener = new BaiduMap.OnMapClickListener() {
+    BaiduMap.OnMapClickListener listener=new BaiduMap.OnMapClickListener(){
         @Override
-        public void onMapClick(LatLng point) {
-
-        }
+        public void onMapClick(LatLng point){}
 
         @Override
-        public void onMapPoiClick(MapPoi mapPoi) {
-            Button button1 = new Button(getApplicationContext());
-            Button button2 = new Button(getApplicationContext());
-            LatLng ll = new LatLng(mapPoi.getPosition().latitude, mapPoi.getPosition().longitude);
+        public void onMapPoiClick(MapPoi mapPoi){
+            Button button1=new Button(getApplicationContext());
+            Button button2=new Button(getApplicationContext());
+            LatLng ll=new LatLng(mapPoi.getPosition().latitude, mapPoi.getPosition().longitude);
             //初始化中心点为点击处,设初始缩放程度为17
             float zoom=18;
-            MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
+            MapStatusUpdate u=MapStatusUpdateFactory.newLatLngZoom(ll,zoom);
             mBaiduMap.setMapStatus(u);
             mBaiduMap.animateMapStatus(u);
             name=mapPoi.getName();
             placeId=mapPoi.getUid();
             baidumap.setMark(ll,mBaiduMap);
             baidumap.setInfoWindow(mBaiduMap,button1,button2,ll,name,"",false);
-            button1.setOnClickListener(v -> {
+            button1.setOnClickListener(v->{
                 mMapView.setVisibility(View.GONE);
                 binding.frame.setVisibility(View.GONE);
                 binding.card.setVisibility(View.GONE);
@@ -276,39 +267,39 @@ public class Renew_Info_promote_Activity extends rootActivity {
     };
 
     private void showInfoDetail(Info myInformation){
-        runOnUiThread(() -> {
+        runOnUiThread(()->{
             binding.detail.setText(myInformation.getDetail());
             binding.editCommobj.setText(myInformation.getLesson());
             binding.editPlace.setText(myInformation.getPlace());
             binding.editDate.setText(myInformation.getDate());
             binding.editReward.setText(String.valueOf(myInformation.getReward()));
             binding.editPrice.setText(String.valueOf(myInformation.getPrice()));
-            switch(form) {
+            switch(form){
                 case 1:{
                     binding.form.setText("学术咨询");
                     binding.persInfoFdType.setVisibility(View.VISIBLE);
                     binding.editReward.setVisibility(View.VISIBLE);
-                    binding.persInfoFdType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    binding.persInfoFdType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
                         @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            if(init==1)parent.setSelection(myInformation.getFd_form());
+                        public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
+                            if(init==1) parent.setSelection(myInformation.getFd_form());
                             fd_form=position;
                             init=0;
                         }
                         @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
+                        public void onNothingSelected(AdapterView<?> parent){
                             parent.setSelection(myInformation.getFd_form());
                         }
                     });
                     binding.finish.setOnClickListener(v->{
                         double reward=binding.editReward.getText().toString().equals("")?-2:
                                 binding.editReward.getText().toString().charAt(0)=='.'?-1:
-                                        binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
-                                                binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
+                                binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
+                                binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
                         String detail=binding.detail.getText().toString();
                         if(reward==-1||reward==0)
                             BToast.showText(Renew_Info_promote_Activity.this,"金额格式错误!",false);
-                        else if(!(fd_form==0||reward==-2||detail.equals(""))) {
+                        else if(!(fd_form==0||reward==-2||detail.equals(""))){
                             String text=String.valueOf(reward);
                             int length=text.length();
                             int res=0;
@@ -324,27 +315,27 @@ public class Renew_Info_promote_Activity extends rootActivity {
                                 BToast.showText(Renew_Info_promote_Activity.this,"金额格式错误!",false);
                             else{
                                 InfoConnection infoConnection=new InfoConnection();
-                                long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                                String time = sdfTwo.format(timecurrentTimeMillis);
+                                long timecurrentTimeMillis=System.currentTimeMillis();
+                                SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+                                String time=sdfTwo.format(timecurrentTimeMillis);
                                 infoConnection.updateMyInfoConnection1(String.valueOf(id),String.valueOf(fd_form),String.valueOf(reward),detail,time, new okhttp3.Callback() {
                                     @Override
-                                    public void onFailure(Call call, IOException e) {
+                                    public void onFailure(Call call,IOException e){
                                         Looper.prepare();
                                         BToast.showText(Renew_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                                         Looper.loop();
                                     }
 
-                                    @RequiresApi(api = Build.VERSION_CODES.O)
+                                    @RequiresApi(api=Build.VERSION_CODES.O)
                                     @Override
-                                    public void onResponse(Call call, Response response) throws IOException {
+                                    public void onResponse(Call call,Response response) throws IOException{
                                         String result=response.body().string();
                                         WebResponse webResponse=new WebResponse();
                                         infoConnection.parseJSONForInfoResponse(webResponse,result);
                                         Looper.prepare();
                                         if(webResponse.getCode()==101){
                                             BToast.showText(Renew_Info_promote_Activity.this,webResponse.getResponse(),true);
-                                            Intent intent1 = new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
+                                            Intent intent1=new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
                                             startActivity(intent1);
                                         }
                                         else{
@@ -364,27 +355,27 @@ public class Renew_Info_promote_Activity extends rootActivity {
                     binding.form.setText("日常求助");
                     binding.persInfoHelpType.setVisibility(View.VISIBLE);
                     binding.editReward.setVisibility(View.VISIBLE);
-                    binding.persInfoHelpType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    binding.persInfoHelpType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
                         @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
                             if(init==1)parent.setSelection(myInformation.getHelp_form());
                             help_form=position;
                             init=0;
                         }
                         @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
+                        public void onNothingSelected(AdapterView<?> parent){
                             parent.setSelection(myInformation.getHelp_form());
                         }
                     });
                     binding.finish.setOnClickListener(v->{
                         double reward=binding.editReward.getText().toString().equals("")?-2:
                                 binding.editReward.getText().toString().charAt(0)=='.'?-1:
-                                        binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
-                                                binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
+                                binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
+                                binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
                         String detail=binding.detail.getText().toString();
                         if(reward==-1||reward==0)
                             BToast.showText(Renew_Info_promote_Activity.this,"金额格式错误!",false);
-                        else if(!(help_form==0||reward==-2||detail.equals(""))) {
+                        else if(!(help_form==0||reward==-2||detail.equals(""))){
                             String text=String.valueOf(reward);
                             int length=text.length();
                             int res=0;
@@ -400,20 +391,20 @@ public class Renew_Info_promote_Activity extends rootActivity {
                                 BToast.showText(Renew_Info_promote_Activity.this,"金额格式错误!",false);
                             else{
                                 InfoConnection infoConnection=new InfoConnection();
-                                long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                                String time = sdfTwo.format(timecurrentTimeMillis);
-                                infoConnection.updateMyInfoConnection2(String.valueOf(id),String.valueOf(help_form),String.valueOf(reward),detail,time, new okhttp3.Callback() {
+                                long timecurrentTimeMillis=System.currentTimeMillis();
+                                SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+                                String time=sdfTwo.format(timecurrentTimeMillis);
+                                infoConnection.updateMyInfoConnection2(String.valueOf(id),String.valueOf(help_form),String.valueOf(reward),detail,time,new okhttp3.Callback(){
                                     @Override
-                                    public void onFailure(Call call, IOException e) {
+                                    public void onFailure(Call call,IOException e){
                                         Looper.prepare();
                                         BToast.showText(Renew_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                                         Looper.loop();
                                     }
 
-                                    @RequiresApi(api = Build.VERSION_CODES.O)
+                                    @RequiresApi(api=Build.VERSION_CODES.O)
                                     @Override
-                                    public void onResponse(Call call, Response response) throws IOException {
+                                    public void onResponse(Call call,Response response) throws IOException{
                                         String result=response.body().string();
                                         WebResponse webResponse=new WebResponse();
                                         infoConnection.parseJSONForInfoResponse(webResponse,result);
@@ -442,12 +433,12 @@ public class Renew_Info_promote_Activity extends rootActivity {
                     binding.finish.setOnClickListener(v->{
                         double price=binding.editPrice.getText().toString().equals("")?-2:
                                 binding.editPrice.getText().toString().charAt(0)=='.'?-1:
-                                        binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
-                                                binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
+                                binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
+                                binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
                         String detail=binding.detail.getText().toString();
                         if(price==-1||price==0)
                             BToast.showText(Renew_Info_promote_Activity.this,"金额格式错误!",false);
-                        else if(!(price==-2||detail.equals(""))) {
+                        else if(!(price==-2||detail.equals(""))){
                             String text=String.valueOf(price);
                             int length=text.length();
                             int res=0;
@@ -463,27 +454,27 @@ public class Renew_Info_promote_Activity extends rootActivity {
                                 BToast.showText(Renew_Info_promote_Activity.this,"金额格式错误!",false);
                             else{
                                 InfoConnection infoConnection=new InfoConnection();
-                                long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                                String time = sdfTwo.format(timecurrentTimeMillis);
-                                infoConnection.updateMyInfoConnection3(String.valueOf(id),String.valueOf(price),detail,time, new okhttp3.Callback() {
+                                long timecurrentTimeMillis=System.currentTimeMillis();
+                                SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+                                String time=sdfTwo.format(timecurrentTimeMillis);
+                                infoConnection.updateMyInfoConnection3(String.valueOf(id),String.valueOf(price),detail,time,new okhttp3.Callback(){
                                     @Override
-                                    public void onFailure(Call call, IOException e) {
+                                    public void onFailure(Call call,IOException e){
                                         Looper.prepare();
                                         BToast.showText(Renew_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                                         Looper.loop();
                                     }
 
-                                    @RequiresApi(api = Build.VERSION_CODES.O)
+                                    @RequiresApi(api=Build.VERSION_CODES.O)
                                     @Override
-                                    public void onResponse(Call call, Response response) throws IOException {
+                                    public void onResponse(Call call,Response response) throws IOException{
                                         String result=response.body().string();
                                         WebResponse webResponse=new WebResponse();
                                         infoConnection.parseJSONForInfoResponse(webResponse,result);
                                         Looper.prepare();
                                         if(webResponse.getCode()==101){
                                             BToast.showText(Renew_Info_promote_Activity.this,webResponse.getResponse(),true);
-                                            Intent intent1 = new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
+                                            Intent intent1=new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
                                             startActivity(intent1);
                                         }
                                         else{
@@ -505,12 +496,12 @@ public class Renew_Info_promote_Activity extends rootActivity {
                     binding.finish.setOnClickListener(v->{
                         double price=binding.editPrice.getText().toString().equals("")?-2:
                                 binding.editPrice.getText().toString().charAt(0)=='.'?-1:
-                                        binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
-                                                binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
+                                binding.editPrice.getText().toString().charAt(binding.editPrice.getText().toString().length()-1)=='.'?-1:
+                                binding.editPrice.getText().toString().equals(".")?-1:Double.parseDouble(binding.editPrice.getText().toString());
                         String detail=binding.detail.getText().toString();
                         if(price==-1||price==0)
                             BToast.showText(Renew_Info_promote_Activity.this,"金额格式错误!",false);
-                        else if(!(price==-2||detail.equals(""))) {
+                        else if(!(price==-2||detail.equals(""))){
                             String text=String.valueOf(price);
                             int length=text.length();
                             int res=0;
@@ -526,27 +517,27 @@ public class Renew_Info_promote_Activity extends rootActivity {
                                 BToast.showText(Renew_Info_promote_Activity.this,"金额格式错误!",false);
                             else{
                                 InfoConnection infoConnection=new InfoConnection();
-                                long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                                String time = sdfTwo.format(timecurrentTimeMillis);
-                                infoConnection.updateMyInfoConnection3(String.valueOf(id),String.valueOf(price),detail,time, new okhttp3.Callback() {
+                                long timecurrentTimeMillis=System.currentTimeMillis();
+                                SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+                                String time=sdfTwo.format(timecurrentTimeMillis);
+                                infoConnection.updateMyInfoConnection3(String.valueOf(id),String.valueOf(price),detail,time,new okhttp3.Callback(){
                                     @Override
-                                    public void onFailure(Call call, IOException e) {
+                                    public void onFailure(Call call,IOException e){
                                         Looper.prepare();
                                         BToast.showText(Renew_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                                         Looper.loop();
                                     }
 
-                                    @RequiresApi(api = Build.VERSION_CODES.O)
+                                    @RequiresApi(api=Build.VERSION_CODES.O)
                                     @Override
-                                    public void onResponse(Call call, Response response) throws IOException {
+                                    public void onResponse(Call call,Response response) throws IOException{
                                         String result=response.body().string();
                                         WebResponse webResponse=new WebResponse();
                                         infoConnection.parseJSONForInfoResponse(webResponse,result);
                                         Looper.prepare();
                                         if(webResponse.getCode()==101){
                                             BToast.showText(Renew_Info_promote_Activity.this,webResponse.getResponse(),true);
-                                            Intent intent1 = new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
+                                            Intent intent1=new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
                                             startActivity(intent1);
                                         }
                                         else{
@@ -571,14 +562,14 @@ public class Renew_Info_promote_Activity extends rootActivity {
                     binding.finish.setOnClickListener(v->{
                         double reward=binding.editReward.getText().toString().equals("")?-2:
                                 binding.editReward.getText().toString().charAt(0)=='.'?-1:
-                                        binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
-                                                binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
+                                binding.editReward.getText().toString().charAt(binding.editReward.getText().toString().length()-1)=='.'?-1:
+                                binding.editReward.getText().toString().equals(".")?-1:Double.parseDouble(binding.editReward.getText().toString());
                         String date=binding.editDate.getText().toString();
                         String place=binding.editPlace.getText().toString();
                         String detail=binding.detail.getText().toString();
                         if(reward==-1||reward==0)
                             BToast.showText(Renew_Info_promote_Activity.this,"金额格式错误!",false);
-                        else if(!(reward==-2||detail.equals("")||date.equals("")||place.equals(""))) {
+                        else if(!(reward==-2||detail.equals("")||date.equals("")||place.equals(""))){
                             String text=String.valueOf(reward);
                             int length=text.length();
                             int res=0;
@@ -595,26 +586,26 @@ public class Renew_Info_promote_Activity extends rootActivity {
                             else{
                                 InfoConnection infoConnection=new InfoConnection();
                                 long timecurrentTimeMillis = System.currentTimeMillis();
-                                SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
+                                SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
                                 String time = sdfTwo.format(timecurrentTimeMillis);
-                                infoConnection.updateMyInfoConnection4(String.valueOf(id),String.valueOf(reward),place,date,detail,placeId,time, new okhttp3.Callback() {
+                                infoConnection.updateMyInfoConnection4(String.valueOf(id),String.valueOf(reward),place,date,detail,placeId,time,new okhttp3.Callback(){
                                     @Override
-                                    public void onFailure(Call call, IOException e) {
+                                    public void onFailure(Call call,IOException e){
                                         Looper.prepare();
                                         BToast.showText(Renew_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                                         Looper.loop();
                                     }
 
-                                    @RequiresApi(api = Build.VERSION_CODES.O)
+                                    @RequiresApi(api=Build.VERSION_CODES.O)
                                     @Override
-                                    public void onResponse(Call call, Response response) throws IOException {
+                                    public void onResponse(Call call,Response response) throws IOException{
                                         String result=response.body().string();
                                         WebResponse webResponse=new WebResponse();
                                         infoConnection.parseJSONForInfoResponse(webResponse,result);
                                         Looper.prepare();
                                         if(webResponse.getCode()==101){
                                             BToast.showText(Renew_Info_promote_Activity.this,webResponse.getResponse(),true);
-                                            Intent intent1 = new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
+                                            Intent intent1=new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
                                             startActivity(intent1);
                                         }
                                         else{
@@ -634,44 +625,44 @@ public class Renew_Info_promote_Activity extends rootActivity {
                     binding.form.setText("课程点评信息");
                     binding.editCommobj.setVisibility(View.VISIBLE);
                     binding.editScore.setVisibility(View.VISIBLE);
-                    binding.editScore.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    binding.editScore.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
                         @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
                             if(init==1)parent.setSelection(myInformation.getScore());
                             score=position;
                             init=0;
                         }
                         @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
+                        public void onNothingSelected(AdapterView<?> parent){
                             parent.setSelection(myInformation.getScore());
                         }
                     });
                     binding.finish.setOnClickListener(v->{
                         String lesson=binding.editCommobj.getText().toString();
                         String detail=binding.detail.getText().toString();
-                        if(!(lesson.equals("")||detail.equals("")||score==0)) {
+                        if(!(lesson.equals("")||detail.equals("")||score==0)){
                             InfoConnection infoConnection=new InfoConnection();
-                            long timecurrentTimeMillis = System.currentTimeMillis();
-                            SimpleDateFormat sdfTwo =new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-                            String time = sdfTwo.format(timecurrentTimeMillis);
-                            infoConnection.updateMyInfoConnection5(String.valueOf(id),String.valueOf(score),lesson,detail,time, new okhttp3.Callback() {
+                            long timecurrentTimeMillis=System.currentTimeMillis();
+                            SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+                            String time=sdfTwo.format(timecurrentTimeMillis);
+                            infoConnection.updateMyInfoConnection5(String.valueOf(id),String.valueOf(score),lesson,detail,time,new okhttp3.Callback(){
                                 @Override
-                                public void onFailure(Call call, IOException e) {
+                                public void onFailure(Call call,IOException e){
                                     Looper.prepare();
                                     BToast.showText(Renew_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                                     Looper.loop();
                                 }
 
-                                @RequiresApi(api = Build.VERSION_CODES.O)
+                                @RequiresApi(api=Build.VERSION_CODES.O)
                                 @Override
-                                public void onResponse(Call call, Response response) throws IOException {
+                                public void onResponse(Call call,Response response) throws IOException{
                                     String result=response.body().string();
                                     WebResponse webResponse=new WebResponse();
                                     infoConnection.parseJSONForInfoResponse(webResponse,result);
                                     Looper.prepare();
                                     if(webResponse.getCode()==101){
                                         BToast.showText(Renew_Info_promote_Activity.this,webResponse.getResponse(),true);
-                                        Intent intent1 = new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
+                                        Intent intent1=new Intent(Renew_Info_promote_Activity.this,Personal_Center_Activity.class);
                                         startActivity(intent1);
                                     }
                                     else{
@@ -691,28 +682,28 @@ public class Renew_Info_promote_Activity extends rootActivity {
     }
 
     @Override
-    protected void initData() {
+    protected void initData(){
         super.initData();
         Intent intent=getIntent();
         form=intent.getIntExtra("form",0);
         id=intent.getIntExtra("id",0);
         InfoConnection infoConnection=new InfoConnection();
-        infoConnection.queryMyInfoDetailConnection(String.valueOf(id), new okhttp3.Callback() {
+        infoConnection.queryMyInfoDetailConnection(String.valueOf(id),new okhttp3.Callback(){
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call,IOException e){
                 Looper.prepare();
                 BToast.showText(Renew_Info_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                 Looper.loop();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call,Response response) throws IOException{
                 String result=response.body().string();
                 Info myInformation=new Info();
                 try {
                     infoConnection.parseJSONForMyInfoDetailResponse(myInformation,result);
                     showInfoDetail(myInformation);
-                } catch (JSONException e) {
+                }catch(JSONException e){
                     e.printStackTrace();
                 }
             }
@@ -720,11 +711,11 @@ public class Renew_Info_promote_Activity extends rootActivity {
     }
 
     @Override
-    protected void initClick() {
+    protected void initClick(){
         super.initClick();
-        binding.editDate.setOnClickListener(v -> {
+        binding.editDate.setOnClickListener(v->{
             binding.calendar.setVisibility(View.VISIBLE);
-            long timecurrentTimeMillis = System.currentTimeMillis();
+            long timecurrentTimeMillis=System.currentTimeMillis();
             binding.calendar.setMinDate(timecurrentTimeMillis);
             if(!binding.editDate.getText().toString().equals("")){
                 SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
@@ -737,7 +728,7 @@ public class Renew_Info_promote_Activity extends rootActivity {
                 }
             }
         });
-        binding.calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+        binding.calendar.setOnDateChangeListener((view,year,month,dayOfMonth)->{
             if(month<9){
                 if(dayOfMonth<10){
                     binding.editDate.setText(String.valueOf(year)+"-0"+String.valueOf(month+1)+"-0"+String.valueOf(dayOfMonth));
@@ -757,44 +748,34 @@ public class Renew_Info_promote_Activity extends rootActivity {
             binding.calendar.setVisibility(View.GONE);
         });
         //开始定义日历隐藏事件
-        binding.editPlace.setOnClickListener(v -> {
+        binding.editPlace.setOnClickListener(v->{
             binding.calendar.setVisibility(View.GONE);
             initMap();
         });
-        binding.detail.setOnClickListener(v -> {
-            binding.calendar.setVisibility(View.GONE);
-        });
-        binding.editReward.setOnClickListener(v -> {
-            binding.calendar.setVisibility(View.GONE);
-        });
-        binding.editPlace.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
+        binding.detail.setOnClickListener(v->binding.calendar.setVisibility(View.GONE));
+        binding.editReward.setOnClickListener(v->binding.calendar.setVisibility(View.GONE));
+        binding.editPlace.setOnFocusChangeListener((v,hasFocus)->{
+            if(hasFocus){
                 binding.calendar.setVisibility(View.GONE);
             }
         });
-        binding.detail.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
+        binding.detail.setOnFocusChangeListener((v,hasFocus)->{
+            if(hasFocus){
                 binding.calendar.setVisibility(View.GONE);
             }
         });
-        binding.editReward.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
+        binding.editReward.setOnFocusChangeListener((v,hasFocus)->{
+            if(hasFocus){
                 binding.calendar.setVisibility(View.GONE);
             }
         });
         //结束日历隐藏事件
-        binding.input.setOnEditorActionListener((v, actionId, event) -> {
-            if(actionId== EditorInfo.IME_ACTION_SEARCH){
+        binding.input.setOnEditorActionListener((v,actionId,event)->{
+            if(actionId==EditorInfo.IME_ACTION_SEARCH){
                 i=1;//重置索引值
-                String kwd = binding.input.getText().toString();
-                boolean valid = false;
-                for (int i = 0; i < kwd.length(); i++) {
-                    if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
-                        continue;
-                    else
-                        valid = true;
-                }
-                if(valid){
+                String kwd=binding.input.getText().toString();
+                SenseCheck senseCheck=new SenseCheck();
+                if(senseCheck.SenseCheckAllBlankOrNull(kwd)){
                     /**
                      *  PoiCiySearchOption 设置检索属性
                      *  city 检索城市
@@ -817,15 +798,9 @@ public class Renew_Info_promote_Activity extends rootActivity {
         });
         binding.search.setOnClickListener(v->{
             i=1;//重置索引值
-            String kwd = binding.input.getText().toString();
-            boolean valid = false;
-            for (int i = 0; i < kwd.length(); i++) {
-                if (kwd.charAt(i) == '\0' || kwd.charAt(i) == '\n' || kwd.charAt(i) == ' ')
-                    continue;
-                else
-                    valid = true;
-            }
-            if(valid){
+            String kwd=binding.input.getText().toString();
+            SenseCheck senseCheck=new SenseCheck();
+            if(senseCheck.SenseCheckAllBlankOrNull(kwd)){
                 /**
                  *  PoiCiySearchOption 设置检索属性
                  *  city 检索城市
@@ -846,7 +821,7 @@ public class Renew_Info_promote_Activity extends rootActivity {
 
     @SuppressLint("RestrictedApi")
     @Override
-    protected void initWidget() {
+    protected void initWidget(){
         super.initWidget();
         ActionBar actionBar =getSupportActionBar();
         actionBar.setTitle("我发布的-信息详情-修改信息");
@@ -855,7 +830,7 @@ public class Renew_Info_promote_Activity extends rootActivity {
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause(){
         super.onPause();
         if(form==5&&first==0){
             mMapView.onPause();
@@ -878,7 +853,7 @@ public class Renew_Info_promote_Activity extends rootActivity {
             mBaiduMap.setMyLocationEnabled(false);
             mMapView.onDestroy();
             mPoiSearch.destroy();
-            mMapView = null;
+            mMapView=null;
         }
     }
 }

@@ -17,13 +17,13 @@ public class Msg{
         return oppo_nickname;
     }
     public void setOppo_nickname(String oppo_nickname) {
-        this.oppo_nickname = oppo_nickname;
+        this.oppo_nickname=oppo_nickname;
     }
     public int getId(){
         return id;
     }
     public void setId(int id) {
-        this.id = id;
+        this.id=id;
     }
     public int getSub_id(){
         return sub_id;
@@ -40,29 +40,27 @@ public class Msg{
     public int getType(){
         return type;
     }
-
     public int getPicture(){return picture;}
     public int getRecalled(){
         return recalled;
     }
-
     public void setContent(String content) {
-        this.content = content;
+        this.content=content;
     }
     public void setObj_id(int obj_id) {
-        this.obj_id = obj_id;
+        this.obj_id=obj_id;
     }
     public void setSub_id(int sub_id) {
-        this.sub_id = sub_id;
+        this.sub_id=sub_id;
     }
     public void setTime(String time) {
-        this.time = time;
+        this.time=time;
     }
     public void setType(int type) {
-        this.type = type;
+        this.type=type;
     }
     public void setPicture(int picture) {
-        this.picture = picture;
+        this.picture=picture;
     }
     public void setRecalled(int recalled){
         this.recalled=recalled;

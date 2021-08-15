@@ -48,71 +48,72 @@ import java.util.Base64;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class Renew_Permsg_promote_Activity extends rootActivity {
+public class Renew_Permsg_promote_Activity extends rootActivity{
     private ActivityRenewPermsgPromoteBinding binding;
-    public static final int TAKE_PHOTO = 1;
+    public static final int TAKE_PHOTO=1;
     public static final int CHOOSE_PHOTO = 2;
     private ImageView picture;
     private Uri imageUri;
     //以下为图片缩放移动使用
     private ImageView mImageView;
-    private Matrix matrix = new Matrix();
-    private Matrix savedMatrix = new Matrix();
-    private static final int NONE = 0;
-    private static final int DRAG = 1;
-    private static final int ZOOM = 2;
-    private int mode = NONE;
+    private Matrix matrix=new Matrix();
+    private Matrix savedMatrix=new Matrix();
+    private static final int NONE=0;
+    private static final int DRAG=1;
+    private static final int ZOOM=2;
+    private int mode=NONE;
     // 第一个按下的手指的点
-    private PointF startPoint = new PointF();
+    private PointF startPoint=new PointF();
     // 两个按下的手指的触摸点的中点
-    private PointF midPoint = new PointF();
+    private PointF midPoint=new PointF();
     // 初始的两个手指按下的触摸点的距离
-    private float oriDis = 1f;
+    private float oriDis=1f;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        mImageView = (ImageView) this.findViewById(R.id.picture);
-        mImageView.setOnTouchListener((v, event) -> {
-            ImageView view = (ImageView) v;
+        mImageView=this.findViewById(R.id.picture);
+        mImageView.setOnTouchListener((v,event)->{
+            ImageView view=(ImageView) v;
 
             // 进行与操作是为了判断多点触摸
-            switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            switch(event.getAction()&MotionEvent.ACTION_MASK){
                 case MotionEvent.ACTION_DOWN:
                     // 第一个手指按下事件
                     matrix.set(view.getImageMatrix());
                     savedMatrix.set(matrix);
-                    startPoint.set(event.getX(), event.getY());
-                    mode = DRAG;
+                    startPoint.set(event.getX(),event.getY());
+                    mode=DRAG;
                     break;
                 case MotionEvent.ACTION_POINTER_DOWN:
                     // 第二个手指按下事件
-                    oriDis = distance(event);
-                    if (oriDis > 10f) {
+                    oriDis=distance(event);
+                    if(oriDis>10f) {
                         savedMatrix.set(matrix);
-                        midPoint = middle(event);
-                        mode = ZOOM;
+                        midPoint=middle(event);
+                        mode=ZOOM;
                     }
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_POINTER_UP:
                     // 手指放开事件
-                    mode = NONE;
+                    mode=NONE;
                     break;
                 case MotionEvent.ACTION_MOVE:
                     // 手指滑动事件
-                    if (mode == DRAG) {
+                    if(mode==DRAG){
                         // 是一个手指拖动
                         matrix.set(savedMatrix);
-                        matrix.postTranslate(event.getX() - startPoint.x, event.getY()
-                                - startPoint.y);
-                    } else if (mode == ZOOM) {
+                        matrix.postTranslate(event.getX()-startPoint.x,event.getY()-startPoint.y);
+                    }
+                    else if(mode==ZOOM){
                         // 两个手指滑动
-                        float newDist = distance(event);
-                        if (newDist > 10f) {
+                        float newDist=distance(event);
+                        if (newDist>10f){
                             matrix.set(savedMatrix);
-                            float scale = newDist / oriDis;
-                            matrix.postScale(scale, scale, midPoint.x, midPoint.y);
+                            float scale=newDist/oriDis;
+                            matrix.postScale(scale,scale,midPoint.x,midPoint.y);
                         }
                     }
                     break;
@@ -125,53 +126,51 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
     }
 
     @Override
-    public void bindView() {
-        binding= ActivityRenewPermsgPromoteBinding.inflate(getLayoutInflater());
+    public void bindView(){
+        binding=ActivityRenewPermsgPromoteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
     }
 
     @Override
-    protected void initData() {
+    protected void initData(){
         super.initData();
-        Intent intent1 = getIntent();
-        String id = Integer.toString(intent1.getIntExtra("id", 0));
-        if(intent1.getIntExtra("type",0)==1) {
+        Intent intent1=getIntent();
+        String id=Integer.toString(intent1.getIntExtra("id",0));
+        if(intent1.getIntExtra("type",0)==1){
             binding.editNickname.setVisibility(View.VISIBLE);
             binding.editPwd.setVisibility(View.VISIBLE);
-            binding.editPwd.addTextChangedListener(new TextWatcher() {
+            binding.editPwd.addTextChangedListener(new TextWatcher(){
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
+                public void beforeTextChanged(CharSequence s,int start,int count,int after){}
 
                 @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
+                public void onTextChanged(CharSequence s,int start,int before,int count){}
 
                 @Override
-                public void afterTextChanged(Editable s) {
-                    if (s.length() > 0) {
-                        for (int i = 0; i < s.length(); i++) {
-                            char c = s.charAt(i);
-                            if (c >= 0x4e00 && c <= 0X9fff) { // 根据字节码判断
+                public void afterTextChanged(Editable s){
+                    if(s.length()>0){
+                        for (int i=0;i<s.length();i++){
+                            char c=s.charAt(i);
+                            if (c>=0x4e00&&c<=0X9fff){ // 根据字节码判断
                                 // 如果是中文，则清除输入的字符，否则保留
-                                s.delete(i, i + 1);
+                                s.delete(i,i+1);
                             }
                         }
                     }
                 }
             });
             UserConnection userConnection=new UserConnection();
-            userConnection.queryUserInfoWithoutPicture(id, new okhttp3.Callback() {
+            userConnection.queryUserInfoWithoutPicture(id,new okhttp3.Callback(){
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(Call call,IOException e){
                     Looper.prepare();
                     BToast.showText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
 
-                @RequiresApi(api = Build.VERSION_CODES.O)
+                @RequiresApi(api=Build.VERSION_CODES.O)
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(Call call,Response response) throws IOException{
                     String result=response.body().string();
                     User user=new User();
                     userConnection.parseJSON(user,result);
@@ -192,7 +191,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
             binding.textStdidRnm.setText("缩放或拖动图片以适配相框");
             if(intent1.getIntExtra("type",0)==2){
                 picture=binding.picture;
-                if(ContextCompat.checkSelfPermission(Renew_Permsg_promote_Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+                if(ContextCompat.checkSelfPermission(Renew_Permsg_promote_Activity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
                     ActivityCompat.requestPermissions(Renew_Permsg_promote_Activity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
                 }
                 else{
@@ -207,11 +206,11 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                         outputImage.delete();
                     }
                     outputImage.createNewFile();
-                }catch (IOException e){
+                }catch(IOException e){
                     e.printStackTrace();
                 }
                 if(Build.VERSION.SDK_INT>=24){
-                    imageUri= FileProvider.getUriForFile(Renew_Permsg_promote_Activity.this,"com.example.whuinfoplatform.fileprovider",outputImage);
+                    imageUri=FileProvider.getUriForFile(Renew_Permsg_promote_Activity.this,"com.example.whuinfoplatform.fileprovider",outputImage);
                 }
                 else{
                     imageUri=Uri.fromFile(outputImage);
@@ -223,47 +222,48 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     @Override
-    protected void initClick() {
+    protected void initClick(){
         super.initClick();
         binding.button1.setOnClickListener(v->{
-            Intent intent1 = getIntent();
+            Intent intent1=getIntent();
             SenseCheck senseCheck=new SenseCheck();
-            if(intent1.getIntExtra("type",0)==1) {
-                String id = Integer.toString(intent1.getIntExtra("id", 0));
-                String newnkn = binding.editNickname.getText().toString();
-                String newpwd = binding.editPwd.getText().toString();
+            if(intent1.getIntExtra("type",0)==1){
+                String id=Integer.toString(intent1.getIntExtra("id",0));
+                String newnkn=binding.editNickname.getText().toString();
+                String newpwd=binding.editPwd.getText().toString();
 
-                if ((newnkn.equals("")) || (newpwd.equals(""))) {
+                if((newnkn.equals(""))||(newpwd.equals(""))){
                     BToast.showText(Renew_Permsg_promote_Activity.this,"请填入完整信息！",false);
                 }
                 else if(!senseCheck.SenseCheckAllBlankOrNull(newnkn)){
                     BToast.showText(Renew_Permsg_promote_Activity.this,"昵称不能为无实义内容！",false);
                     binding.editNickname.setText("");
                 }
-                else {
+                else{
                     UserConnection userConnection=new UserConnection();
-                    userConnection.renewUserInfo(id,newpwd,newnkn, new okhttp3.Callback() {
+                    userConnection.renewUserInfo(id,newpwd,newnkn,new okhttp3.Callback(){
                         @Override
-                        public void onFailure(Call call, IOException e) {
+                        public void onFailure(Call call,IOException e){
                             Looper.prepare();
                             BToast.showText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                             Looper.loop();
                         }
 
-                        @RequiresApi(api = Build.VERSION_CODES.O)
+                        @RequiresApi(api=Build.VERSION_CODES.O)
                         @Override
-                        public void onResponse(Call call, Response response) throws IOException {
+                        public void onResponse(Call call,Response response) throws IOException{
                             String result=response.body().string();
                             User user=new User();
                             userConnection.parseJSON(user,result);
                             Looper.prepare();
                             if(user.getCode()==101){
                                 BToast.showText(Renew_Permsg_promote_Activity.this,user.getResponse(),true);
-                                Intent intent2 = new Intent(Renew_Permsg_promote_Activity.this, MainActivity.class);
+                                Intent intent2=new Intent(Renew_Permsg_promote_Activity.this,MainActivity.class);
                                 startActivity(intent2);
-                            }else{
+                            }
+                            else{
                                 BToast.showText(Renew_Permsg_promote_Activity.this,user.getResponse(),false);
                             }
                             Looper.loop();
@@ -271,27 +271,27 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                     });
                 }
             }
-            if(intent1.getIntExtra("type",0)>1) {
-                BToast.showToast(Renew_Permsg_promote_Activity.this,"上传中，请稍候...", Toast.LENGTH_LONG,2);
-                String id = Integer.toString(intent1.getIntExtra("id", 0));
+            if(intent1.getIntExtra("type",0)>1){
+                BToast.showToast(Renew_Permsg_promote_Activity.this,"上传中，请稍候...",Toast.LENGTH_LONG,2);
+                String id=Integer.toString(intent1.getIntExtra("id",0));
                 binding.picture.setDrawingCacheEnabled(true);
-                Bitmap bitmap = Bitmap.createBitmap(binding.picture.getDrawingCache());
+                Bitmap bitmap=Bitmap.createBitmap(binding.picture.getDrawingCache());
                 binding.picture.setDrawingCacheEnabled(false);
-                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                final ByteArrayOutputStream os=new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 byte[] in=os.toByteArray();
-                String FileBuf = Base64.getEncoder().encodeToString(in);
+                String FileBuf=Base64.getEncoder().encodeToString(in);
                 UserConnection userConnection=new UserConnection();
-                userConnection.renewUserPicture(id,FileBuf, new okhttp3.Callback() {
+                userConnection.renewUserPicture(id,FileBuf,new okhttp3.Callback(){
                     @Override
-                    public void onFailure(Call call, IOException e) {
+                    public void onFailure(Call call,IOException e){
                         Looper.prepare();
                         BToast.showText(Renew_Permsg_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                         Looper.loop();
                     }
 
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
+                    public void onResponse(Call call,Response response) throws IOException{
                         String result=response.body().string();
                         User user=new User();
                         userConnection.parseJSON(user,result);
@@ -299,9 +299,8 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                         if(user.getCode()==101){
                             BToast.showText(Renew_Permsg_promote_Activity.this,user.getResponse(),true);
                             LocalPicture localPicture=new LocalPicture();
-                            localPicture.setPicture(FileBuf);
-                            localPicture.updateAll("user_code=?",id);
-                            Intent intent = new Intent(Renew_Permsg_promote_Activity.this, Personal_Message_Activity.class);
+                            localPicture.updateUserPicture(id,FileBuf,user.getPicture_version());
+                            Intent intent=new Intent(Renew_Permsg_promote_Activity.this,Personal_Message_Activity.class);
                             startActivity(intent);
                         }else{
                             BToast.showText(Renew_Permsg_promote_Activity.this,user.getResponse(),false);
@@ -319,54 +318,55 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
 
     @SuppressLint("RestrictedApi")
     @Override
-    protected void initWidget() {
+    protected void initWidget(){
         super.initWidget();
-        ActionBar actionBar =getSupportActionBar();
-        Intent intent1 = getIntent();
-        if(intent1.getIntExtra("type",0)==1) {
+        ActionBar actionBar=getSupportActionBar();
+        Intent intent1=getIntent();
+        if(intent1.getIntExtra("type",0)==1){
             actionBar.setTitle("个人资料-修改");
-        }else
+        }
+        else
             actionBar.setTitle("个人资料-选择头像");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
     }
 
     private void showResult(String nkn,String rnm,String stdid){
-        runOnUiThread(() -> {
+        runOnUiThread(()->{
             binding.editNickname.setText(nkn);
-            binding.textStdidRnm.setText(stdid + "-" + rnm);
+            binding.textStdidRnm.setText(stdid+"-"+rnm);
         });
     }
 
     // 计算两个触摸点之间的距离
-    private float distance(MotionEvent event) {
-        float x = event.getX(0) - event.getX(1);
-        float y = event.getY(0) - event.getY(1);
-        return (float) Math.sqrt(x*x+y*y);
+    private float distance(MotionEvent event){
+        float x=event.getX(0)-event.getX(1);
+        float y=event.getY(0)-event.getY(1);
+        return (float)Math.sqrt(x*x+y*y);
     }
 
     // 计算两个触摸点的中点
-    private PointF middle(MotionEvent event) {
-        float x = event.getX(0) + event.getX(1);
-        float y = event.getY(0) + event.getY(1);
-        return new PointF(x / 2, y / 2);
+    private PointF middle(MotionEvent event){
+        float x=event.getX(0)+event.getX(1);
+        float y=event.getY(0)+event.getY(1);
+        return new PointF(x/2,y/2);
     }
 
     private void openAlbum(){
-        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        Intent intent=new Intent("android.intent.action.GET_CONTENT");
         intent.setType("image/*");
         startActivityForResult(intent,CHOOSE_PHOTO);//打开相册
     }
 
     @SuppressLint("MissingSuperCall")
     @Override
-    protected void onActivityResult(int requestCode,int resultCode,Intent data) {
+    protected void onActivityResult(int requestCode,int resultCode,Intent data){
         switch(requestCode){
             case TAKE_PHOTO:
-                if (resultCode==RESULT_OK){
+                if(resultCode==RESULT_OK){
                     try{
                         //显示照片
-                        Bitmap bitmap= BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        Bitmap bitmap=BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
                         Bitmap bitmap_p;
                         double p_width=bitmap.getWidth();
                         double p_height=bitmap.getHeight();
@@ -376,14 +376,14 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
                         double ratio=p_width/p_height;
                         if(ratio>1){
                             height=width/ratio;
-                            params = new LinearLayout.LayoutParams(800,800);
-                            bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
+                            params=new LinearLayout.LayoutParams(800,800);
+                            bitmap_p=Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
                             picture.setImageBitmap(bitmap_p);
                         }
                         else{
                             width=ratio*height;
-                            params = new LinearLayout.LayoutParams(800,800);
-                            bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
+                            params=new LinearLayout.LayoutParams(800,800);
+                            bitmap_p=Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
                             picture.setImageBitmap(bitmap_p);
                         }
                         picture.setLayoutParams(params);
@@ -417,7 +417,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,String[] permissions,int[] grantResults){
-        switch (requestCode){
+        switch(requestCode){
             case 1:
                 if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     openAlbum();
@@ -432,44 +432,44 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
 
     @TargetApi(19)
     private void handleImageOnKitKat(Intent data){
-        String imagePath = null;
-        Uri uri = data.getData();
+        String imagePath=null;
+        Uri uri=data.getData();
         if (DocumentsContract.isDocumentUri(this,uri)){
             //Document 类型的Uri通过document id处理
-            String docId = DocumentsContract.getDocumentId(uri);
+            String docId=DocumentsContract.getDocumentId(uri);
             if("com.android.providers.media.documents".equals(uri.getAuthority())){
-                String id = docId.split(":")[1];//解析出数字格式的id
-                String selection = MediaStore.Images.Media._ID+"="+id;
-                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
+                String id=docId.split(":")[1];//解析出数字格式的id
+                String selection=MediaStore.Images.Media._ID+"="+id;
+                imagePath=getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
             }
             else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())){
-                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),Long.valueOf(docId));
-                imagePath = getImagePath(contentUri,null);
+                Uri contentUri=ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),Long.valueOf(docId));
+                imagePath=getImagePath(contentUri,null);
             }
         }
         else if("content".equalsIgnoreCase(uri.getScheme())){
             //content类型的Uri使用普通方式处理
-            imagePath = getImagePath(uri,null);
+            imagePath=getImagePath(uri,null);
         }
         else if("file".equalsIgnoreCase(uri.getScheme())){
             //file类型的Uri直接获取图片路径
-            imagePath = uri.getPath();
+            imagePath=uri.getPath();
         }
         displayImage(imagePath);
     }
 
     private void handleImageBeforeKitKat(Intent data){
-        Uri uri = data.getData();
-        String imagePath = getImagePath(uri,null);
+        Uri uri=data.getData();
+        String imagePath=getImagePath(uri,null);
         displayImage(imagePath);
     }
 
     private String getImagePath(Uri uri,String selection){
-        String path = null;
-        Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
+        String path=null;
+        Cursor cursor=getContentResolver().query(uri,null,selection,null,null);
         if(cursor!=null){
             if(cursor.moveToFirst()){
-                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                path=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
             }
             cursor.close();
         }
@@ -478,7 +478,7 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
 
     private void displayImage(String imagePath){
         if(imagePath!=null){
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+            Bitmap bitmap=BitmapFactory.decodeFile(imagePath);
             Bitmap bitmap_p;
             double p_width=bitmap.getWidth();
             double p_height=bitmap.getHeight();
@@ -488,14 +488,14 @@ public class Renew_Permsg_promote_Activity extends rootActivity {
             double ratio=p_width/p_height;
             if(ratio>1){
                 height=width/ratio;
-                params = new LinearLayout.LayoutParams(800,800);
-                bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
+                params=new LinearLayout.LayoutParams(800,800);
+                bitmap_p=Bitmap.createScaledBitmap(bitmap,(int)width,(int)(height)-1,true);
                 picture.setImageBitmap(bitmap_p);
             }
             else{
                 width=ratio*height;
-                params = new LinearLayout.LayoutParams(800,800);
-                bitmap_p = Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
+                params=new LinearLayout.LayoutParams(800,800);
+                bitmap_p=Bitmap.createScaledBitmap(bitmap,(int)width-1,(int)(height),true);
                 picture.setImageBitmap(bitmap_p);
             }
             picture.setLayoutParams(params);

@@ -14,14 +14,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class PictureConnection {
+public class PictureConnection{
     private RequestBody formBody;
-    public static String URL = "http://122.9.144.219:8080/myServlet/";
+    public static String URL="http://122.9.144.219:8080/myServlet/";
 
-    public void initUploadConnection(String picture,okhttp3.Callback callback) {
+    public void initUploadConnection(String picture,okhttp3.Callback callback){
         String Url=URL+"UploadPictureServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("download","0")
                 .add("picture",picture)
                 .build();
@@ -33,12 +33,12 @@ public class PictureConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void initDownloadConnection(String id,okhttp3.Callback callback) {
+    public void initDownloadConnection(String id,okhttp3.Callback callback){
 
 
         String Url=URL+"UploadPictureServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("download","1")
                 .build();
@@ -50,16 +50,15 @@ public class PictureConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     public void parseJSONForPictureResponse(WebResponse Response, String json){
         try{
             JSONObject jsonObject=new JSONObject(json);
             int code=jsonObject.getInt("code");
             String response=jsonObject.getString("response");
             int id=jsonObject.getInt("id");
-
             showResponseForPictureResponse(Response,code,response,id);
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
     }
@@ -71,7 +70,7 @@ public class PictureConnection {
             picture.setCode(jsonObject.getInt("code"));
             picture.setResponse(jsonObject.getString("response"));
             picture.setPicture(jsonObject.getString("picture"));
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
     }

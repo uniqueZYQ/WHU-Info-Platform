@@ -27,12 +27,11 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 public class Personal_Center_Activity extends rootActivity {
-
     private ActivityPersonalCenterBinding binding;
     private List<my_info> my_info_list = new ArrayList<>();
     private SwipeRefreshLayout swipeRefresh;
     private my_info_Adapter adapter;
-    int id;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +39,10 @@ public class Personal_Center_Activity extends rootActivity {
     }
 
     @Override
-    public void bindView() {
-        binding = ActivityPersonalCenterBinding.inflate(getLayoutInflater());
+    public void bindView(){
+        binding=ActivityPersonalCenterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        adapter = new my_info_Adapter(Personal_Center_Activity.this,R.layout.my_info_item,my_info_list);
+        adapter=new my_info_Adapter(Personal_Center_Activity.this,R.layout.my_info_item,my_info_list);
         init();
     }
 
@@ -52,17 +51,17 @@ public class Personal_Center_Activity extends rootActivity {
         id=intent.getIntExtra("id",0);
 
         InfoConnection connection=new InfoConnection();
-        connection.queryMyInfoConnection(String.valueOf(id), new okhttp3.Callback() {
+        connection.queryMyInfoConnection(String.valueOf(id),new okhttp3.Callback(){
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call,IOException e){
                 Looper.prepare();
                 BToast.showText(Personal_Center_Activity.this,"服务器连接失败，请检查网络设置",false);
                 Looper.loop();
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.O)
+            @RequiresApi(api=Build.VERSION_CODES.O)
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call,Response response) throws IOException{
                 String result=response.body().string();
                 int n=connection.parseJSONForMyInfoResponse(result,my_info_list);
                 if(n>0){
@@ -82,40 +81,39 @@ public class Personal_Center_Activity extends rootActivity {
     }
 
     private void showNoneInfo(){
-        runOnUiThread(() -> binding.none.setVisibility(View.VISIBLE));
+        runOnUiThread(()->binding.none.setVisibility(View.VISIBLE));
     }
 
     private void OtherOptions(){
-        runOnUiThread(() -> {
-            ListView listView=(ListView)findViewById(R.id.list_view);
+        runOnUiThread(()->{
+            ListView listView=findViewById(R.id.list_view);
             listView.setAdapter(adapter);
-            listView.setOnItemClickListener((parent, view, position, id) -> {
-                my_info myinfo = my_info_list.get(position);
+            listView.setOnItemClickListener((parent,view,position,id)->{
+                my_info myinfo=my_info_list.get(position);
                 int infoid=myinfo.getId();
-                Intent intent2 = getIntent();
+                Intent intent2=getIntent();
                 int owner_id=intent2.getIntExtra("id",0);
-                Intent intent = new Intent(Personal_Center_Activity.this,My_Info_details_Activity.class);
+                Intent intent=new Intent(Personal_Center_Activity.this,My_Info_details_Activity.class);
                 intent.putExtra("id",infoid);
                 intent.putExtra("owner_id",owner_id);
                 startActivity(intent);
             });
-            swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperrfresh);
+            swipeRefresh=findViewById(R.id.swiperrfresh);
             swipeRefresh.setColorSchemeResources(
                     android.R.color.holo_blue_light,
                     android.R.color.holo_purple);
-            swipeRefresh.setOnRefreshListener(() -> refresh_my_info(2000));
+            swipeRefresh.setOnRefreshListener(()->refresh_my_info(2000));
         });
     }
 
     private void refresh_my_info(int s){
-        new Thread(() -> {
+        new Thread(()->{
             try{
                 Thread.sleep(s);
-            }
-            catch (InterruptedException e){
+            }catch(InterruptedException e){
                 e.printStackTrace();
             }
-            runOnUiThread((() -> {
+            runOnUiThread((()->{
                 adapter.clear();
                 init();
                 adapter.notifyDataSetChanged();
@@ -136,9 +134,9 @@ public class Personal_Center_Activity extends rootActivity {
 
     @SuppressLint("RestrictedApi")
     @Override
-    protected void initWidget() {
+    protected void initWidget(){
         super.initWidget();
-        ActionBar actionBar =getSupportActionBar();
+        ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("我发布的");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);

@@ -122,6 +122,15 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/login_button_select"/>
 
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:text="记住我的登录"
+        />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
@@ -159,7 +168,7 @@
         android:background="#ffffff"
         android:text="-创建新账号-"
         android:layout_gravity="bottom|center"
-        android:layout_marginTop="225dp"
+        android:layout_marginTop="210dp"
         style="?android:attr/borderlessButtonStyle"/>
 
 </LinearLayout>

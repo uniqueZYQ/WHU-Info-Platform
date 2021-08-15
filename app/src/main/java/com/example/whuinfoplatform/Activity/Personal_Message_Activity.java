@@ -37,9 +37,9 @@ import okhttp3.Response;
 
 public class Personal_Message_Activity extends rootActivity implements View.OnClickListener{
     private ActivityPersonalMessageBinding binding;
-    int id=0,type1=1;
-    Dialog mCameraDialog;
-    Bitmap bit;
+    private int id=0,type1=1;
+    private Dialog mCameraDialog;
+    private Bitmap bit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +47,16 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     }
 
     @Override
-    public void bindView() {
+    public void bindView(){
         binding=ActivityPersonalMessageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     @Override
-    protected void initData() {
+    protected void initData(){
         super.initData();
-        Intent intent = getIntent();
+        Intent intent=getIntent();
         id=intent.getIntExtra("id",0);
         UserConnection userConnection=new UserConnection();
         List<LocalPicture> localPictures=DataSupport.where("user_code=?",String.valueOf(id)).find(LocalPicture.class);
@@ -65,15 +65,15 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
             userConnection.queryUserInfoWithoutPicture(String.valueOf(id),new okhttp3.Callback(){
 
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(Call call,IOException e){
                     Looper.prepare();
                     BToast.showText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
 
-                @RequiresApi(api = Build.VERSION_CODES.O)
+                @RequiresApi(api=Build.VERSION_CODES.O)
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(Call call,Response response) throws IOException{
                     String result=response.body().string();
                     User user=new User();
                     userConnection.parseJSON(user,result);
@@ -82,7 +82,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
                         String nkn=user.getNickname();
                         String rnm=user.getRealname();
                         String stdid=user.getStdid();
-                        bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                        bit=BitmapFactory.decodeByteArray(in,0,in.length);
                         showResult(stdid,nkn,rnm,bit);
                     }
                     Looper.loop();
@@ -93,15 +93,15 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
             userConnection.queryUserInfo(String.valueOf(id),new okhttp3.Callback(){
 
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(Call call,IOException e){
                     Looper.prepare();
                     BToast.showText(Personal_Message_Activity.this,"服务器连接失败，请检查网络设置",false);
                     Looper.loop();
                 }
 
-                @RequiresApi(api = Build.VERSION_CODES.O)
+                @RequiresApi(api=Build.VERSION_CODES.O)
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(Call call,Response response) throws IOException{
                     String result=response.body().string();
                     User user=new User();
                     userConnection.parseJSON(user,result);
@@ -110,11 +110,11 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
                         String nkn=user.getNickname();
                         String rnm=user.getRealname();
                         String stdid=user.getStdid();
-                        byte[] in = user.getPicture();
-                        bit = BitmapFactory.decodeByteArray(in, 0, in.length);
+                        byte[] in=user.getPicture();
+                        bit=BitmapFactory.decodeByteArray(in,0,in.length);
                         showResult(stdid,nkn,rnm,bit);
                         LocalPicture localPicture=new LocalPicture();
-                        localPicture.userPictureAddToLocal(id,Base64.getEncoder().encodeToString(in));
+                        localPicture.userPictureAddToLocal(id,Base64.getEncoder().encodeToString(in),user.getPicture_version());
                     }
                     Looper.loop();
                 }
@@ -123,10 +123,10 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     }
 
     @Override
-    protected void initClick() {
+    protected void initClick(){
         super.initClick();
         binding.buttonUpgrade.setOnClickListener(v->{
-            Intent intent = new Intent(Personal_Message_Activity.this,Renew_Permsg_promote_Activity.class);
+            Intent intent=new Intent(Personal_Message_Activity.this,Renew_Permsg_promote_Activity.class);
             intent.putExtra("id",id);
             intent.putExtra("type",1);
             startActivity(intent);
@@ -142,7 +142,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     }
 
     private void showResult(String stdid,String nkn,String rnm,Bitmap bit){
-        runOnUiThread(() -> {
+        runOnUiThread(()->{
             binding.picture.setImageBitmap(bit);
             binding.textNickname.setText("昵称:"+nkn);
             binding.textRealname.setText("真实姓名:"+rnm);
@@ -151,50 +151,50 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     }
 
     private void setDialog() {
-        LinearLayout root = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.bottom_dialog, null);
+        LinearLayout root=(LinearLayout)LayoutInflater.from(this).inflate(R.layout.bottom_dialog,null);
         //初始化视图
         root.findViewById(R.id.btn_choose_img).setOnClickListener(this);
         root.findViewById(R.id.btn_open_camera).setOnClickListener(this);
-        mCameraDialog = new Dialog(this, R.style.BottomDialog);
+        mCameraDialog=new Dialog(this, R.style.BottomDialog);
         mCameraDialog.setContentView(root);
-        Window dialogWindow = mCameraDialog.getWindow();
+        Window dialogWindow=mCameraDialog.getWindow();
         dialogWindow.setGravity(Gravity.BOTTOM);
         //dialogWindow.setWindowAnimations(R.style.dialogstyle); // 添加动画
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
-        lp.x = 0; // 新位置X坐标
-        lp.y = 0; // 新位置Y坐标
-        lp.width = getResources().getDisplayMetrics().widthPixels; // 宽度
-        root.measure(0, 0);
-        lp.height = root.getMeasuredHeight();
-        lp.alpha = 9f; // 透明度
+        WindowManager.LayoutParams lp=dialogWindow.getAttributes(); // 获取对话框当前的参数值
+        lp.x=0; // 新位置X坐标
+        lp.y=0; // 新位置Y坐标
+        lp.width=getResources().getDisplayMetrics().widthPixels; // 宽度
+        root.measure(0,0);
+        lp.height=root.getMeasuredHeight();
+        lp.alpha=9f; // 透明度
         dialogWindow.setAttributes(lp);
         mCameraDialog.show();
     }
 
     @SuppressLint("RestrictedApi")
     @Override
-    protected void initWidget() {
+    protected void initWidget(){
         super.initWidget();
-        ActionBar actionBar =getSupportActionBar();
+        ActionBar actionBar=getSupportActionBar();
         actionBar.setTitle("个人资料");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(View view){
         Intent intent;
-        switch (view.getId()) {
+        switch(view.getId()){
             case R.id.btn_choose_img:
                 //选择照片按钮
-                intent = new Intent(Personal_Message_Activity.this,Renew_Permsg_promote_Activity.class);
+                intent=new Intent(Personal_Message_Activity.this,Renew_Permsg_promote_Activity.class);
                 intent.putExtra("id",id);
                 intent.putExtra("type",2);
                 startActivity(intent);
                 break;
             case R.id.btn_open_camera:
                 //拍照按钮
-                intent = new Intent(Personal_Message_Activity.this,Renew_Permsg_promote_Activity.class);
+                intent=new Intent(Personal_Message_Activity.this,Renew_Permsg_promote_Activity.class);
                 intent.putExtra("id",id);
                 intent.putExtra("type",3);
                 startActivity(intent);
@@ -205,15 +205,15 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause(){
         if(type1==0)
             if(mCameraDialog.isShowing()) mCameraDialog.cancel();
         super.onPause();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     @Override
-    protected void onResume() {
+    protected void onResume(){
         super.onResume();
         initData();
     }

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
 import com.example.whuinfoplatform.Entity.BToast;
+import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
@@ -28,40 +29,38 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 public class Create_User_promote_Activity extends rootActivity {
-
     private ActivityCreateUserPromoteBinding binding;
-    ImageView picture;
+    private ImageView picture;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public void bindView() {
+    public void bindView(){
         binding=ActivityCreateUserPromoteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
     }
 
     @Override
-    protected void initData() {
+    protected void initData(){
         super.initData();
         picture=binding.picture;
         picture.setImageResource(R.drawable.default_head);
-        binding.editPwd.addTextChangedListener(new TextWatcher() {
+        binding.editPwd.addTextChangedListener(new TextWatcher(){
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s,int start,int count,int after){}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+            public void onTextChanged(CharSequence s,int start,int before,int count){}
 
             @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0) {
-                    for (int i = 0; i < s.length(); i++) {
-                        char c = s.charAt(i);
-                        if (c >= 0x4e00 && c <= 0X9fff) { // 根据字节码判断
+            public void afterTextChanged(Editable s){
+                if(s.length()>0){
+                    for (int i=0;i<s.length();i++){
+                        char c=s.charAt(i);
+                        if(c>=0x4e00&&c<=0X9fff){ // 根据字节码判断
                             // 如果是中文，则清除输入的字符，否则保留
                             s.delete(i,i+1);
                         }
@@ -69,21 +68,19 @@ public class Create_User_promote_Activity extends rootActivity {
                 }
             }
         });
-        binding.editRealname.addTextChangedListener(new TextWatcher() {
+        binding.editRealname.addTextChangedListener(new TextWatcher(){
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s,int start,int count,int after){}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+            public void onTextChanged(CharSequence s,int start,int before,int count){}
 
             @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0) {
-                    for (int i = 0; i < s.length(); i++) {
-                        char c = s.charAt(i);
-                        if (!(c >= 0x4e00 && c <= 0X9fff)) { // 根据字节码判断
+            public void afterTextChanged(Editable s){
+                if (s.length()>0){
+                    for (int i=0;i<s.length();i++){
+                        char c=s.charAt(i);
+                        if(!(c>=0x4e00&&c<=0X9fff)){ // 根据字节码判断
                             // 如果不是中文，则清除输入的字符，否则保留
                             s.delete(i,i+1);
                         }
@@ -93,53 +90,56 @@ public class Create_User_promote_Activity extends rootActivity {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     @Override
-    protected void initClick() {
+    protected void initClick(){
         super.initClick();
         binding.button1.setOnClickListener(v->{
             SenseCheck senseCheck=new SenseCheck();
-            String nnm = binding.editNickname.getText().toString();
-            String pw = binding.editPwd.getText().toString();
-            String rnm = binding.editRealname.getText().toString();
-            String id = binding.editStdid.getText().toString();
+            String nnm=binding.editNickname.getText().toString();
+            String pw=binding.editPwd.getText().toString();
+            String rnm=binding.editRealname.getText().toString();
+            String id=binding.editStdid.getText().toString();
             if(nnm.equals("")||pw.equals("")||rnm.equals("")||id.equals("")){
                 BToast.showText(Create_User_promote_Activity.this,"请完善信息！",false);
             }
-            else {
+            else{
                 if(!senseCheck.SenseCheckAllBlankOrNull(nnm)){
                     BToast.showText(Create_User_promote_Activity.this,"昵称不能为无实义内容！",false);
                     binding.editNickname.setText("");
                 }
-                else if(id.length()==13) {
+                else if(id.length()==13){
                     picture.setDrawingCacheEnabled(true);
-                    Bitmap bitmap = Bitmap.createBitmap(picture.getDrawingCache());
+                    Bitmap bitmap=Bitmap.createBitmap(picture.getDrawingCache());
                     picture.setDrawingCacheEnabled(false);
-                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                    final ByteArrayOutputStream os=new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG,100,os);
                     byte[] in=os.toByteArray();
-                    String FileBuf = Base64.getEncoder().encodeToString(in);
+                    String FileBuf=Base64.getEncoder().encodeToString(in);
                     UserConnection userConnection=new UserConnection();
-                    userConnection.initRegisterConnection(id,pw,rnm,nnm,FileBuf,new okhttp3.Callback() {
+                    userConnection.initRegisterConnection(id,pw,rnm,nnm,FileBuf,new okhttp3.Callback(){
                         @Override
-                        public void onFailure(Call call, IOException e) {
+                        public void onFailure(Call call,IOException e){
                             Looper.prepare();
                             BToast.showText(Create_User_promote_Activity.this,"服务器连接失败，请检查网络设置",false);
                             Looper.loop();
                         }
 
-                        @RequiresApi(api = Build.VERSION_CODES.O)
+                        @RequiresApi(api=Build.VERSION_CODES.O)
                         @Override
-                        public void onResponse(Call call, Response response) throws IOException {
+                        public void onResponse(Call call,Response response) throws IOException{
                             String result=response.body().string();
                             User user=new User();
                             userConnection.parseJSON(user,result);
                             Looper.prepare();
                             if(user.getCode()==101){
+                                LocalPicture localPicture=new LocalPicture();
+                                localPicture.userPictureAddToLocal(user.getId(),FileBuf,0);
                                 BToast.showText(Create_User_promote_Activity.this,user.getResponse(),true);
-                                Intent intent = new Intent(Create_User_promote_Activity.this, MainActivity.class);
+                                Intent intent=new Intent(Create_User_promote_Activity.this,MainActivity.class);
                                 startActivity(intent);
-                            }else{
+                            }
+                            else{
                                 BToast.showText(Create_User_promote_Activity.this,user.getResponse(),false);
                             }
                             Looper.loop();
@@ -154,7 +154,7 @@ public class Create_User_promote_Activity extends rootActivity {
 
     @SuppressLint("RestrictedApi")
     @Override
-    protected void initWidget() {
+    protected void initWidget(){
         super.initWidget();
         ActionBar actionBar =getSupportActionBar();
         actionBar.setTitle("创建账号");

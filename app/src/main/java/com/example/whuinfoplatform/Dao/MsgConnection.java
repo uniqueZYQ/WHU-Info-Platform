@@ -18,14 +18,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class MsgConnection {
+public class MsgConnection{
     private RequestBody formBody;
-    public static String URL = "http://122.9.144.219:8080/myServlet/";
+    public static String URL="http://122.9.144.219:8080/myServlet/";
 
-    public void queryMsgAboutUser(String sub_id,String obj_id,okhttp3.Callback callback) {
+    public void queryMsgAboutUser(String sub_id,String obj_id,okhttp3.Callback callback){
         String Url=URL+"MsgServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("sub_id",sub_id)
                 .add("obj_id", obj_id)
                 .add("type","1")
@@ -38,10 +38,10 @@ public class MsgConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryMsgById(String id,okhttp3.Callback callback) {
+    public void queryMsgById(String id,okhttp3.Callback callback){
         String Url=URL+"MsgServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("type","2")
                 .build();
@@ -53,10 +53,10 @@ public class MsgConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryMsgAboutUserByOneWay(String sub_id,String obj_id,okhttp3.Callback callback) {
+    public void queryMsgAboutUserByOneWay(String sub_id,String obj_id,okhttp3.Callback callback){
         String Url=URL+"MsgServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("sub_id",sub_id)
                 .add("obj_id", obj_id)
                 .add("type","3")
@@ -69,10 +69,10 @@ public class MsgConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryMsgAboutUserForOneUser(String id,okhttp3.Callback callback) {
+    public void queryMsgAboutUserForOneUser(String id,okhttp3.Callback callback){
         String Url=URL+"MsgServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("type","4")
                 .build();
@@ -84,10 +84,10 @@ public class MsgConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void queryMsgAboutUserForObjUser(String obj_id,okhttp3.Callback callback) {
+    public void queryMsgAboutUserForObjUser(String obj_id,okhttp3.Callback callback){
         String Url=URL+"MsgServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("obj_id",obj_id)
                 .add("type","5")
                 .build();
@@ -99,10 +99,10 @@ public class MsgConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void recallMsgById(String id,okhttp3.Callback callback) {
+    public void recallMsgById(String id,okhttp3.Callback callback){
         String Url=URL+"MsgServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("id",id)
                 .add("type","6")
                 .build();
@@ -114,10 +114,10 @@ public class MsgConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void sendMsgPicture(String sub_id,String obj_id,String picture,String time,okhttp3.Callback callback) {
+    public void sendMsgPicture(String sub_id,String obj_id,String picture,String time,okhttp3.Callback callback){
         String Url=URL+"MsgServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("sub_id",sub_id)
                 .add("obj_id",obj_id)
                 .add("picture",picture)
@@ -132,10 +132,10 @@ public class MsgConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    public void sendMsgWithoutPicture(String sub_id,String obj_id,String content,String time,okhttp3.Callback callback) {
+    public void sendMsgWithoutPicture(String sub_id,String obj_id,String content,String time,okhttp3.Callback callback){
         String Url=URL+"MsgServlet";
 
-        formBody = new FormBody.Builder()
+        formBody=new FormBody.Builder()
                 .add("sub_id",sub_id)
                 .add("obj_id",obj_id)
                 .add("content",content)
@@ -150,7 +150,7 @@ public class MsgConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api=Build.VERSION_CODES.O)
     public int parseJSONMsgResponse(String json,int sub_id,List<Msg> msgList){
         try{
             JSONArray jsonArray=new JSONArray(json);
@@ -175,17 +175,16 @@ public class MsgConnection {
                 if(sub_id==jsonArray.getJSONObject(i).getInt("sub_id"))cumsg.setType(1);
                 else cumsg.setType(0);
                 msgList.add(cumsg);
-
             }
             return jsonArray.length();
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
         return -1;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public int parseJSONMyMsgResponse(Context context, String json, List<my_msg> myMsgList){
+    @RequiresApi(api=Build.VERSION_CODES.O)
+    public int parseJSONMyMsgResponse(Context context,String json,List<my_msg> myMsgList){
         try{
             JSONArray jsonArray=new JSONArray(json);
             for(int i=0;i<jsonArray.length();i++){
@@ -209,9 +208,9 @@ public class MsgConnection {
             }
             //更新对方头像信息
             UpdateLocalPicture updateLocalPicture=new UpdateLocalPicture();
-            updateLocalPicture.getMyMsgOppoIdList(context,myMsgList);
+            updateLocalPicture.updateMyMsgOppoPicture(context,myMsgList);
             return jsonArray.length();
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
         return -1;

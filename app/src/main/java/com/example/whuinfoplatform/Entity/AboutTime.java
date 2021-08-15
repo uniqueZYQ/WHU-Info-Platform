@@ -3,26 +3,27 @@ package com.example.whuinfoplatform.Entity;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class AboutTime {
+public class AboutTime{
 
     public String getTime(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
+        long timecurrentTimeMillis=System.currentTimeMillis();
+        SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+        String time=sdfTwo.format(timecurrentTimeMillis);
         return time;
     }
+
     public int getYear(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
+        long timecurrentTimeMillis=System.currentTimeMillis();
+        SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+        String time=sdfTwo.format(timecurrentTimeMillis);
         int year=Integer.valueOf(String.valueOf(time.charAt(0))+String.valueOf(time.charAt(1))+String.valueOf(time.charAt(2))+String.valueOf(time.charAt(3))).intValue();
         return year;
     }
 
     public int getMonth(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
+        long timecurrentTimeMillis=System.currentTimeMillis();
+        SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+        String time=sdfTwo.format(timecurrentTimeMillis);
         int month;
         if(!String.valueOf(time.charAt(5)).equals("0"))
             month=Integer.valueOf(String.valueOf(time.charAt(5))+String.valueOf(time.charAt(6))).intValue();
@@ -32,9 +33,9 @@ public class AboutTime {
     }
 
     public int getDay(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
+        long timecurrentTimeMillis=System.currentTimeMillis();
+        SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+        String time=sdfTwo.format(timecurrentTimeMillis);
         int day;
         if(!String.valueOf(time.charAt(8)).equals("0"))
             day=Integer.valueOf(String.valueOf(time.charAt(8))+String.valueOf(time.charAt(9))).intValue();
@@ -44,9 +45,9 @@ public class AboutTime {
     }
 
     public int getHour(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
+        long timecurrentTimeMillis=System.currentTimeMillis();
+        SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+        String time=sdfTwo.format(timecurrentTimeMillis);
         int hour;
         if(!String.valueOf(time.charAt(12)).equals("0"))
             hour=Integer.valueOf(String.valueOf(time.charAt(12))+String.valueOf(time.charAt(13))).intValue();
@@ -56,9 +57,9 @@ public class AboutTime {
     }
 
     public int getMinute(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
+        long timecurrentTimeMillis=System.currentTimeMillis();
+        SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+        String time=sdfTwo.format(timecurrentTimeMillis);
         int minute;
         if(!String.valueOf(time.charAt(15)).equals("0"))
             minute=Integer.valueOf(String.valueOf(time.charAt(15))+String.valueOf(time.charAt(16))).intValue();
@@ -68,9 +69,9 @@ public class AboutTime {
     }
 
     public int getSecond(){
-        long timecurrentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat sdfTwo = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
-        String time = sdfTwo.format(timecurrentTimeMillis);
+        long timecurrentTimeMillis=System.currentTimeMillis();
+        SimpleDateFormat sdfTwo=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss",Locale.getDefault());
+        String time=sdfTwo.format(timecurrentTimeMillis);
         int second=Integer.valueOf(String.valueOf(time.charAt(18))+String.valueOf(time.charAt(19))).intValue();
         return second;
     }
@@ -97,11 +98,11 @@ public class AboutTime {
                     +String.valueOf(time_ex.charAt(10))+String.valueOf(time_ex.charAt(11))+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
                     String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
         }
-        else if (currentDay-itemDay == 2) {
+        else if(currentDay-itemDay == 2){
             timestamp="前天 "+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
                     String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
         }
-        else if (currentDay-itemDay == 1) {
+        else if(currentDay-itemDay == 1){
             timestamp="昨天 "+String.valueOf(time_ex.charAt(12))+String.valueOf(time_ex.charAt(13))+
                     String.valueOf(time_ex.charAt(14))+String.valueOf(time_ex.charAt(15))+String.valueOf(time_ex.charAt(16));
         }
