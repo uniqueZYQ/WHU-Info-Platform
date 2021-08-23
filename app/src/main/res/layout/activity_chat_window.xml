@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="#d8e0e8" >
+    android:background="#d8e0e8">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -15,17 +16,14 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="20sp"
-            android:textColor="#000000"
-            />
-
-
+            android:textColor="#000000"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/msg_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,8 +47,7 @@
             android:padding="2.5dp"
             android:maxLines="40"
             android:maxLength="400"
-            android:maxHeight="20dp"
-            />
+            android:maxHeight="20dp"/>
 
         <Button
             android:id="@+id/send"
@@ -62,6 +59,7 @@
             android:layout_margin="7dp"
             android:layout_gravity="center"
             android:textColor="#ffffff"/>
+
         <Button
             android:id="@+id/send_picture"
             android:layout_width="53dp"

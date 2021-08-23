@@ -7,5 +7,4 @@
     android:layout_height="50dp"
     android:background="#01FFFFFF"
     android:gravity="center"
-    app:layout_scrollFlags="scroll|enterAlways">
-    </androidx.appcompat.widget.Toolbar>
+    app:layout_scrollFlags="scroll|enterAlways"/>

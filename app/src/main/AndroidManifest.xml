@@ -24,12 +24,10 @@
 
         <activity android:name=".Activity.Renew_Permsg_promote_Activity" />
         <activity android:name=".Activity.Renew_Info_promote_Activity" />
-
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
-
         <activity android:name=".Activity.Upload_Picture_promote_Activity" />
         <activity android:name=".Activity.SplashActivity">
             <intent-filter>
@@ -65,7 +63,6 @@
         <activity
             android:name=".Activity.MainActivity"
             android:launchMode="singleTask" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.whuinfoplatform.fileprovider"
@@ -75,7 +72,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="rd3OYzcOpHfKM3xczjqacNIcHC6fHQjm" />

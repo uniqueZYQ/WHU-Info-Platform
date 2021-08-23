@@ -39,6 +39,7 @@ import com.baidu.mapapi.search.poi.PoiSearch;
 import com.example.whuinfoplatform.Dao.InfoConnection;
 import com.example.whuinfoplatform.Dao.PictureConnection;
 import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.BaiDuMap;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
@@ -61,16 +62,16 @@ public class Srch_Info_details_Activity extends rootActivity{
     private com.example.whuinfoplatform.databinding.ActivitySrchInfoDetailsBinding binding;
     private int form=0,first=1;
     private String owner,name,address;
-    private MapView mMapView = null;
+    private MapView mMapView=null;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
     private BaiDuMap baidumap=new BaiDuMap();
-    private PoiSearch mPoiSearch = PoiSearch.newInstance();
+    private PoiSearch mPoiSearch=PoiSearch.newInstance();
     private LatLng endPt;
     private double latitude,longitude;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
     }
 
@@ -81,7 +82,18 @@ public class Srch_Info_details_Activity extends rootActivity{
     }
 
     private void BaiDuAPPNotExist(){
-        BToast.showText(Srch_Info_details_Activity.this,"若要使用导航功能，请先下载百度地图客户端",false);
+        //BToast.showText(Srch_Info_details_Activity.this,"若要使用导航功能，请先下载百度地图客户端",false);
+        AlertDialog.Builder dialog=new AlertDialog.Builder(Srch_Info_details_Activity.this);
+        dialog.setTitle("未安装应用");
+        dialog.setMessage("若要使用导航功能，请先下载百度地图客户端");
+        dialog.setCancelable(true);
+        dialog.setPositiveButton("现在安装",(dialog1,which)->{
+            Intent intent=new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("https://na.mbd.baidu.com/r/qLuvZrymZy"));
+            startActivity(intent);
+        });
+        dialog.setNegativeButton("不，我再想想",(dialog12,which)->{});
+        dialog.show();
     }
 
     private void initMap(String Uid){
@@ -120,7 +132,7 @@ public class Srch_Info_details_Activity extends rootActivity{
         @Override
         public void onReceiveLocation(BDLocation location){
             //mapView 销毁后不再处理新接收的位置
-            if (location==null||mMapView==null){
+            if(location==null||mMapView==null){
                 return;
             }
             MyLocationData locData=new MyLocationData.Builder()
@@ -164,7 +176,7 @@ public class Srch_Info_details_Activity extends rootActivity{
 
     private void startBikeNavigation() throws ActivityNotFoundException{
         try{
-            Intent i1 = new Intent();
+            Intent i1=new Intent();
             // 骑行路线规划
             i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
                 +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)
@@ -178,7 +190,7 @@ public class Srch_Info_details_Activity extends rootActivity{
 
     private void startBusNavigation() throws ActivityNotFoundException{
         try{
-            Intent i1 = new Intent();
+            Intent i1=new Intent();
             // 公交路线规划
             i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)+
                     "&destination="+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)+
@@ -192,7 +204,7 @@ public class Srch_Info_details_Activity extends rootActivity{
 
     private void startNavigation() throws ActivityNotFoundException{
         try{
-            Intent i1 = new Intent();
+            Intent i1=new Intent();
             // 驾车路线规划
             i1.setData(Uri.parse("baidumap://map/direction?origin=name:我的位置|latlng:"+String.valueOf(latitude)+","+String.valueOf(longitude)
                     +"&destination=name:"+name+"|latlng:"+String.valueOf(endPt.latitude)+","+String.valueOf(endPt.longitude)

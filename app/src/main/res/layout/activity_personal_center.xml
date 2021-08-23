@@ -6,15 +6,17 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="@drawable/p_c">
+
     <include layout="@layout/toolbar"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="点击查看详情 下拉刷新"
         android:background="#77FFFFFF"
-        android:layout_margin="2dp"
-        />
+        android:layout_margin="2dp"/>
+
     <TextView
         android:id="@+id/none"
         android:layout_width="match_parent"
@@ -24,19 +26,19 @@
         android:text="暂无信息发布记录\n试试去信息大厅发布信息!"
         android:gravity="center"
         android:background="#77FFFFFF"
-        android:visibility="gone"
-        />
+        android:visibility="gone"/>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperrfresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        >
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <ListView
             android:id="@+id/list_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-        />
+            android:layout_height="wrap_content"/>
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

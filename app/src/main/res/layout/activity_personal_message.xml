@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="@drawable/p_m">
+
     <include layout="@layout/toolbar"/>
 
     <com.google.android.material.card.MaterialCardView
@@ -16,13 +17,14 @@
         android:layout_gravity="center"
         android:layout_marginTop="80dp"
         android:layout_marginBottom="8dp">
+
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:id="@+id/picture"
             android:layout_gravity="center"
-            android:background="@drawable/downloading"
-            />
+            android:background="@drawable/downloading"/>
+
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
@@ -33,8 +35,8 @@
         android:textColor="#000000"
         android:background="#00FFFFFF"
         android:layout_margin="4dp"
-        android:gravity="center"
-        />
+        android:gravity="center"/>
+
     <TextView
         android:id="@+id/text_realname"
         android:layout_width="match_parent"
@@ -43,8 +45,8 @@
         android:textColor="#000000"
         android:background="#00FFFFFF"
         android:layout_margin="4dp"
-        android:gravity="center"
-        />
+        android:gravity="center"/>
+
     <TextView
         android:id="@+id/text_stdid"
         android:layout_width="match_parent"
@@ -53,8 +55,8 @@
         android:textColor="#000000"
         android:background="#00FFFFFF"
         android:layout_margin="4dp"
-        android:gravity="center"
-        />
+        android:gravity="center"/>
+
     <Button
         android:id="@+id/button_upgrade"
         android:layout_width="wrap_content"
@@ -63,8 +65,8 @@
         android:textSize="19sp"
         android:background="@drawable/common_button_select"
         android:layout_gravity="center"
-        android:layout_margin="4dp"
-        />
+        android:layout_margin="4dp"/>
+
     <Button
         android:id="@+id/button_upload"
         android:layout_width="wrap_content"
@@ -73,7 +75,6 @@
         android:textSize="19sp"
         android:background="@drawable/common_button_select"
         android:layout_gravity="center"
-        android:layout_margin="4dp"
-        />
+        android:layout_margin="4dp"/>
 
 </LinearLayout>

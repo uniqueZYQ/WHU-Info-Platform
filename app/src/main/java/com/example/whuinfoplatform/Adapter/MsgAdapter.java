@@ -108,7 +108,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                         }
                         else
                             BToast.showText(adapter_parent.getContext(),"超过两分钟的消息无法撤回！",false);
-                    }catch(ParseException e) {
+                    }catch(ParseException e){
                         e.printStackTrace();
                     }
                 }
@@ -253,8 +253,8 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                             Bitmap bitmap_p;
                             double p_width=bit.getWidth();
                             double p_height=bit.getHeight();
-                            double width=800;//标准宽
-                            double height=1200;//标准高
+                            double width=400;//标准宽
+                            double height=600;//标准高
                             LinearLayout.LayoutParams params;
                             double ratio=p_width/p_height,st_ratio=width/height;
                             if(ratio>st_ratio){
@@ -317,8 +317,8 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
                             Bitmap bitmap_p;
                             double p_width=bit.getWidth();
                             double p_height=bit.getHeight();
-                            double width=800;//标准宽
-                            double height=1200;//标准高
+                            double width=400;//标准宽
+                            double height=600;//标准高
                             LinearLayout.LayoutParams params;
                             double ratio=p_width/p_height,st_ratio=width/height;
                             if(ratio>st_ratio){

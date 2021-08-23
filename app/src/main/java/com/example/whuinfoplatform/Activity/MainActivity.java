@@ -30,7 +30,6 @@ import com.example.whuinfoplatform.Entity.BToast;
 import com.example.whuinfoplatform.Entity.LocalLogin;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
-import com.google.android.material.card.MaterialCardView;
 
 import java.io.IOException;
 
@@ -39,7 +38,6 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity{
     private EditText id,pw;
-    private MaterialCardView e_pw,e_stdid;
     private LinearLayout layout,edit,wrong_promote;
     private Button startLogin,startCreateUser;
     private int wrong_time=0;
@@ -70,8 +68,6 @@ public class MainActivity extends AppCompatActivity{
         second=findViewById(R.id.second);
         startLogin=findViewById(R.id.log_in);
         startCreateUser=findViewById(R.id.create_user);
-        e_pw=findViewById(R.id.pw);
-        e_stdid=findViewById(R.id.stdid);
         checkBox=findViewById(R.id.checkbox);
 
         pw.addTextChangedListener(new TextWatcher(){
@@ -99,6 +95,7 @@ public class MainActivity extends AppCompatActivity{
             Intent intent=new Intent(MainActivity.this,Create_User_promote_Activity.class);
             startActivity(intent);
         });
+
         startLogin.setOnClickListener(v->{
             if(!(id.getText().toString().equals(""))&&!(pw.getText().toString().equals(""))){
                 String currid=id.getText().toString();
@@ -158,8 +155,8 @@ public class MainActivity extends AppCompatActivity{
             Animation shake=AnimationUtils.loadAnimation(MainActivity.this,R.anim.shake_button);//给组件播放动画效果
             //findViewById(R.id.bt).startAnimation(shake);  //写法一
             edit.startAnimation(shake);  //写法二
-            e_pw.setBackgroundColor(getResources().getColor(R.color.light_red));
-            e_stdid.setBackgroundColor(getResources().getColor(R.color.light_red));
+            pw.setBackgroundColor(getResources().getColor(R.color.light_red));
+            id.setBackgroundColor(getResources().getColor(R.color.light_red));
         });
         if(++wrong_time==5){
             runOnUiThread(()->{
@@ -215,8 +212,8 @@ public class MainActivity extends AppCompatActivity{
         dialog.setTitle("未登录");
         dialog.setMessage("确定退出WHU平台？");
         dialog.setCancelable(true);
-        dialog.setPositiveButton("是",(dialog1, which)->ActivityCollector.finishAll());
-        dialog.setNegativeButton("不，我再想想",(dialog12, which)->{});
+        dialog.setPositiveButton("是",(dialog1,which)->ActivityCollector.finishAll());
+        dialog.setNegativeButton("不，我再想想",(dialog12,which)->{});
         dialog.show();
     };
 

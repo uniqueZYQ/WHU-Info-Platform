@@ -6,15 +6,17 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="@drawable/i_f">
+
     <include layout="@layout/toolbar"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="点击查看详情 下拉刷新"
         android:background="#77FFFFFF"
-        android:layout_margin="2dp"
-        />
+        android:layout_margin="2dp"/>
+
     <TextView
         android:id="@+id/none"
         android:layout_width="match_parent"
@@ -24,8 +26,8 @@
         android:text="暂无结果\n试试其他搜索关键词!"
         android:gravity="center"
         android:background="#77FFFFFF"
-        android:visibility="gone"
-        />
+        android:visibility="gone"/>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperrfresh"
         android:layout_width="match_parent"
@@ -35,8 +37,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content"/>
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

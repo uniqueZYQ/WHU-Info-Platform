@@ -114,9 +114,9 @@ public class Chat_Window_Activity extends rootActivity{
             }
         });
 
-        binding.send.setOutlineProvider(new ViewOutlineProvider() {
+        binding.send.setOutlineProvider(new ViewOutlineProvider(){
             @Override
-            public void getOutline(View view, Outline outline) {
+            public void getOutline(View view,Outline outline){
                 outline.setRoundRect(0,0,view.getWidth(),view.getHeight(),30);
             }
         });
@@ -277,7 +277,7 @@ public class Chat_Window_Activity extends rootActivity{
         int picture=intent.getIntExtra("picture_id",0);
         if(picture!=0){
             long timecurrentTimeMillis=System.currentTimeMillis();
-            SimpleDateFormat sdfTwo=new SimpleDateFormat("YYYY年MM月dd日 HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat sdfTwo=new SimpleDateFormat("YYYY年MM月dd日 HH:mm:ss",Locale.getDefault());
             String time=sdfTwo.format(timecurrentTimeMillis);
             Msg msg=new Msg();
             msg.setContent("");

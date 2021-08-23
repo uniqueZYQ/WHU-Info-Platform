@@ -7,12 +7,14 @@
     android:fitsSystemWindows="true"
     android:padding="10dp"
     android:background="@drawable/p_c">
+
     <!--add map-->
     <FrameLayout
         android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card"
             android:layout_width="match_parent"
@@ -25,6 +27,7 @@
             android:layout_marginRight="10dp"
             android:padding="5dp"
             android:visibility="gone">
+
             <EditText
                 android:layout_width="275dp"
                 android:layout_height="match_parent"
@@ -35,32 +38,35 @@
                 android:singleLine="true"
                 android:maxLength="25"
                 android:imeOptions="actionSearch"
-                android:layout_marginLeft="7dp"
-                />
+                android:layout_marginLeft="7dp"/>
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/search"
                 android:background="@drawable/search"
                 android:layout_gravity="right"
-                android:layout_margin="3dp"
-                />
+                android:layout_margin="3dp"/>
+
         </com.google.android.material.card.MaterialCardView>
+
         <com.baidu.mapapi.map.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:visibility="gone">
-        </com.baidu.mapapi.map.MapView>
+            android:visibility="gone"/>
+
     </FrameLayout>
     <!--done-->
+
     <include layout="@layout/toolbar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/form"
             android:layout_width="match_parent"
@@ -69,9 +75,8 @@
             android:layout_margin="11dp"
             android:textColor="#000000"
             android:gravity="center"
-            android:background="#ffffff"
+            android:background="#ffffff"/>
 
-            />
         <Spinner
             android:id="@+id/pers_info_fd_type"
             android:layout_width="match_parent"
@@ -80,8 +85,8 @@
             android:visibility="gone"
             android:theme="@style/spinner_style"
             android:layout_margin="5dp"
-            android:background="@drawable/edittext"
-            />
+            android:background="@drawable/edittext"/>
+
         <Spinner
             android:id="@+id/pers_info_help_type"
             android:layout_width="match_parent"
@@ -90,8 +95,8 @@
             android:visibility="gone"
             android:theme="@style/spinner_style"
             android:layout_margin="5dp"
-            android:background="@drawable/edittext"
-            />
+            android:background="@drawable/edittext"/>
+
         <EditText
             android:id="@+id/edit_date"
             android:layout_width="match_parent"
@@ -104,14 +109,14 @@
             android:background="@drawable/edittext"
             android:textColor="#000000"
             android:clickable="true"
-            android:focusableInTouchMode="false"
-            />
+            android:focusableInTouchMode="false"/>
+
         <CalendarView
             android:id="@+id/calendar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#77ffffff"
-            />
+            android:background="#77ffffff"/>
+
         <EditText
             android:id="@+id/edit_place"
             android:layout_width="match_parent"
@@ -123,8 +128,8 @@
             android:background="@drawable/edittext"
             android:textColor="#000000"
             android:clickable="true"
-            android:focusableInTouchMode="false"
-            />
+            android:focusableInTouchMode="false"/>
+
         <EditText
             android:id="@+id/edit_commobj"
             android:layout_width="match_parent"
@@ -134,8 +139,8 @@
             android:textSize="18sp"
             android:layout_margin="5dp"
             android:background="@drawable/edittext"
-            android:textColor="#000000"
-            />
+            android:textColor="#000000"/>
+
         <Spinner
             android:id="@+id/edit_score"
             android:layout_width="match_parent"
@@ -144,12 +149,13 @@
             android:entries="@array/pers_info_comm_form"
             android:theme="@style/spinner_style"
             android:layout_margin="5dp"
-            android:background="@drawable/edittext"
-            />
+            android:background="@drawable/edittext"/>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
+
             <EditText
                 android:id="@+id/detail"
                 android:layout_width="match_parent"
@@ -159,9 +165,10 @@
                 android:maxLength="400"
                 android:layout_margin="5dp"
                 android:background="@drawable/edittext"
-                android:textColor="#000000"
-                />
+                android:textColor="#000000"/>
+
         </ScrollView>
+
         <EditText
             android:id="@+id/edit_price"
             android:layout_width="match_parent"
@@ -172,8 +179,8 @@
             android:textSize="18sp"
             android:layout_margin="5dp"
             android:background="@drawable/edittext"
-            android:textColor="#000000"
-            />
+            android:textColor="#000000"/>
+
         <EditText
             android:id="@+id/edit_reward"
             android:layout_width="match_parent"
@@ -184,8 +191,8 @@
             android:textSize="18sp"
             android:layout_margin="5dp"
             android:background="@drawable/edittext"
-            android:textColor="#000000"
-            />
+            android:textColor="#000000"/>
+
         <Button
             android:id="@+id/finish"
             android:layout_width="wrap_content"
@@ -196,8 +203,8 @@
             android:textSize="18sp"
             android:layout_gravity="center"
             android:layout_marginTop="7dp"
-            android:layout_marginBottom="7dp"
-            />
+            android:layout_marginBottom="7dp"/>
+
     </LinearLayout>
 
 </LinearLayout>

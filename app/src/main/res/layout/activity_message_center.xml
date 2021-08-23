@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="@drawable/m_c">
+
     <include layout="@layout/toolbar"/>
 
     <TextView
@@ -14,8 +15,8 @@
         android:gravity="center"
         android:text="点击查看详情 下拉刷新"
         android:background="#77EEEEEE"
-        android:layout_margin="2dp"
-        />
+        android:layout_margin="2dp"/>
+
     <TextView
         android:id="@+id/none"
         android:layout_width="match_parent"
@@ -25,19 +26,19 @@
         android:text="暂无会话记录\n试试发布或响应信息!"
         android:gravity="center"
         android:background="#77FFFFFF"
-        android:visibility="gone"
-        />
+        android:visibility="gone"/>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperrfresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        >
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <ListView
             android:id="@+id/list_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content"/>
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

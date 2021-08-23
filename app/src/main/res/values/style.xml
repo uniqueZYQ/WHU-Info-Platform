@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="BottomDialog" parent="@android:style/Theme.Dialog">
-
         <!-- 背景透明 -->
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -23,5 +22,4 @@
         <item name="android:windowEnterAnimation">@anim/dialog_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_out</item>
     </style>
-
 </resources>

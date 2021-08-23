@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/timestamp"
             android:layout_width="match_parent"
@@ -19,6 +20,7 @@
             android:layout_margin="5dp"
             android:textSize="15dp"
             android:visibility="gone"/>
+
     </LinearLayout>
 
     <TextView
@@ -28,37 +30,38 @@
         android:layout_margin="5dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:visibility="gone"
-        />
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/left_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="left"
-         >
+        android:layout_gravity="left">
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_picture_left"
             android:layout_width="40dp"
             android:layout_height="40dp"
             app:cardCornerRadius="10dp"
             android:layout_gravity="left">
+
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:id="@+id/picture_left"
-                android:layout_gravity="center"
-                />
+                android:layout_gravity="center"/>
+
         </com.google.android.material.card.MaterialCardView>
+
         <LinearLayout
             android:id="@+id/left_layout_inner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:orientation="vertical"
-            android:padding="5dp"
-            >
+            android:padding="5dp">
+
             <TextView
                 android:id="@+id/leftMsg"
                 android:layout_width="wrap_content"
@@ -73,40 +76,36 @@
                 android:paddingBottom="6dp"
                 android:paddingTop="6dp"
                 android:background="@drawable/message_left"/>
+
             <ImageView
                 android:id="@+id/left_upload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                />
+                android:visibility="gone"/>
+
         </LinearLayout>
 
-
-
     </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/right_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:orientation="horizontal"
-         >
+        android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/right_layout_inner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="5dp"
-            >
+            android:padding="5dp">
             <ImageView
                 android:id="@+id/right_upload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                />
+                android:visibility="gone"/>
+
             <TextView
                 android:id="@+id/rightMsg"
                 android:layout_width="wrap_content"
@@ -120,10 +119,10 @@
                 android:paddingRight="15dp"
                 android:paddingBottom="6dp"
                 android:paddingTop="6dp"
-                android:background="@drawable/message_right"
-                />
+                android:background="@drawable/message_right"/>
 
         </LinearLayout>
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_picture_right"
             android:layout_width="40dp"
@@ -134,8 +133,8 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:id="@+id/picture_right"
-                android:layout_gravity="center"
-                />
+                android:layout_gravity="center"/>
+
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>

@@ -6,10 +6,13 @@
     android:layout_height="match_parent"
     android:background="@drawable/basic"
     android:fitsSystemWindows="true">
+
     <include layout="@layout/toolbar"/>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <Button
             android:id="@+id/start_message_center_activity"
             android:layout_height="150dp"
@@ -18,8 +21,7 @@
             android:layout_gravity="top|left"
             android:layout_marginTop="175dp"
             android:layout_marginLeft="15dp"
-            android:shadowRadius="20"
-            />
+            android:shadowRadius="20"/>
 
         <Button
             android:id="@+id/start_info_hall_activity"
@@ -29,8 +31,7 @@
             android:layout_gravity="top|right"
             android:layout_marginTop="175dp"
             android:layout_marginRight="15dp"
-            android:shadowRadius="20"
-            />
+            android:shadowRadius="20"/>
 
         <Button
             android:id="@+id/start_personal_message_activity"
@@ -40,8 +41,7 @@
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="265dp"
             android:layout_marginRight="15dp"
-            android:shadowRadius="20"
-            />
+            android:shadowRadius="20"/>
 
         <Button
             android:id="@+id/start_personal_center_activity"
@@ -51,8 +51,7 @@
             android:layout_gravity="bottom|left"
             android:layout_marginBottom="265dp"
             android:layout_marginLeft="15dp"
-            android:shadowRadius="20"
-            />
+            android:shadowRadius="20"/>
 
         <Button
             android:id="@+id/change_user"
@@ -63,8 +62,7 @@
             android:textColor="#ffffff"
             android:layout_gravity="bottom|center"
             android:layout_marginBottom="40dp"
-            style="?android:attr/borderlessButtonStyle"
-            />
+            style="?android:attr/borderlessButtonStyle"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="22dp"
@@ -74,8 +72,8 @@
             android:layout_marginTop="195dp"
             android:layout_marginLeft="145dp"
             app:backgroundTint="#FFFF0000"
-            android:visibility="gone"
-            />
+            android:visibility="gone"/>
+
     </FrameLayout>
 
 </LinearLayout>

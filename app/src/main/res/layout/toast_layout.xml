@@ -5,7 +5,7 @@
     android:background="@drawable/toast_back"
     android:gravity="center_vertical"
     android:padding="13dp"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/toast_img"
@@ -13,7 +13,7 @@
         android:layout_height="50dp"
         android:background="@drawable/toast_y"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="5dp" />
+        android:layout_marginBottom="5dp"/>
 
     <TextView
         android:id="@+id/toast_text"
@@ -24,6 +24,6 @@
         android:layout_marginRight="10dp"
         android:textColor="#FFFFFF"
         android:gravity="center"
-        android:textSize="17sp" />
+        android:textSize="17sp"/>
 
 </LinearLayout>

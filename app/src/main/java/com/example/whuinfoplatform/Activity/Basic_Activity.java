@@ -58,26 +58,31 @@ public class Basic_Activity extends rootActivity{
     @Override
     protected void initClick(){
         super.initClick();
+
         binding.startPersonalMessageActivity.setOnClickListener(v->{
             Intent intent=new Intent(Basic_Activity.this,Personal_Message_Activity.class);
             intent.putExtra("id",id);
             startActivity(intent);
         });
+
         binding.startPersonalCenterActivity.setOnClickListener(v->{
             Intent intent=new Intent(Basic_Activity.this,Personal_Center_Activity.class);
             intent.putExtra("id",id);
             startActivity(intent);
         });
+
         binding.startInfoHallActivity.setOnClickListener(v->{
             Intent intent=new Intent(Basic_Activity.this,Info_Hall_Activity.class);
             intent.putExtra("id",id);
             startActivity(intent);
         });
+
         binding.startMessageCenterActivity.setOnClickListener(v->{
             Intent intent=new Intent(Basic_Activity.this,Message_Center_Activity.class);
             intent.putExtra("id",id);
             startActivity(intent);
         });
+
         binding.changeUser.setOnClickListener(v->{
             DataSupport.deleteAll(LocalLogin.class);
             Intent intent=new Intent(Basic_Activity.this,MainActivity.class);
@@ -107,7 +112,7 @@ public class Basic_Activity extends rootActivity{
         Intent intent = getIntent();
         id=intent.getIntExtra("tmpid",0);
         //List<Msg> cumsg= DataSupport.where("obj_id=?",String.valueOf(id)).order("id desc").find(Msg.class);
-        List<Msg> cumsg= new ArrayList<>();
+        List<Msg> cumsg=new ArrayList<>();
         List<Last> culast=new ArrayList<>();
         MsgConnection msgConnection=new MsgConnection();
         msgConnection.queryMsgAboutUserForObjUser(String.valueOf(id),new okhttp3.Callback(){
@@ -179,7 +184,8 @@ public class Basic_Activity extends rootActivity{
             if((System.currentTimeMillis()-exitTime)>2000){
                 BToast.showText(Basic_Activity.this,"再按一次退出程序",true);
                 exitTime=System.currentTimeMillis();
-            } else {
+            }
+            else {
                 ActivityCollector.finishAll();
                 ActivityCollector.removeActivity(this);
             }
