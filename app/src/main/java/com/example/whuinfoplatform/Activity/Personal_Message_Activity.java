@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -19,8 +20,11 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.example.whuinfoplatform.Dao.UserConnection;
+import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.BToast;
+import com.example.whuinfoplatform.Entity.BottomNavigation;
 import com.example.whuinfoplatform.Entity.EnlargePicture;
+import com.example.whuinfoplatform.Entity.LocalLogin;
 import com.example.whuinfoplatform.Entity.LocalPicture;
 import com.example.whuinfoplatform.Entity.User;
 import com.example.whuinfoplatform.R;
@@ -40,16 +44,20 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     private int id=0,type1=1;
     private Dialog mCameraDialog;
     private Bitmap bit;
+    private long exitTime=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityCollector.addActivity(this);
     }
 
     @Override
     public void bindView(){
         binding=ActivityPersonalMessageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        BottomNavigation bottomNavigation=new BottomNavigation();
+        bottomNavigation.init(binding.navigationBar,Personal_Message_Activity.this,4);
     }
 
     @RequiresApi(api=Build.VERSION_CODES.O)
@@ -139,6 +147,12 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
             EnlargePicture enlargePicture=new EnlargePicture();
             enlargePicture.EnlargePicture(Personal_Message_Activity.this,bit,false);
         });
+        binding.changeUser.setOnClickListener(v->{
+            DataSupport.deleteAll(LocalLogin.class);
+            Intent intent=new Intent(Personal_Message_Activity.this,MainActivity.class);
+            startActivity(intent);
+            this.finish();
+        });
     }
 
     private void showResult(String stdid,String nkn,String rnm,Bitmap bit){
@@ -176,9 +190,7 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     protected void initWidget(){
         super.initWidget();
         ActionBar actionBar=getSupportActionBar();
-        actionBar.setTitle("个人资料");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("  个人资料");
     }
 
     @Override
@@ -216,5 +228,21 @@ public class Personal_Message_Activity extends rootActivity implements View.OnCl
     protected void onResume(){
         super.onResume();
         initData();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK&&event.getAction()==KeyEvent.ACTION_DOWN){
+            if((System.currentTimeMillis()-exitTime)>2000){
+                BToast.showText(Personal_Message_Activity.this,"再按一次退出程序",true);
+                exitTime=System.currentTimeMillis();
+            }
+            else{
+                ActivityCollector.finishAll();
+                ActivityCollector.removeActivity(this);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode,event);
     }
 }

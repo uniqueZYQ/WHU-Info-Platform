@@ -8,7 +8,7 @@ public class LocalLogin extends DataSupport{
     private int id;
     private int user_id;
     private long time;
-    private static final long LOGIN_TIME=1000*60*60*8;//8h
+    private static final long LOGIN_TIME=1000*60*60*24*7;//一周
 
     public void setId(int id) {
         this.id=id;

@@ -351,7 +351,7 @@ public class InfoConnection{
             UpdateLocalPicture updateLocalPicture=new UpdateLocalPicture();
             updateLocalPicture.updateInfoOwnerPicture(context,srch_info_list);
             return jsonArray.length();
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
         return -1;

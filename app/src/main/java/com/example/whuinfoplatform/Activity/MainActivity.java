@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -11,8 +12,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,11 +42,12 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity{
     private EditText id,pw;
     private LinearLayout layout,edit,wrong_promote;
-    private Button startLogin,startCreateUser;
+    private Button startLogin,startCreateUser,showPw;
     private int wrong_time=0;
     private TextView second;
     private CheckBox checkBox;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -65,10 +69,14 @@ public class MainActivity extends AppCompatActivity{
         layout=findViewById(R.id.main_activity_layout);
         wrong_promote=findViewById(R.id.wrong_promote);
         edit=findViewById(R.id.edit);
+        showPw=findViewById(R.id.show_pw);
         second=findViewById(R.id.second);
         startLogin=findViewById(R.id.log_in);
         startCreateUser=findViewById(R.id.create_user);
         checkBox=findViewById(R.id.checkbox);
+
+        pw.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        id.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
         pw.addTextChangedListener(new TextWatcher(){
             @Override
@@ -84,6 +92,26 @@ public class MainActivity extends AppCompatActivity{
                         char c=s.charAt(i);
                         if(c>=0x4e00&&c<=0X9fff){ // 根据字节码判断
                             // 如果是中文，则清除输入的字符，否则保留
+                            s.delete(i,i+1);
+                        }
+                    }
+                }
+            }
+        });
+
+        id.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s,int start,int count,int after){}
+
+            @Override
+            public void onTextChanged(CharSequence s,int start,int before,int count){}
+
+            @Override
+            public void afterTextChanged(Editable s){
+                if(s.length()>0){
+                    for(int i=0;i<s.length();i++){
+                        char c=s.charAt(i);
+                        if(!(c=='0'||c=='1'||c=='2'||c=='3'||c=='4'||c=='5'||c=='6'||c=='7'||c=='8'||c=='9')){
                             s.delete(i,i+1);
                         }
                     }
@@ -123,10 +151,12 @@ public class MainActivity extends AppCompatActivity{
                                 LocalLogin localLogin=new LocalLogin();
                                 localLogin.updateOrInsert(user.getId());
                             }
-                            Intent intent=new Intent(MainActivity.this,Basic_Activity.class);
+                            /*Intent intent=new Intent(MainActivity.this,Basic_Activity.class);
                             intent.putExtra("tmpnkn",user.getNickname());
                             intent.putExtra("tmpid",user.getId());
-                            intent.putExtra("ref_nkn",1);
+                            intent.putExtra("ref_nkn",1);*/
+                            Intent intent=new Intent(MainActivity.this,Info_Hall_Activity.class);
+                            intent.putExtra("id",user.getId());
                             startActivity(intent);
                             Looper.prepare();
                             BToast.showText(MainActivity.this,user.getRealname()+"登录成功！",true);
@@ -145,6 +175,18 @@ public class MainActivity extends AppCompatActivity{
                 Animation shake=AnimationUtils.loadAnimation(MainActivity.this,R.anim.shake_button);//给组件播放动画效果
                 layout.startAnimation(shake);
             }
+        });
+
+        showPw.setOnTouchListener((v,event)->{
+            switch(event.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    pw.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    pw.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
+                    break;
+                }
+            return true;
         });
     }
 
@@ -170,7 +212,7 @@ public class MainActivity extends AppCompatActivity{
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }
-                int finalI = i;
+                int finalI=i;
                 runOnUiThread(()->second.setText(String.valueOf(finalI)));
             }
             runOnUiThread(()->{

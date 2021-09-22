@@ -15,12 +15,10 @@ import com.example.whuinfoplatform.Dao.LastConnection;
 import com.example.whuinfoplatform.Dao.MsgConnection;
 import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.BToast;
+import com.example.whuinfoplatform.Entity.BottomNavigation;
 import com.example.whuinfoplatform.Entity.Last;
-import com.example.whuinfoplatform.Entity.LocalLogin;
 import com.example.whuinfoplatform.Entity.Msg;
 import com.example.whuinfoplatform.databinding.ActivityBasicBinding;
-
-import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,6 +43,8 @@ public class Basic_Activity extends rootActivity{
     public void bindView(){
         binding=ActivityBasicBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        BottomNavigation bottomNavigation=new BottomNavigation();
+        bottomNavigation.init(binding.navigationBar,Basic_Activity.this,3);
     }
 
     @Override
@@ -81,13 +81,6 @@ public class Basic_Activity extends rootActivity{
             Intent intent=new Intent(Basic_Activity.this,Message_Center_Activity.class);
             intent.putExtra("id",id);
             startActivity(intent);
-        });
-
-        binding.changeUser.setOnClickListener(v->{
-            DataSupport.deleteAll(LocalLogin.class);
-            Intent intent=new Intent(Basic_Activity.this,MainActivity.class);
-            startActivity(intent);
-            this.finish();
         });
     }
 

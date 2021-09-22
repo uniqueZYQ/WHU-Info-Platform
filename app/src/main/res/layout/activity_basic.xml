@@ -53,17 +53,6 @@
             android:layout_marginLeft="15dp"
             android:shadowRadius="20"/>
 
-        <Button
-            android:id="@+id/change_user"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="-切换用户-"
-            android:textSize="17sp"
-            android:textColor="#ffffff"
-            android:layout_gravity="bottom|center"
-            android:layout_marginBottom="40dp"
-            style="?android:attr/borderlessButtonStyle"/>
-
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="22dp"
             android:layout_height="22dp"
@@ -73,6 +62,9 @@
             android:layout_marginLeft="145dp"
             app:backgroundTint="#FFFF0000"
             android:visibility="gone"/>
+
+        <include android:id="@+id/navigation_bar"
+            layout="@layout/navigationbar"/>
 
     </FrameLayout>
 

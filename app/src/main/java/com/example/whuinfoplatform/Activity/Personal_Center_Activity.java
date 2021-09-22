@@ -9,12 +9,15 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
 
 import com.example.whuinfoplatform.Adapter.my_info_Adapter;
 import com.example.whuinfoplatform.Dao.InfoConnection;
+import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.BToast;
+import com.example.whuinfoplatform.Entity.BottomNavigation;
 import com.example.whuinfoplatform.Entity.my_info;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityPersonalCenterBinding;
@@ -28,20 +31,24 @@ import okhttp3.Response;
 
 public class Personal_Center_Activity extends rootActivity {
     private ActivityPersonalCenterBinding binding;
-    private List<my_info> my_info_list = new ArrayList<>();
+    private List<my_info> my_info_list=new ArrayList<>();
     private SwipeRefreshLayout swipeRefresh;
     private my_info_Adapter adapter;
     private int id;
+    private long exitTime=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityCollector.addActivity(this);
     }
 
     @Override
     public void bindView(){
         binding=ActivityPersonalCenterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        BottomNavigation bottomNavigation=new BottomNavigation();
+        bottomNavigation.init(binding.navigationBar,Personal_Center_Activity.this,3);
         adapter=new my_info_Adapter(Personal_Center_Activity.this,R.layout.my_info_item,my_info_list);
         init();
     }
@@ -137,14 +144,28 @@ public class Personal_Center_Activity extends rootActivity {
     protected void initWidget(){
         super.initWidget();
         ActionBar actionBar=getSupportActionBar();
-        actionBar.setTitle("我发布的");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("  我发布的");
     }
 
     @Override
     protected void onRestart(){
         super.onRestart();
         refresh_my_info(1);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK&&event.getAction()==KeyEvent.ACTION_DOWN){
+            if((System.currentTimeMillis()-exitTime)>2000){
+                BToast.showText(Personal_Center_Activity.this,"再按一次退出程序",true);
+                exitTime=System.currentTimeMillis();
+            }
+            else{
+                ActivityCollector.finishAll();
+                ActivityCollector.removeActivity(this);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode,event);
     }
 }

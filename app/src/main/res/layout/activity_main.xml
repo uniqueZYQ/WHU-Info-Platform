@@ -56,12 +56,10 @@
 
                     <EditText
                         android:id="@+id/edit_stdid"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
+                        android:layout_width="250dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:hint=" 学号:"
-                        android:inputType="number"
+                        android:hint="学号:"
                         android:maxLength="13"
                         android:singleLine="true"
                         android:textSize="20dp"
@@ -79,8 +77,7 @@
             android:layout_height="40dp"
             android:orientation="horizontal"
             android:layout_marginLeft="50dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="70dp">
+            android:layout_marginTop="10dp">
 
             <ImageView
                 android:layout_width="40dp"
@@ -88,10 +85,9 @@
                 android:src="@drawable/key"/>
 
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="10dp"
-                android:background="#eeeeee"
                 android:id="@+id/pw">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -101,11 +97,10 @@
 
                     <EditText
                         android:id="@+id/edit_pwd"
-                        android:layout_width="match_parent"
-                        android:layout_height="99dp"
+                        android:layout_width="250dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="center_vertical"
-                        android:hint=" 密码:"
-                        android:inputType="textPassword"
+                        android:hint="密码:"
                         android:maxLength="15"
                         android:singleLine="true"
                         android:textSize="20dp"
@@ -115,6 +110,14 @@
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
+            <Button
+                android:id="@+id/show_pw"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/show_pw"/>
 
         </LinearLayout>
 

@@ -38,6 +38,7 @@ public class SplashActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
             Window window=getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS|WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -79,10 +80,10 @@ public class SplashActivity extends AppCompatActivity{
         set1.setDuration(20000).play(animatorX1).with(animatorY1).after(animatorY);
         set1.start();
         //动画完成监听
-        set1.addListener(new AnimatorListenerAdapter() {
+        set1.addListener(new AnimatorListenerAdapter(){
 
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(Animator animation){
                 activityJumper(localLogin.judgeLogin());
             }
         });
@@ -102,7 +103,7 @@ public class SplashActivity extends AppCompatActivity{
                 @Override
                 public void onResponse(Call call,Response response) throws IOException{
                     String result=response.body().string();
-                    try {
+                    try{
                         LocalLogin localLogin=new LocalLogin();
                         localLogin.updateOrInsert(user_id);
                         JSONObject jsonObject=new JSONObject(result);
@@ -119,7 +120,7 @@ public class SplashActivity extends AppCompatActivity{
         }
         else{
             if(user_id==0){
-                BToast.showText(SplashActivity.this,"连接超时，请重新登录");
+                BToast.showText(SplashActivity.this,"信息验证超时，请重新登录");
             }
             //动画完成后跳转首页
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
@@ -131,9 +132,11 @@ public class SplashActivity extends AppCompatActivity{
     private void gotoBasic(int id,String nkn){
         runOnUiThread(()->{
             //动画完成后跳转首页
-            Intent intent=new Intent(SplashActivity.this,Basic_Activity.class);
+            /*Intent intent=new Intent(SplashActivity.this,Basic_Activity.class);
             intent.putExtra("tmpnkn",nkn);
-            intent.putExtra("tmpid",id);
+            intent.putExtra("tmpid",id);*/
+            Intent intent=new Intent(SplashActivity.this,Info_Hall_Activity.class);
+            intent.putExtra("id",id);
             startActivity(intent);
             finish();
             overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);

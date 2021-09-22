@@ -9,13 +9,16 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
 
 import com.example.whuinfoplatform.Adapter.my_msg_Adapter;
 import com.example.whuinfoplatform.Dao.LastConnection;
 import com.example.whuinfoplatform.Dao.MsgConnection;
+import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.BToast;
+import com.example.whuinfoplatform.Entity.BottomNavigation;
 import com.example.whuinfoplatform.Entity.my_msg;
 import com.example.whuinfoplatform.R;
 import com.example.whuinfoplatform.databinding.ActivityMessageCenterBinding;
@@ -37,17 +40,21 @@ public class Message_Center_Activity extends rootActivity{
     private List<my_msg> my_msg_list=new ArrayList<>();
     private SwipeRefreshLayout swipeRefresh;
     private my_msg_Adapter adapter;
-    int myid=0,oppo_id=0;
+    private int myid=0,oppo_id=0;
+    private long exitTime=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        ActivityCollector.addActivity(this);
     }
 
     @Override
     public void bindView(){
         binding=ActivityMessageCenterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        BottomNavigation bottomNavigation=new BottomNavigation();
+        bottomNavigation.init(binding.navigationBar,Message_Center_Activity.this,1);
         init();
         adapter=new my_msg_Adapter(Message_Center_Activity.this,R.layout.my_msg_item,my_msg_list);
     }
@@ -242,15 +249,29 @@ public class Message_Center_Activity extends rootActivity{
     @Override
     protected void initWidget(){
         super.initWidget();
-        ActionBar actionBar =getSupportActionBar();
-        actionBar.setTitle("消息中心");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar=getSupportActionBar();
+        actionBar.setTitle("  消息中心");
     }
 
     @Override
     protected void onRestart(){
         super.onRestart();
         refresh_my_msg(1);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK&&event.getAction()==KeyEvent.ACTION_DOWN){
+            if((System.currentTimeMillis()-exitTime)>2000){
+                BToast.showText(Message_Center_Activity.this,"再按一次退出程序",true);
+                exitTime=System.currentTimeMillis();
+            }
+            else{
+                ActivityCollector.finishAll();
+                ActivityCollector.removeActivity(this);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode,event);
     }
 }

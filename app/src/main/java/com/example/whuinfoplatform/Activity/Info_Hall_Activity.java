@@ -5,24 +5,31 @@ import androidx.appcompat.app.ActionBar;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 
+import com.example.whuinfoplatform.Entity.ActivityCollector;
 import com.example.whuinfoplatform.Entity.BToast;
+import com.example.whuinfoplatform.Entity.BottomNavigation;
 import com.example.whuinfoplatform.Entity.SenseCheck;
 import com.example.whuinfoplatform.databinding.ActivityInfoHallBinding;
 
 public class Info_Hall_Activity extends rootActivity {
     private ActivityInfoHallBinding binding;
+    private long exitTime=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        ActivityCollector.addActivity(this);
     }
 
     @Override
     public void bindView(){
         binding=ActivityInfoHallBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        BottomNavigation bottomNavigation=new BottomNavigation();
+        bottomNavigation.init(binding.navigationBar,Info_Hall_Activity.this,2);
     }
 
     @Override
@@ -67,11 +74,9 @@ public class Info_Hall_Activity extends rootActivity {
             }
         });
         binding.startPublishInfoActivity.setOnClickListener(v->{
-            Intent intent1=getIntent();
-            int id=intent1.getIntExtra("id",0);
-            Intent intent2=new Intent(Info_Hall_Activity.this,Publish_Info_promote_Activity.class);
-            intent2.putExtra("id",id);
-            startActivity(intent2);
+            Intent intent=new Intent(Info_Hall_Activity.this,Publish_Info_promote_Activity.class);
+            intent.putExtra("id",getIntent().getIntExtra("id",0));
+            startActivity(intent);
         });
     }
 
@@ -83,10 +88,24 @@ public class Info_Hall_Activity extends rootActivity {
     @SuppressLint("RestrictedApi")
     @Override
     protected void initWidget(){
-        ActionBar actionBar =getSupportActionBar();
-        actionBar.setTitle("信息大厅");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar=getSupportActionBar();
+        actionBar.setTitle("  信息大厅");
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK&&event.getAction()==KeyEvent.ACTION_DOWN){
+            if((System.currentTimeMillis()-exitTime)>2000){
+                BToast.showText(Info_Hall_Activity.this,"再按一次退出程序",true);
+                exitTime=System.currentTimeMillis();
+            }
+            else{
+                ActivityCollector.finishAll();
+                ActivityCollector.removeActivity(this);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode,event);
     }
 }
 
